@@ -4,6 +4,7 @@ using Final.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Final.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241103164038_CreateRole")]
+    partial class CreateRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,10 +59,7 @@ namespace Final.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RoleId1")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Username")
@@ -70,8 +70,6 @@ namespace Final.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("RoleId1");
 
                     b.ToTable("Accounts");
                 });
@@ -98,43 +96,21 @@ namespace Final.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CodeName = "ADMIN",
-                            CreatedAt = new DateTime(2024, 11, 4, 0, 3, 16, 664, DateTimeKind.Local).AddTicks(2788),
-                            IsDeleted = false,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CodeName = "USER",
-                            CreatedAt = new DateTime(2024, 11, 4, 0, 3, 16, 664, DateTimeKind.Local).AddTicks(2801),
-                            IsDeleted = false,
-                            Name = "User"
-                        });
                 });
 
             modelBuilder.Entity("Final.Models.Account", b =>
                 {
                     b.HasOne("Final.Models.Role", "Role")
-                        .WithMany()
+                        .WithMany("Accounts")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Final.Models.Role", null)
-                        .WithMany("Accounts")
-                        .HasForeignKey("RoleId1");
 
                     b.Navigation("Role");
                 });
