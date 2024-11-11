@@ -1,7 +1,27 @@
+using Final.net.Models;
+using Microsoft.EntityFrameworkCore;
+using Final.net.Areas.Admin.CategoryService;
+
+using CloudinaryDotNet;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<PizzaStoreContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddSingleton(x =>
+{
+    var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+    var account = new Account(cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret);
+    return new Cloudinary(account);
+});
+builder.Services.AddSingleton<CategoryService>();
+
 
 var app = builder.Build();
 
@@ -19,6 +39,12 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapAreaControllerRoute(
+    name: "admin",
+    areaName: "Admin",
+    pattern: "admin/{controller=Category}/{action=Index}/{id?}");
+
 
 app.MapControllerRoute(
     name: "default",
