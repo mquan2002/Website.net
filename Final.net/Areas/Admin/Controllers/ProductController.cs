@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Final.net.Models;
+using Final.net.Areas.Admin.ProductService;
 
 namespace Final.net.Areas_Admin_Controllers
 {
@@ -14,10 +15,13 @@ namespace Final.net.Areas_Admin_Controllers
     public class ProductController : Controller
     {
         private readonly PizzaStoreContext _context;
+        private readonly ProductService _productService;
 
-        public ProductController(PizzaStoreContext context)
+
+        public ProductController(PizzaStoreContext context, ProductService productService)
         {
             _context = context;
+            _productService = productService;
         }
 
         // GET: Product
@@ -52,24 +56,46 @@ namespace Final.net.Areas_Admin_Controllers
         // GET: Product/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
             return View();
         }
 
         // POST: Product/Create
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,Price,Description,ImageUrl,CategoryId,CreatedAt,UpdatedAt,DeletedAt")] Product product)
+        public async Task<IActionResult> Create(Product product, IFormFile ImageUrl)
         {
-            if (ModelState.IsValid)
+            if (ImageUrl != null && ImageUrl.Length > 0)
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    var imageUrl = await _productService.UploadImageToCloudinary(ImageUrl);
+                    product.ImageUrl = imageUrl;
+                    ModelState.Remove("ImageUrl");
+                    if (ModelState.IsValid)
+                    {
+                        _context.Add(product);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    else
+                    {
+                        ModelState.AddModelError("ImageUrl", "Không thể upload ảnh lên Cloudinary.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("ImageUrl", "Lỗi khi upload ảnh: " + ex.Message);
+                }
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
+            else
+            {
+                ModelState.AddModelError("ImageUrl", "Vui lòng chọn một ảnh.");
+            }
             return View(product);
         }
+
 
         [HttpGet("Edit/{id}")]
         // GET: Product/Edit/5
@@ -85,43 +111,56 @@ namespace Final.net.Areas_Admin_Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
         }
 
-        // POST: Product/Edit/5
+
         [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,Price,Description,ImageUrl,CategoryId,CreatedAt,UpdatedAt,DeletedAt")] Product product)
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile? ImageUrl)
         {
             if (id != product.ProductId)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.ProductId == id);
+            if (existingProduct == null)
             {
-                try
-                {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.ProductId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
+            if (ImageUrl != null && ImageUrl.Length > 0)
+            {
+                var imageUrl = await _productService.UploadImageToCloudinary(ImageUrl);
+                product.ImageUrl = imageUrl;
+            }
+            else
+            {
+                product.ImageUrl = existingProduct.ImageUrl;
+                ModelState.Remove("ImageUrl");
+            }
+
+            try
+            {
+                product.UpdatedAt = DateTime.Now;
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(product.ProductId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
             return View(product);
         }
+
 
         [HttpGet("Delete/{id}")]
         // GET: Product/Delete/5

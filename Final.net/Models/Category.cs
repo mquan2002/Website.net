@@ -13,7 +13,7 @@ namespace Final.net.Models
         public string CategoryName { get; set; } = null!;
 
         [MaxLength(255)]
-        public string CategoryImage { get; set; } = null!;
+        public string? CategoryImage { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

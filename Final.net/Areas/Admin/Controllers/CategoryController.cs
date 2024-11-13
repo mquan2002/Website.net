@@ -116,47 +116,46 @@ namespace Final.net.Areas_Admin_Controllers
         // Có thể dùng [HttpPost("Edit")]
         [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Category category, IFormFile CategoryImage)
+        public async Task<IActionResult> Edit(int id, Category category, IFormFile? CategoryImage)
         {
-
             if (id != category.CategoryId)
             {
                 return NotFound();
             }
-            ModelState.Remove("CategoryImage");
-
+            var existingCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.CategoryId == id);
+            if (existingCategory == null)
+            {
+                return NotFound();
+            }
             if (CategoryImage != null && CategoryImage.Length > 0)
             {
                 var imageUrl = await _categoryService.UploadImageToCloudinary(CategoryImage);
                 category.CategoryImage = imageUrl;
-                ModelState.Remove("CategoryImage");
-                // if (ModelState.IsValid)
-                // {
-                try
-                {
-                    category.UpdatedAt = DateTime.Now; // Cập nhật lại thời gian trước khi lưu
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.CategoryId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-                // }
             }
             else
             {
+                category.CategoryImage = existingCategory.CategoryImage;
                 ModelState.Remove("CategoryImage");
-
             }
+
+            try
+            {
+                category.UpdatedAt = DateTime.Now;
+                _context.Update(category);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CategoryExists(category.CategoryId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
             return View(category);
         }
 
@@ -200,3 +199,6 @@ namespace Final.net.Areas_Admin_Controllers
         }
     }
 }
+
+
+

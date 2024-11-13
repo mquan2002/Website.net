@@ -1,7 +1,7 @@
 using Final.net.Models;
 using Microsoft.EntityFrameworkCore;
 using Final.net.Areas.Admin.CategoryService;
-
+using Final.net.Areas.Admin.ProductService;
 using CloudinaryDotNet;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +21,7 @@ builder.Services.AddSingleton(x =>
     return new Cloudinary(account);
 });
 builder.Services.AddSingleton<CategoryService>();
+builder.Services.AddSingleton<ProductService>();
 
 
 var app = builder.Build();

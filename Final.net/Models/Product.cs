@@ -11,13 +11,12 @@ public partial class Product
     [MaxLength(255)]
     public string ProductName { get; set; } = null!;
 
-    [MaxLength(255)]
     public double? Price { get; set; }
 
     public string Description { get; set; } = null!;
 
     [MaxLength(255)]
-    public string ImageUrl { get; set; } = null!;
+    public string? ImageUrl { get; set; } = null!;
 
     public int? CategoryId { get; set; }
 
