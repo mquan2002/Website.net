@@ -62,6 +62,22 @@ namespace Final.net.Areas_Admin_Controllers
             if (ModelState.IsValid)
             {
 
+                // Check for duplicate email
+                bool emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
+                if (emailExists)
+                {
+                    ModelState.AddModelError("Email", "Email đã tồn tại trong hệ thống.");
+                    return View(user);
+                }
+
+                bool usernameExists = await _context.Users.AnyAsync(u => u.UserName == user.UserName);
+                if (usernameExists)
+                {
+                    ModelState.AddModelError("UserName", "Username đã tồn tại trong hệ thống.");
+                    return View(user);
+                }
+
+
                 user.Password = _passwordHasher.HashPassword(user, user.Password);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
