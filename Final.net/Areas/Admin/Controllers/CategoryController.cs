@@ -26,10 +26,24 @@ namespace Final.net.Areas_Admin_Controllers
 
         // GET: Category
         [HttpGet("")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Categories.ToListAsync());
+            const int pageSize = 5; 
+
+            var totalCategories = await _context.Categories.CountAsync();
+
+            var totalPages = (int)Math.Ceiling(totalCategories / (double)pageSize);
+
+            var categories = await _context.Categories
+                .Skip((page - 1) * pageSize) 
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            return View(categories);
         }
+
 
         // GET: Category/Details/5
         [HttpGet("Detail/{id}")]
@@ -62,6 +76,12 @@ namespace Final.net.Areas_Admin_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category, IFormFile CategoryImage)
         {
+            if (await _context.Categories.AnyAsync(c => c.CategoryName.ToLower() == category.CategoryName.ToLower()))
+            {
+                ModelState.AddModelError("CategoryName", "Thể loại này đã tồn tại.");
+                return View(category);
+            }
+
             if (CategoryImage != null && CategoryImage.Length > 0)
             {
                 try
@@ -122,11 +142,24 @@ namespace Final.net.Areas_Admin_Controllers
             {
                 return NotFound();
             }
-            var existingCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.CategoryId == id);
-            if (existingCategory == null)
+
+            if (await _context.Categories.AnyAsync(c => c.CategoryName.ToLower() == category.CategoryName.ToLower() && c.CategoryId != id))
+            {
+                ModelState.AddModelError("CategoryName", "Thể loại này đã tồn tại.");
+                var existingCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.CategoryId == id);
+                if (existingCategory != null)
+                {
+                    category.CategoryImage = existingCategory.CategoryImage;
+                }
+                return View(category);
+            }
+
+            var existingCategoryForEdit = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.CategoryId == id);
+            if (existingCategoryForEdit == null)
             {
                 return NotFound();
             }
+
             if (CategoryImage != null && CategoryImage.Length > 0)
             {
                 var imageUrl = await _categoryService.UploadImageToCloudinary(CategoryImage);
@@ -134,7 +167,7 @@ namespace Final.net.Areas_Admin_Controllers
             }
             else
             {
-                category.CategoryImage = existingCategory.CategoryImage;
+                category.CategoryImage = existingCategoryForEdit.CategoryImage;
                 ModelState.Remove("CategoryImage");
             }
 
@@ -155,8 +188,8 @@ namespace Final.net.Areas_Admin_Controllers
                     throw;
                 }
             }
+
             return RedirectToAction(nameof(Index));
-            return View(category);
         }
 
         // GET: Category/Delete/5
@@ -183,15 +216,28 @@ namespace Final.net.Areas_Admin_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var categoryInUse = await _context.Products.AnyAsync(p => p.CategoryId == id);
+
+            if (categoryInUse)
             {
-                _context.Categories.Remove(category);
+                // Thêm thông báo lỗi vào ModelState
+                ModelState.AddModelError("", "Không thể xóa thể loại này vì nó đang được sử dụng trong các sản phẩm.");
+
+                // Truyền lại thể loại vào view để hiển thị
+                var category = await _context.Categories.FindAsync(id);
+                return View(category);
             }
 
-            await _context.SaveChangesAsync();
+            var categoryToDelete = await _context.Categories.FindAsync(id);
+            if (categoryToDelete != null)
+            {
+                _context.Categories.Remove(categoryToDelete);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool CategoryExists(int id)
         {

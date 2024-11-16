@@ -26,10 +26,23 @@ namespace Final.net.Areas_Admin_Controllers
 
         // GET: Product
         [HttpGet("")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var pizzaStoreContext = _context.Products.Include(p => p.Category);
-            return View(await pizzaStoreContext.ToListAsync());
+            const int pageSize = 5;  
+
+            var totalProducts = await _context.Products.CountAsync();
+
+            var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+
+            var products = await _context.Products
+                .Skip((page - 1) * pageSize)  
+                .Take(pageSize) 
+                .Include(p => p.Category)   
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            return View(products);
         }
 
         [HttpGet("Detail/{id}")]
@@ -65,6 +78,13 @@ namespace Final.net.Areas_Admin_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product, IFormFile ImageUrl)
         {
+            if (await _context.Products.AnyAsync(c => c.ProductName.ToLower() == product.ProductName.ToLower()))
+            {
+                ModelState.AddModelError("ProductName", "Sản phẩm này đã tồn tại.");
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
+                return View(product); // Trả lại model với dữ liệu đã nhập
+            }
+
             if (ImageUrl != null && ImageUrl.Length > 0)
             {
                 try
@@ -72,29 +92,30 @@ namespace Final.net.Areas_Admin_Controllers
                     var imageUrl = await _productService.UploadImageToCloudinary(ImageUrl);
                     product.ImageUrl = imageUrl;
                     ModelState.Remove("ImageUrl");
-                    if (ModelState.IsValid)
-                    {
-                        _context.Add(product);
-                        await _context.SaveChangesAsync();
-                        return RedirectToAction(nameof(Index));
-                    }
-
-                    else
-                    {
-                        ModelState.AddModelError("ImageUrl", "Không thể upload ảnh lên Cloudinary.");
-                    }
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("ImageUrl", "Lỗi khi upload ảnh: " + ex.Message);
+                    return View(product); // Trả lại model khi có lỗi upload ảnh
                 }
             }
             else
             {
                 ModelState.AddModelError("ImageUrl", "Vui lòng chọn một ảnh.");
+                return View(product); // Trả lại model khi không chọn ảnh
             }
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Trả lại view với thông báo lỗi nếu ModelState không hợp lệ
             return View(product);
         }
+
 
 
         [HttpGet("Edit/{id}")]
@@ -124,6 +145,19 @@ namespace Final.net.Areas_Admin_Controllers
             {
                 return NotFound();
             }
+
+            if (await _context.Products.AnyAsync(c => c.ProductName.ToLower() == product.ProductName.ToLower() && c.ProductId != id))
+            {
+                ModelState.AddModelError("ProductName", "Sản phẩm này đã tồn tại.");
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
+                var retriveImage = await _context.Products.AsNoTracking().FirstOrDefaultAsync(c => c.ProductId == id);
+                if (retriveImage != null)
+                {
+                    product.ImageUrl = retriveImage.ImageUrl;
+                }
+                return View(product);
+            }
+
             var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.ProductId == id);
             if (existingProduct == null)
             {
