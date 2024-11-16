@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Linq;
+using Final.net.Services;
 
 namespace Final.net.Controllers
 {
-    public class CartController : Controller
+    public class CartController : BaseController
     {
         private const string CartSessionKey = "CartSession";
         private readonly PizzaStoreContext _context;
 
-        public CartController(PizzaStoreContext context)
+        public CartController(CartService cartService, PizzaStoreContext context) : base(cartService)
         {
             _context = context;
         }

@@ -1,14 +1,17 @@
-using Final.net.Models;
+﻿using Final.net.Models;
+using Final.net.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace Final.net.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(CartService cartService, ILogger<HomeController> logger) : base(cartService)
         {
             _logger = logger;
         }

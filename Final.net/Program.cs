@@ -1,4 +1,5 @@
 ﻿using Final.net.Models;
+using Final.net.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,10 @@ builder.Services.AddDbContext<PizzaStoreContext>(options =>
 // Thêm cấu hình cho Session
 builder.Services.AddSession(); // Thêm dịch vụ Session
 
+//Service cho Cart
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<CartService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,12 +30,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Sử dụng Session trong ứng dụng
+app.UseSession(); // Thêm dòng này để kích hoạt Session
+
 app.UseRouting();
 
 app.UseAuthorization();
-
-// Sử dụng Session trong ứng dụng
-app.UseSession(); // Thêm dòng này để kích hoạt Session
 
 app.MapControllerRoute(
     name: "areas",

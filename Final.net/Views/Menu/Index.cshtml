@@ -19,6 +19,25 @@
         });
     }
 
+    function showToast(message) {
+        $('#toast .toast-body').text(message);
+        $('#toast').css('display', 'block');
+
+        setTimeout(function () {
+            let opacity = 1;
+            let fadeOutInterval = setInterval(function () {
+                if (opacity > 0) {
+                    opacity -= 0.05;  
+                    $('#toast').css('opacity', opacity);  
+                } else {
+                    clearInterval(fadeOutInterval);  // Dừng fade-out khi opacity = 0
+                    $('#toast').css('display', 'none');  // Ẩn toast khi hoàn thành
+                }
+            }, 50);  // Mỗi 50ms giảm opacity 0.05
+        }, 800);  // Màn hình hiển thị toast trong xs
+    }
+
+     
     function addToCart() {
         var form = $('#addToCartForm');
         $.ajax({
@@ -28,7 +47,7 @@
             success: function (response) {
                 if (response.success) {
                     $('#addToCartModal').modal('hide');
-                    alert(response.message);
+                    showToast(response.message);
                 } else {
                     alert(response.message);
                 }
@@ -46,6 +65,10 @@
         return name.Replace(" ", "-").ToLower(); // Thay thế khoảng trắng bằng dấu gạch ngang
     }
 }
+
+<div id="toast" class="toast">
+    <div class="toast-body">Sản phẩm đã được thêm vào giỏ hàng!</div>
+</div>
 
 <section class="featured spad">
     <div class="container">
@@ -99,6 +122,17 @@
 
 <div id="modalContainer"></div>
 
-
-
-
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+        opacity: 1;
+        z-index: 9999;
+    }
+</style>
