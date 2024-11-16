@@ -177,3 +177,7 @@
             transform: scale(1.1);
         }
 
+
+.text-danger {
+    color: #dc3545;
+}
