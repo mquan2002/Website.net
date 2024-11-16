@@ -61,7 +61,7 @@ namespace Final.net.Controllers
 
         // Phương thức thêm sản phẩm vào giỏ hàng với Size và Crust
         [HttpPost]
-        public IActionResult AddToCart(int productId, string productName, double price, string imageUrl, int sizeId, int crustId, int quantity)
+        public IActionResult AddToCart(int productId, string productName, double price, string imageUrl, int sizeId, int crustId, int quantity = 1)
         {
             var cart = GetCartItems();
 
@@ -74,24 +74,29 @@ namespace Final.net.Controllers
                 return BadRequest("Size hoặc Crust không hợp lệ.");
             }
 
-            // Tính tổng giá sản phẩm với kích cỡ (Size)
+            // Tính giá cuối cùng
             double finalPrice = price + (size.SizeCost ?? 0);
 
-            // Kiểm tra xem sản phẩm đã có trong giỏ với cùng Size và Crust chưa
-            var cartItem = cart.FirstOrDefault(item => item.ProductId == productId && item.SizeId == sizeId && item.CrustId == crustId);
+            // Kiểm tra sản phẩm dựa trên các thuộc tính đầy đủ
+            var cartItem = cart.FirstOrDefault(item =>
+                item.ProductId == productId &&
+                item.SizeId == sizeId &&
+                item.CrustId == crustId &&
+                item.ProductName == productName);
+
             if (cartItem != null)
             {
-                // Nếu sản phẩm đã tồn tại trong giỏ, tăng số lượng
+                // Nếu sản phẩm đã tồn tại, tăng số lượng
                 cartItem.Quantity += quantity;
             }
             else
             {
-                // Nếu sản phẩm chưa có trong giỏ, thêm sản phẩm mới với Size và Crust
+                // Thêm sản phẩm mới vào giỏ hàng
                 cart.Add(new CartItem
                 {
                     ProductId = productId,
                     ProductName = productName,
-                    Price = finalPrice, // Sử dụng giá đã tính bao gồm SizeCost
+                    Price = finalPrice, // Giá đã bao gồm kích cỡ
                     Quantity = quantity,
                     ImageUrl = imageUrl,
                     SizeId = sizeId,
@@ -104,6 +109,7 @@ namespace Final.net.Controllers
             SaveCartSession(cart);
             return Json(new { success = true, message = "Sản phẩm đã được thêm vào giỏ hàng!" });
         }
+
 
         // Phương thức xóa sản phẩm khỏi giỏ hàng
         [HttpPost]
