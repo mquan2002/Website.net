@@ -24,7 +24,7 @@
                 </p>
                 <div style="font-size: 0.85rem;">
                     <a href="#" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a> |
-                    <a href="@Url.Action("RemoveFromCart", "Cart", new { productId = item.ProductId, sizeId = item.SizeId, crustId = item.CrustId })" style="color: #007bff; text-decoration: none;">Xóa</a>
+                    <a href="javascript:void(0);" onclick="removeFromCart(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Xóa</a>
                 </div>
             </div>
 
@@ -90,3 +90,27 @@
         </div>
     </div>
 </div>
+
+<script>
+    function removeFromCart(productId, sizeId, crustId) {
+        if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) return;
+
+        $.ajax({
+            url: '/Cart/RemoveFromCart',
+            type: 'POST',
+            data: { productId: productId, sizeId: sizeId, crustId: crustId },
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    // Reload lại trang giỏ hàng
+                    location.reload();
+                } else {
+                    alert("Không thể xóa sản phẩm. Vui lòng thử lại.");
+                }
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi xóa sản phẩm.");
+            }
+        });
+    }
+</script>

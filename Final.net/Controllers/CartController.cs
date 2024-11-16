@@ -117,7 +117,7 @@ namespace Final.net.Controllers
                 SaveCartSession(cart);
             }
 
-            return RedirectToAction("Index");
+            return Json(new { success = true, message = "Sản phẩm đã được xóa khỏi giỏ hàng!" });
         }
 
         // Phương thức lấy danh sách sản phẩm trong giỏ hàng từ Session
