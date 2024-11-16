@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +26,9 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            var pizzaStoreContext = _context.Users.Include(u => u.Role);
+            var pizzaStoreContext = _context.Users
+            .Include(u => u.Role)
+            .Where(u => u.IsDeleted == false);
             return View(await pizzaStoreContext.ToListAsync());
         }
 
@@ -188,7 +190,11 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
-                _context.Users.Remove(user);
+                user.IsDeleted = true;
+                // Set the IsDeleted flag to true instead of deleting the user entity
+
+                _context.Users.Update(user);
+                // _context.Users.Delete(user);
             }
 
             await _context.SaveChangesAsync();
