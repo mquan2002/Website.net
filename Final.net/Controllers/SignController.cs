@@ -56,5 +56,47 @@ namespace Final.net.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // Đăng ký
+        [HttpPost]
+        public async Task<IActionResult> SignUp([Bind("Username,Password,Email,Address,Phone")] User newUser)
+        {
+
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(newUser); // Return the view with validation errors
+            //}
+
+            // Kiểm tra xem email đã tồn tại chưa
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == newUser.Username);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Username", "Username đã tồn tại.");
+                return View(newUser);
+            }
+            if (!string.IsNullOrEmpty(newUser.Password))
+            {
+                newUser.Password = _passwordHasher.HashPassword(null, newUser.Password);
+            }
+            else
+            {
+                // Xử lý nếu mật khẩu bị null hoặc rỗng (nếu cần)
+                ModelState.AddModelError("Password", "Mật khẩu không được để trống.");
+                return View(newUser);
+            }
+
+
+            newUser.Password = _passwordHasher.HashPassword(null, newUser.Password);
+            newUser.RoleId = 2;
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            // Chuyển hướng đến trang đăng nhập
+            return RedirectToAction("SignIn");
+
+        }
+           
+
+
     }
 }

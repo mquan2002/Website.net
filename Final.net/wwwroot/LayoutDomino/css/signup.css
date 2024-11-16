@@ -125,3 +125,8 @@
         background-color: rgba(0, 0, 0, .85);
         cursor: pointer;
     }
+
+
+.text-danger {
+    color: #dc3545;
+}

@@ -15,10 +15,15 @@ public partial class User : BaseEntity
     public string Password { get; set; } = null!;
 
 
-    public string? Email { get; set; }
+    [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
+    [Required(ErrorMessage = "Email là bắt buộc.")]
+    public string Email { get; set; }
 
+    [Required(ErrorMessage = "Địa chỉ là bắt buộc.")]
     public string Address { get; set; } = null!;
 
+    [Required(ErrorMessage = "Số điện thoại là bắt buộc.")]
+    [Phone(ErrorMessage = "Số điện thoại không hợp lệ.")]
     public string Phone { get; set; } = null!;
 
     public int RoleId { get; set; }

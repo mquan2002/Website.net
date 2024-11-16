@@ -19,34 +19,7 @@ namespace Final.net.Controllers
             _passwordHasher = new PasswordHasher<object>();
         }
 
-        // Đăng ký
-        [HttpPost]
-        public async Task<IActionResult> Register(string email, string password)
-        {
-            // Kiểm tra xem email đã tồn tại chưa
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (existingUser != null)
-            {
-                ModelState.AddModelError("Email", "Email đã tồn tại.");
-                return View();
-            }
-
-            // Tạo user mới
-            var user = new User
-            {
-                Email = email,
-                Password = _passwordHasher.HashPassword(null, password),
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow,
-                RoleId = 1 // Gán role mặc định, ví dụ: RoleId = 1 là người dùng bình thường
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            // Chuyển hướng đến trang đăng nhập
-            return RedirectToAction("Login");
-        }
+       
 
        
         // Đăng xuất
