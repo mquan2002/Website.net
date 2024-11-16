@@ -34,7 +34,7 @@ namespace Final.net.Controllers
         public async Task<IActionResult> SignIn(string username, string password)
         {
             // Tìm user theo email
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.IsDeleted == false);
             if (user == null)
             {
                 ModelState.AddModelError("Username", "Username không tồn tại.");

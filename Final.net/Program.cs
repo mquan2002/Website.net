@@ -33,6 +33,10 @@ app.UseAuthorization();
 app.UseSession(); // Thêm dòng này để kích hoạt Session
 
 app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
