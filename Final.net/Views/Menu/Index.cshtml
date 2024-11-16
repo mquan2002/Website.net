@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model List<Category>
+
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function showAddToCartModal(productId) {
+        $.ajax({
+            url: '/Cart/ShowAddToCartModal',
+            type: 'GET',
+            data: { productId: productId },
+            success: function (result) {
+                $('#modalContainer').html(result);
+                $('#addToCartModal').modal('show');
+            }
+        });
+    }
+
+    function addToCart() {
+        var form = $('#addToCartForm');
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            success: function (response) {
+                if (response.success) {
+                    $('#addToCartModal').modal('hide');
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi thêm vào giỏ hàng.");
+            }
+        });
+    }
+</script>
+
+@functions {
+    string ToClassName(string name)
+    {
+        return name.Replace(" ", "-").ToLower(); // Thay thế khoảng trắng bằng dấu gạch ngang
+    }
+}
+
+<section class="featured spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <h2>Thực đơn</h2>
+                </div>
+                <div class="featured__controls">
+                    <ul>
+                        <li class="active" data-filter="*">All</li>
+                        @foreach (var category in Model)
+                        {
+                            <li data-filter=".@ToClassName(category.CategoryName)">@category.CategoryName</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row featured__filter">
+            @foreach (var category in Model)
+            {
+                foreach (var product in category.Products)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6 mix @ToClassName(category.CategoryName)">
+                        <div class="featured__item">
+                            <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
+                                <ul class="featured__item__pic__hover">
+                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                    <li>
+                                        <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </a>
+                                    </li>
+
+
+                                </ul>
+                            </div>
+                            <div class="featured__item__text">
+                                <h6><a href="#">@product.ProductName</a></h6>
+                                <h5>@product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<div id="modalContainer"></div>
+
+
+
+

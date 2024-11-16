@@ -1,0 +1,62 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang đăng ký</title>
+    <link rel="stylesheet" href="../LayoutDomino/css/signup.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,300,0,0" />
+</head>
+<body>
+    <div class="register-card-container">
+        <div class="form-container">
+            <div class="register-card-logo">
+                <a asp-controller="Home" asp-action="Index">
+                    <img src="../LayoutDomino/img/domino_logo.png" style="width: 190px; cursor: pointer;">
+                </a>
+            </div>
+            <div class="register-card-header">
+                <p style="font-size: 22px; font-weight: bold;">Đăng ký</p>
+            </div>
+            <form id="register" onsubmit="return validateForm()" action="../Admin/register.php" method="post">
+                <div class="form-item">
+                    <span class="form-item-icon material-symbols-rounded">person</span>
+                    <input type="text" placeholder="User Name" id="username" name="username">
+                </div>
+                <div class="form-item">
+                    <span class="form-item-icon material-symbols-rounded">lock</span>
+                    <input type="password" placeholder="Enter Password" id="password1" name="password1">
+                </div>
+                <div class="form-item">
+                    <span class="form-item-icon material-symbols-rounded">lock</span>
+                    <input type="password" placeholder="Confirm Password" id="password2" name="password2">
+                </div>
+                <div class="form-item">
+                    <span class="form-item-icon material-symbols-rounded">pin_drop</span>
+                    <input type="text" placeholder="Enter your address" id="address" name="address">
+                </div>
+                <div class="form-item">
+                    <span class="form-item-icon material-symbols-rounded">mail</span>
+                    <input type="text" placeholder="Enter your email" id="email" name="email">
+                </div>
+                <div class="form-item">
+                    <span class="form-item-icon material-symbols-rounded">smartphone</span>
+                    <input type="text" placeholder="Enter your phone number" id="phoneNumber" name="phoneNumber">
+                </div>
+
+                <button class="btn" type="submit">Sign Up</button>
+                <p style="font-size: 14px; text-align: center; margin-bottom: 1px">Đã có tài khoản?</p>
+                <a asp-action="SignIn">
+                    <p style="text-decoration: underline; font-size: 14px; text-align: center;">Đăng nhập</p>
+                </a>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
