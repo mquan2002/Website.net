@@ -9,7 +9,7 @@ public partial class Product
 
     public string ProductName { get; set; } = null!;
 
-    public double? Price { get; set; }
+    public double Price { get; set; }
 
     public string Description { get; set; } = null!;
 

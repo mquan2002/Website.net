@@ -1,33 +1,38 @@
-﻿@{
+﻿@model List<Final.net.Models.CartItem>
+@{
     ViewData["Title"] = "Giỏ Hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
 }
-
-
 
 <div class="container" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
-        <span style="font-size: 0.9rem; color: #666;">1 Món</span>
+        <span style="font-size: 0.9rem; color: #666;">@Model.Count Món</span>
     </div>
 
-    <div class="cart-item" style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
-        <img src="/LayoutDomino/img/latest-product/lp-6.png" alt="Pizza" style="width: 80px; height: 80px; border-radius: 5px; object-fit: cover; margin-right: 15px;">
+    @foreach (var item in Model)
+    {
+        <div class="cart-item" style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
+            <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 80px; height: 80px; border-radius: 5px; object-fit: cover; margin-right: 15px;">
 
-        <div style="flex: 1;">
-            <p style="font-weight: bold; font-size: 1rem; color: #333; margin: 0;">Pizza Hải Sản Xốt Pesto "Chanh Sả"</p>
-            <p style="font-size: 0.85rem; color: #777; margin: 5px 0;">Cỡ 9 inch | Đế Dày Bột Tươi</p>
-            <div style="font-size: 0.85rem;">
-                <a href="#" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a> |
-                <a href="#" style="color: #007bff; text-decoration: none;">Xóa</a>
+            <div style="flex: 1;">
+                <p style="font-weight: bold; font-size: 1rem; color: #333; margin: 0;">
+                    x @item.Quantity @item.ProductName
+                </p>
+                <p style="font-size: 0.85rem; color: #777; margin: 5px 0;">
+                    Cỡ: @(item.Size != null ? item.Size.SizeName : "Không xác định") | Đế: @(item.Crust != null ? item.Crust.CrustName : "Không xác định")
+                </p>
+                <div style="font-size: 0.85rem;">
+                    <a href="#" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a> |
+                    <a href="@Url.Action("RemoveFromCart", "Cart", new { productId = item.ProductId, sizeId = item.SizeId, crustId = item.CrustId })" style="color: #007bff; text-decoration: none;">Xóa</a>
+                </div>
+            </div>
+
+            <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
+                @item.TotalPrice.ToString("N0")₫
             </div>
         </div>
-
-        <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
-            215,000₫
-        </div>
-    </div>
+    }
 
     <div class="voucher-section" style="display: flex; gap: 10px; margin-top: 20px;">
         <input type="text" placeholder="Nhập Mã Khuyến Mãi" style="flex: 1; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: 1px solid #ddd;">
@@ -35,16 +40,19 @@
     </div>
 
     <div class="cart-summary" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;">
-        <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Tổng: <span style="font-weight: bold;">215,000₫</span></p>
+        <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Tổng: <span style="font-weight: bold;">@Model.Sum(item => item.TotalPrice).ToString("N0")₫</span></p>
         <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm K.Mãi: <span style="font-weight: bold;">0₫</span></p>
         <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm Vouchers: <span style="font-weight: bold;">0₫</span></p>
         <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Phí Giao Hàng: <span style="font-weight: bold;">0₫</span></p>
     </div>
 
     <div class="checkout-section" style="text-align: center; margin-top: 20px;">
-        <button style="background-color: #e31b23; color: white; padding: 10px; font-size: 1rem; font-weight: bold; border-radius: 5px; width: 100%; border: none;">Thanh Toán 215,000₫</button>
+        <button style="background-color: #e31b23; color: white; padding: 10px; font-size: 1rem; font-weight: bold; border-radius: 5px; width: 100%; border: none;">
+            Thanh Toán @Model.Sum(item => item.TotalPrice).ToString("N0")₫
+        </button>
     </div>
 </div>
+
 
 
 <!-- Phần Sản Phẩm Gợi Ý -->
@@ -82,4 +90,3 @@
         </div>
     </div>
 </div>
-

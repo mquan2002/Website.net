@@ -927,9 +927,10 @@ ol {
 	margin-right: 6px;
 }
 
-.featured__item__pic__hover li:last-child {
-	margin-right: 0;
-}
+	.featured__item__pic__hover li:last-child {
+		margin-right: 0;
+		
+	}
 
 .featured__item__pic__hover li:hover a {
 	background: #7fad39;
@@ -941,23 +942,24 @@ ol {
 	transform: rotate(360deg);
 }
 
-.featured__item__pic__hover li a {
-	font-size: 16px;
-	color: #1c1c1c;
-	height: 40px;
-	width: 40px;
-	line-height: 40px;
-	text-align: center;
-	border: 1px solid #ebebeb;
-	background: #ffffff;
-	display: block;
-	border-radius: 50%;
-	-webkit-transition: all, 0.5s;
-	-moz-transition: all, 0.5s;
-	-ms-transition: all, 0.5s;
-	-o-transition: all, 0.5s;
-	transition: all, 0.5s;
-}
+	.featured__item__pic__hover li a {
+		font-size: 16px;
+		color: #1c1c1c;
+		height: 40px;
+		width: 40px;
+		line-height: 40px;
+		text-align: center;
+		border: 1px solid #ebebeb;
+		background: #ffffff;
+		display: block;
+		border-radius: 50%;
+		-webkit-transition: all, 0.5s;
+		-moz-transition: all, 0.5s;
+		-ms-transition: all, 0.5s;
+		-o-transition: all, 0.5s;
+		transition: all, 0.5s;
+		
+	}
 
 .featured__item__pic__hover li a i {
 	position: relative;
@@ -1363,9 +1365,10 @@ ol {
 	margin-right: 6px;
 }
 
-.product__item__pic__hover li:last-child {
-	margin-right: 0;
-}
+	.product__item__pic__hover li:last-child {
+		margin-right: 0;
+		
+	}
 
 .product__item__pic__hover li:hover a {
 	background: #7fad39;

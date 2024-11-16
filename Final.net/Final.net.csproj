@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Cart\_AddToCartModal.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Shared\_LayoutDomino.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\LayoutAdmin\.DS_Store" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />

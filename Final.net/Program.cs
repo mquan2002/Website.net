@@ -1,7 +1,17 @@
+﻿using Final.net.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Thêm cấu hình DbContext cho PizzaStoreContext
+builder.Services.AddDbContext<PizzaStoreContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Thêm cấu hình cho Session
+builder.Services.AddSession(); // Thêm dịch vụ Session
 
 var app = builder.Build();
 
@@ -9,7 +19,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -19,6 +28,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Sử dụng Session trong ứng dụng
+app.UseSession(); // Thêm dòng này để kích hoạt Session
 
 app.MapControllerRoute(
     name: "default",
