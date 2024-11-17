@@ -2,7 +2,8 @@
 
 @{
     ViewData["Title"] = "Edit";
-        @* Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml"; *@
+        Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin2.cshtml";
+
 
 }
 
@@ -61,8 +62,4 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+

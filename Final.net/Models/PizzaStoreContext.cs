@@ -31,9 +31,11 @@ public partial class PizzaStoreContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     //     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-    //         => optionsBuilder.UseSqlServer("Data Source=MSI;Initial Catalog=PizzaStore;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;TrustServerCertificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    //         => optionsBuilder.UseSqlServer("Server=KHANGMINH;Database=PizzaStore;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,14 +76,19 @@ public partial class PizzaStoreContext : DbContext
             entity.Property(e => e.SizeName).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.Property(e => e.Address).HasMaxLength(200);
-            entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.Password).HasMaxLength(100);
-            entity.Property(e => e.Phone).HasMaxLength(20);
-            entity.Property(e => e.UserName).HasMaxLength(100);
-        });
+        base.OnModelCreating(modelBuilder);
+
+        // Seed data for Role
+        modelBuilder.Entity<Role>().HasData(
+            new Role { Id = 1, Name = "Admin" },
+            new Role { Id = 2, Name = "User" }
+        );
+
+        modelBuilder.Entity<User>()
+        .HasOne(u => u.Role)
+        .WithMany(r => r.Users)
+        .HasForeignKey(u => u.RoleId)
+        .OnDelete(DeleteBehavior.Restrict);
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -1,0 +1,61 @@
+﻿@model int
+@using Final.net.Models
+
+<div class="modal" tabindex="-1" role="dialog" id="addToCartModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chọn Kích cỡ, Đế bánh và Số lượng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addToCartForm" method="post" asp-action="AddToCart" asp-controller="Cart">
+                    <!-- Hidden fields for essential product information -->
+                    <input type="hidden" name="productId" value="@Model" />
+                    <input type="hidden" name="productName" value="@ViewBag.ProductName" />
+                    <input type="hidden" name="price" value="@ViewBag.ProductPrice" />
+                    <input type="hidden" name="imageUrl" value="@ViewBag.ImageUrl" />
+
+                    <!-- Size selection -->
+                    <div class="form-group">
+                        <label for="sizeSelect">Size</label>
+                        <select name="sizeId" id="sizeSelect" class="form-control">
+                            @foreach (var size in ViewBag.Sizes as List<Size>)
+                            {
+                                <option value="@size.SizeId">
+                                    @size.SizeName - @size.SizeCost?.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Crust selection -->
+                    <div class="form-group">
+                        <label for="crustSelect">Crust</label>
+                        <select name="crustId" id="crustSelect" class="form-control">
+                            @foreach (var crust in ViewBag.Crusts as List<Crust>)
+                            {
+                                <option value="@crust.CrustId">@crust.CrustName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Quantity selection -->
+                    <div class="form-group">
+                        <label for="quantity">Số lượng</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" />
+                    </div>
+
+                    <!-- Submit button -->
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick="addToCart()">Thêm vào giỏ hàng</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
