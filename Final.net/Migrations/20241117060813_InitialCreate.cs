@@ -174,8 +174,8 @@ namespace Final.net.Migrations
                 columns: new[] { "Id", "CreatedDate", "IsDeleted", "Name", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 11, 17, 12, 35, 20, 905, DateTimeKind.Local).AddTicks(6902), false, "Admin", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, new DateTime(2024, 11, 17, 12, 35, 20, 905, DateTimeKind.Local).AddTicks(6918), false, "User", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, new DateTime(2024, 11, 17, 13, 8, 12, 753, DateTimeKind.Local).AddTicks(6977), false, "Admin", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 2, new DateTime(2024, 11, 17, 13, 8, 12, 753, DateTimeKind.Local).AddTicks(6994), false, "User", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.CreateIndex(

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Final.net.Migrations
 {
     [DbContext(typeof(PizzaStoreContext))]
-    [Migration("20241117053522_InitialCreate")]
+    [Migration("20241117060813_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -218,7 +218,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 11, 17, 12, 35, 20, 905, DateTimeKind.Local).AddTicks(6902),
+                            CreatedDate = new DateTime(2024, 11, 17, 13, 8, 12, 753, DateTimeKind.Local).AddTicks(6977),
                             IsDeleted = false,
                             Name = "Admin",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -226,7 +226,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 11, 17, 12, 35, 20, 905, DateTimeKind.Local).AddTicks(6918),
+                            CreatedDate = new DateTime(2024, 11, 17, 13, 8, 12, 753, DateTimeKind.Local).AddTicks(6994),
                             IsDeleted = false,
                             Name = "User",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
