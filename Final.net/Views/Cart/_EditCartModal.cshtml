@@ -34,12 +34,17 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Điều chỉnh: @ViewBag.ProductName</h5>
+                <h5 class="modal-title">Điều chỉnh sản phẩm</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
-                </button>
+                </button>              
             </div>
             <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img src="@Model.ImageUrl" alt="@Model.ProductName" class="img-fluid" style="max-height: 200px;" />
+                    <h4 class="mt-2">@Model.ProductName</h4>
+                    <p class="text-danger font-weight-bold">@Model.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</p>
+                </div>
                 <form id="editCartForm" method="post" asp-action="EditCart" asp-controller="Cart">
                     <!-- Hidden fields for essential product information -->
                     <input type="hidden" name="productId" value="@Model.ProductId" />
@@ -78,8 +83,8 @@
                     </div>
 
                     <!-- Submit button -->
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" onclick="updateCart()">Cập nhật</button>
+                    <div class="form-group" style="padding-left: 165px">
+                        <button type="button" class="btn_seemore" onclick="updateCart()" style="margin: 10px">Cập nhật</button>
                     </div>
 
                 </form>

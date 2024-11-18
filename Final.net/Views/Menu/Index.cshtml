@@ -116,21 +116,12 @@
                 {
                     <div class="col-lg-3 col-md-4 col-sm-6 mix @ToClassName(category.CategoryName)">
                         <div class="featured__item">
-                            <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
-                                <ul class="featured__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li>
-                                        <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
-                                            <i class="fa fa-shopping-cart"></i>
-                                        </a>
-                                    </li>
-
-
-                                </ul>
-                            </div>
+                            <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
+                                <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
+                                </div>
+                            </a>
                             <div class="featured__item__text">
-                                <h6><a href="#">@product.ProductName</a></h6>
+                                <h6><a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">@product.ProductName</a></h6>
                                 <h5>@product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h5>
                             </div>
                         </div>
@@ -156,4 +147,29 @@
         opacity: 1;
         z-index: 9999;
     }
+
+    .featured__item__pic {
+        transition: transform 0.3s ease; 
+    }
+        .featured__item__pic:hover {
+            transform: scale(1.05); 
+        }
+
+    .featured__item__text h6 a {
+        text-decoration: none; 
+        color: black; 
+        
+    }
+        .featured__item__text h6 a:hover {
+            font-weight: bolder;
+        }
+
+    .featured__controls li {
+        display: inline-block;
+        transition: font-size 0.3s ease;
+    }
+        .featured__controls li:hover {
+            font-size: 24px; 
+
+        }
 </style>

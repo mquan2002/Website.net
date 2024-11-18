@@ -10,6 +10,13 @@
     }
 </script>
 
+@functions {
+    string ToClassName(string name)
+    {
+        return name.Replace(" ", "-").ToLower(); // Thay thế khoảng trắng bằng dấu gạch ngang
+    }
+}
+
 <div class="modal" tabindex="-1" role="dialog" id="addToCartModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -20,6 +27,11 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img src="@ViewBag.ImageUrl" alt="@ViewBag.ProductName" class="img-fluid" style="max-height: 200px;" />
+                    <h4 class="mt-2">@ViewBag.ProductName</h4>
+                    <p class="text-danger font-weight-bold">@ViewBag.ProductPrice.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</p>
+                </div>
                 <form id="addToCartForm" method="post" asp-action="AddToCart" asp-controller="Cart">
                     <!-- Hidden fields for essential product information -->
                     <input type="hidden" name="productId" value="@ViewBag.ProductId" />
@@ -58,8 +70,8 @@
                     </div>
 
                     <!-- Submit button -->
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" onclick="addToCart()">Thêm vào giỏ hàng</button>
+                    <div class="form-group" style="padding-left: 137px">
+                        <button type="button" class="btn_seemore" onclick="addToCart()" style="margin: 10px" >Thêm vào giỏ hàng</button>
                     </div>
 
                 </form>
