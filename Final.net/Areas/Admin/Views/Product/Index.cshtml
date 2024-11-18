@@ -21,7 +21,6 @@
             <th>@Html.DisplayNameFor(model => model.Category)</th>
             <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
             <th>@Html.DisplayNameFor(model => model.UpdatedAt)</th>
-            <th>@Html.DisplayNameFor(model => model.DeletedAt)</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -30,22 +29,23 @@
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.ProductId)</td>
-                <td>
-                    <img style="width: 80px; height: auto; padding-right: 5px" src="@item.ImageUrl" alt="Product Image">
-                    @Html.DisplayFor(modelItem => item.ProductName)
+                <td class="product_image">
+                    <img class="product-image" style="width: 80px; height: auto; padding-right: 5px" src="@item.ImageUrl"
+                        alt="Product Image">
+                    <span class="product-name">@Html.DisplayFor(modelItem => item.ProductName)</span>
+
                 </td>
                 <td>@Html.DisplayFor(modelItem => item.Price)</td>
                 <td>@Html.DisplayFor(modelItem => item.Description)</td>
                 <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
                 <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
                 <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
-                <td>@Html.DisplayFor(modelItem => item.DeletedAt)</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
                 </td>
-            </tr>   
+            </tr>
         }
     </tbody>
 </table>
@@ -70,3 +70,118 @@
         }
     }
 </div>
+
+
+<style>
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .table th:nth-child(1),
+    .table td:nth-child(1) {
+        width: 1%;
+    }
+
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+        width: 30%;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .table th:nth-child(3),
+    .table td:nth-child(3) {
+        width: 5%;
+    }
+
+
+    /* Cập nhật cách hiển thị tên sản phẩm dưới ảnh */
+    .table .product-name {
+        display: block;
+        text-align: center;
+        font-weight: bold;
+        /* Để tên sản phẩm dễ nhận diện */
+        margin-top: 5px;
+        /* Thêm khoảng cách giữa ảnh và tên sản phẩm */
+    }
+
+    .table img {
+        display: block;
+        /* Đảm bảo ảnh chiếm một dòng riêng */
+        margin-left: auto;
+        /* Căn giữa ảnh theo chiều ngang */
+        margin-right: auto;
+        /* Căn giữa ảnh theo chiều ngang */
+        max-width: 80px;
+        /* Giới hạn kích thước ảnh */
+        height: auto;
+        /* Đảm bảo tỷ lệ ảnh không bị biến dạng */
+        margin-bottom: 5px;
+        /* Thêm khoảng cách giữa ảnh và tên sản phẩm */
+    }
+
+    .table th:nth-child(4),
+    .table td:nth-child(4) {
+        width: 25%;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .table th:nth-child(5),
+    .table td:nth-child(5) {
+        width: 10%;
+    }
+
+    .table th:nth-child(6),
+    .table td:nth-child(6) {
+        width: 10%;
+    }
+
+    .table th:nth-child(7),
+    .table td:nth-child(7) {
+        width: 10%;
+    }
+
+    .table th:nth-child(8),
+    .table td:nth-child(8) {
+        width: 10%;
+    }
+
+    .table th:nth-child(9),
+    .table td:nth-child(9) {
+        width: 10%;
+    }
+
+    /* Chỉnh sửa hiển thị hình ảnh trong cột Product Image */
+    .table img {
+        max-width: 100px;
+        height: auto;
+    }
+
+    /* Thiết lập phân trang */
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination a {
+        padding: 8px 16px;
+        margin: 0 5px;
+        background-color: blue;
+        color: #333;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .pagination a:hover {
+        background-color: #ddd;
+    }
+</style>
