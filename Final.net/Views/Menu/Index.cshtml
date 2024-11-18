@@ -23,7 +23,6 @@
     function showToast(message) {
         $('#toast .toast-body').text(message);
         $('#toast').css('display', 'block');
-
         setTimeout(function () {
             let opacity = 1;
             let fadeOutInterval = setInterval(function () {
@@ -55,8 +54,6 @@
         });
     }
 
-
-
     function addToCart() {
         var form = $('#addToCartForm');
         $.ajax({
@@ -77,7 +74,6 @@
             }
         });
     }
-
 </script>
 
 @functions {
@@ -169,7 +165,7 @@
         transition: font-size 0.3s ease;
     }
         .featured__controls li:hover {
-            font-size: 24px; 
-
+            font-size: 23px;
+            font-weight: bold;
         }
 </style>

@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Giỏ Hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var uniqueItemCount = Model.Select(item => item.ProductName).Distinct().Count();
 }
 
  
@@ -9,7 +10,7 @@
 <div class="container" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
-        <span style="font-size: 0.9rem; color: #666;">@Model.Sum(item => item.Quantity) Món</span>
+        <span style="font-size: 0.9rem; color: #666;">@uniqueItemCount Món</span>
 
     </div>
 
@@ -138,7 +139,6 @@
     }
 
     function updateCartItem() {
-        
         var form = $('#editCartItemForm');
         $.ajax({
             url: '/Cart/UpdateCartItem',
