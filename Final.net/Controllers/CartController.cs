@@ -146,6 +146,14 @@ namespace Final.net.Controllers
             }
         }
 
+        [HttpGet]
+        public JsonResult GetCartItemCount()
+        {
+            var cart = GetCartItems();
+            return Json(new { count = cart.Sum(item => item.Quantity) });
+        }
+
+
         // Phương thức lưu giỏ hàng vào Session
         private void SaveCartSession(List<CartItem> cart)
         {

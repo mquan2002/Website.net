@@ -1,6 +1,15 @@
 ﻿@model int
 @using Final.net.Models
 
+
+<script>
+    function validateQuantity(input) {
+        if (input.value === "" || input.value < 1) {
+            input.value = 1; // Đặt lại giá trị về 1 nếu trường trống hoặc nhỏ hơn 1
+        }
+    }
+</script>
+
 <div class="modal" tabindex="-1" role="dialog" id="addToCartModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -45,7 +54,7 @@
                     <!-- Quantity selection -->
                     <div class="form-group">
                         <label for="quantity">Số lượng</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" />
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" onblur="validateQuantity(this)" />
                     </div>
 
                     <!-- Submit button -->
