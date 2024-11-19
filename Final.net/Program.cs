@@ -5,10 +5,15 @@ using Final.net.Areas.Admin.ProductService;
 using CloudinaryDotNet;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-﻿using Final.net.Models;
+using Final.net.Models;
 using Final.net.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Register IHttpContextAccessor
+// builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -32,7 +37,14 @@ builder.Services.AddDbContext<PizzaStoreContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Thêm cấu hình cho Session
-builder.Services.AddSession(); // Thêm dịch vụ Session
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;  // Đảm bảo cookie hoạt động đúng trên mọi nền tảng
+});
+
+
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
