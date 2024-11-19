@@ -1,14 +1,15 @@
 ﻿using Final.net.Models;
+using Final.net.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 
 namespace Final.net.Controllers
 {
-    public class MenuController : Controller
+    public class MenuController : BaseController
     {
         private readonly PizzaStoreContext _context;
-        public MenuController(PizzaStoreContext context)
+        public MenuController(CartService cartService, PizzaStoreContext context) : base(cartService)
         {
             _context = context;
         }

@@ -2,12 +2,16 @@
 @{
     ViewData["Title"] = "Giỏ Hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    
 }
+
+ 
 
 <div class="container" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
-        <span style="font-size: 0.9rem; color: #666;">@Model.Count Món</span>
+        <span style="font-size: 0.9rem; color: #666;">@ViewBag.CartItemCount Món</span>
+
     </div>
 
     @foreach (var item in Model)
@@ -23,9 +27,11 @@
                     Cỡ: @(item.Size != null ? item.Size.SizeName : "Không xác định") | Đế: @(item.Crust != null ? item.Crust.CrustName : "Không xác định")
                 </p>
                 <div style="font-size: 0.85rem;">
-                    <a href="#" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a> |
+                    <a href="javascript:void(0);" onclick="showEditModal(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a>
+                    <span style="margin: 0 10px; color: #ccc;">|</span> 
                     <a href="javascript:void(0);" onclick="removeFromCart(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Xóa</a>
                 </div>
+
             </div>
 
             <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
@@ -91,6 +97,9 @@
     </div>
 </div>
 
+<div id="modalContainer"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function removeFromCart(productId, sizeId, crustId) {
         if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) return;
@@ -102,6 +111,7 @@
             success: function (response) {
                 if (response.success) {
                     alert(response.message);
+                    refreshCartIcon();
                     // Reload lại trang giỏ hàng
                     location.reload();
                 } else {
@@ -113,4 +123,57 @@
             }
         });
     }
+
+    function showEditModal(productId, sizeId, crustId) {
+        $.ajax({
+            url: '/Cart/ShowEditCartItemModal',
+            type: 'GET',
+            data: { productId: productId, sizeId: sizeId, crustId: crustId },
+            success: function (result) {
+                $('#modalContainer').html(result);
+                $('#editCartModal').modal('show');
+            },
+            error: function () {
+                alert('Không thể tải thông tin sản phẩm.');
+            }
+        });
+    }
+
+    function updateCartItem() {
+        var form = $('#editCartItemForm');
+        $.ajax({
+            url: '/Cart/UpdateCartItem',
+            type: 'POST',
+            data: form.serialize(),
+            success: function (response) {
+                if (response.success) {
+                    $('#editCartModal').modal('hide');
+                    refreshCartIcon();
+                    location.reload(); // Tải lại trang
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert('Có lỗi xảy ra khi cập nhật sản phẩm.');
+            }
+        });
+    }
+
+    function refreshCartIcon() {
+        $.ajax({
+            url: '/Cart/RefreshCartIcon',
+            type: 'GET',
+            success: function (html) {
+                $('.header__cart').html(html);
+            },
+            error: function () {
+                console.error('Không thể làm mới icon giỏ hàng.');
+            }
+        });
+    }
+
+   
+
+
 </script>

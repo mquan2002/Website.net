@@ -1,10 +1,31 @@
-﻿using Final.net.Models;
+using Final.net.Models;
 using Microsoft.EntityFrameworkCore;
+using Final.net.Areas.Admin.CategoryService;
+using Final.net.Areas.Admin.ProductService;
+using CloudinaryDotNet;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+﻿using Final.net.Models;
+using Final.net.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<PizzaStoreContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddSingleton(x =>
+{
+    var cloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+    var account = new Account(cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret);
+    return new Cloudinary(account);
+});
+builder.Services.AddSingleton<CategoryService>();
+builder.Services.AddSingleton<ProductService>();
+
 
 // Thêm cấu hình DbContext cho PizzaStoreContext
 builder.Services.AddDbContext<PizzaStoreContext>(options =>
@@ -12,6 +33,10 @@ builder.Services.AddDbContext<PizzaStoreContext>(options =>
 
 // Thêm cấu hình cho Session
 builder.Services.AddSession(); // Thêm dịch vụ Session
+
+//Service cho Cart
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<CartService>();
 
 var app = builder.Build();
 
@@ -25,12 +50,18 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Sử dụng Session trong ứng dụng
+app.UseSession(); // Thêm dòng này để kích hoạt Session
+
 app.UseRouting();
 
 app.UseAuthorization();
 
-// Sử dụng Session trong ứng dụng
-app.UseSession(); // Thêm dòng này để kích hoạt Session
+app.MapAreaControllerRoute(
+    name: "admin",
+    areaName: "Admin",
+    pattern: "admin/{controller=Category}/{action=Index}/{id?}");
+
 
 app.MapControllerRoute(
     name: "areas",

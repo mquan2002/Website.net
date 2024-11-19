@@ -39,15 +39,6 @@ public partial class PizzaStoreContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Category>(entity =>
-        {
-            entity.Property(e => e.CategoryName).HasMaxLength(100);
-        });
-
-        modelBuilder.Entity<Crust>(entity =>
-        {
-            entity.Property(e => e.CrustName).HasMaxLength(20);
-        });
 
         modelBuilder.Entity<Delivery>(entity =>
         {
@@ -59,6 +50,12 @@ public partial class PizzaStoreContext : DbContext
             entity.Property(e => e.PaymentStatus).HasMaxLength(10);
         });
 
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.Property(p => p.CreatedAt)
+                  .HasDefaultValueSql("GETUTCDATE()");
+        });
+
         modelBuilder.Entity<Payment>(entity =>
         {
             entity.Property(e => e.Method).HasMaxLength(20);
@@ -66,15 +63,12 @@ public partial class PizzaStoreContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasIndex(e => e.CategoryId, "IX_Products_CategoryId");
+            entity.HasOne(d => d.Category)
+                  .WithMany(p => p.Products)
+                  .HasForeignKey(d => d.CategoryId);
 
-            entity.Property(e => e.Description).HasMaxLength(500);
-            entity.Property(e => e.ImageUrl)
-                .HasMaxLength(200)
-                .HasColumnName("ImageURL");
-            entity.Property(e => e.ProductName).HasMaxLength(200);
-
-            entity.HasOne(d => d.Category).WithMany(p => p.Products).HasForeignKey(d => d.CategoryId);
+            entity.Property(p => p.CreatedAt)
+                  .HasDefaultValueSql("GETUTCDATE()");
         });
 
         modelBuilder.Entity<Size>(entity =>

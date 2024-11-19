@@ -1,4 +1,4 @@
-﻿@model int
+﻿@model Final.net.Models.CartItem
 @using Final.net.Models
 
 
@@ -8,36 +8,49 @@
             input.value = 1; // Đặt lại giá trị về 1 nếu trường trống hoặc nhỏ hơn 1
         }
     }
+
+    function updateCart() {
+        var form = $('#editCartForm');
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            success: function (response) {
+                if (response.success) {
+                    $('#editCartModal').modal('hide');
+                    location.reload(); // Reload lại trang để cập nhật giỏ hàng
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+            }
+        });
+    }
 </script>
 
-@functions {
-    string ToClassName(string name)
-    {
-        return name.Replace(" ", "-").ToLower(); // Thay thế khoảng trắng bằng dấu gạch ngang
-    }
-}
-
-<div class="modal" tabindex="-1" role="dialog" id="addToCartModal">
+<div class="modal" tabindex="-1" role="dialog" id="editCartModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Chọn Kích cỡ, Đế bánh và Số lượng</h5>
+                <h5 class="modal-title">Điều chỉnh sản phẩm</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
-                </button>
+                </button>              
             </div>
             <div class="modal-body">
                 <div class="text-center mb-3">
-                    <img src="@ViewBag.ImageUrl" alt="@ViewBag.ProductName" class="img-fluid" style="max-height: 200px;" />
-                    <h4 class="mt-2">@ViewBag.ProductName</h4>
-                    <p class="text-danger font-weight-bold">@ViewBag.ProductPrice.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</p>
+                    <img src="@Model.ImageUrl" alt="@Model.ProductName" class="img-fluid" style="max-height: 200px;" />
+                    <h4 class="mt-2">@Model.ProductName</h4>
+                    <p class="text-danger font-weight-bold">@Model.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</p>
                 </div>
-                <form id="addToCartForm" method="post" asp-action="AddToCart" asp-controller="Cart">
+                <form id="editCartForm" method="post" asp-action="EditCart" asp-controller="Cart">
                     <!-- Hidden fields for essential product information -->
-                    <input type="hidden" name="productId" value="@ViewBag.ProductId" />
-                    <input type="hidden" name="productName" value="@ViewBag.ProductName" />
-                    <input type="hidden" name="price" value="@ViewBag.ProductPrice" />
-                    <input type="hidden" name="imageUrl" value="@ViewBag.ImageUrl" />
+                    <input type="hidden" name="productId" value="@Model.ProductId" />
+                    <input type="hidden" name="imageUrl" value="@Model.ImageUrl" />
+                    <input type="hidden" name="currentSizeId" value="@Model.SizeId" />
+                    <input type="hidden" name="currentCrustId" value="@Model.CrustId" />
 
                     <!-- Size selection -->
                     <div class="form-group">
@@ -66,12 +79,12 @@
                     <!-- Quantity selection -->
                     <div class="form-group">
                         <label for="quantity">Số lượng</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" onblur="validateQuantity(this)" />
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="@Model.Quantity" min="1" onblur="validateQuantity(this)" />
                     </div>
 
                     <!-- Submit button -->
-                    <div class="form-group" style="padding-left: 137px">
-                        <button type="button" class="btn_seemore" onclick="addToCart()" style="margin: 10px" >Thêm vào giỏ hàng</button>
+                    <div class="form-group" style="padding-left: 165px">
+                        <button type="button" class="btn_seemore" onclick="updateCart()" style="margin: 10px">Cập nhật</button>
                     </div>
 
                 </form>
@@ -79,4 +92,3 @@
         </div>
     </div>
 </div>
-

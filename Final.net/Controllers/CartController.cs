@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Linq;
+using Final.net.Services;
 
 namespace Final.net.Controllers
 {
-    public class CartController : Controller
+    public class CartController : BaseController
     {
         private const string CartSessionKey = "CartSession";
         private readonly PizzaStoreContext _context;
 
-        public CartController(PizzaStoreContext context)
+        public CartController(CartService cartService, PizzaStoreContext context) : base(cartService)
         {
             _context = context;
         }
@@ -21,6 +22,7 @@ namespace Final.net.Controllers
         public IActionResult Index()
         {
             var cart = GetCartItems();
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
             return View(cart);
         }
 
@@ -58,6 +60,29 @@ namespace Final.net.Controllers
             return PartialView("_AddToCartModal");
         }
 
+        public IActionResult ShowEditCartItemModal(int productId, int sizeId, int crustId)
+        {
+            var cart = GetCartItems();
+
+            // Lấy sản phẩm từ giỏ hàng
+            var cartItem = cart.FirstOrDefault(item =>
+                item.ProductId == productId &&
+                item.SizeId == sizeId &&
+                item.CrustId == crustId);
+
+            if (cartItem == null)
+            {
+                return NotFound("Không tìm thấy sản phẩm trong giỏ hàng.");
+            }
+
+            // Lấy danh sách Size và Crust từ database
+            ViewBag.Sizes = _context.Sizes.ToList();
+            ViewBag.Crusts = _context.Crusts.ToList();
+            ViewBag.ProductName = cartItem.ProductName;
+
+            return PartialView("_EditCartModal", cartItem);
+        }
+
 
         // Phương thức thêm sản phẩm vào giỏ hàng với Size và Crust
         [HttpPost]
@@ -74,10 +99,7 @@ namespace Final.net.Controllers
                 return BadRequest("Size hoặc Crust không hợp lệ.");
             }
 
-            // Tính giá cuối cùng
-            double finalPrice = price + (size.SizeCost ?? 0);
-
-            // Kiểm tra sản phẩm dựa trên các thuộc tính đầy đủ
+            // Kiểm tra sản phẩm đã có trong giỏ hàng hay chưa
             var cartItem = cart.FirstOrDefault(item =>
                 item.ProductId == productId &&
                 item.SizeId == sizeId &&
@@ -96,7 +118,7 @@ namespace Final.net.Controllers
                 {
                     ProductId = productId,
                     ProductName = productName,
-                    Price = finalPrice, // Giá đã bao gồm kích cỡ
+                    BasePrice = price, // Lưu giá gốc
                     Quantity = quantity,
                     ImageUrl = imageUrl,
                     SizeId = sizeId,
@@ -107,8 +129,12 @@ namespace Final.net.Controllers
             }
 
             SaveCartSession(cart);
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
+
             return Json(new { success = true, message = "Sản phẩm đã được thêm vào giỏ hàng!" });
         }
+
+
 
 
         // Phương thức xóa sản phẩm khỏi giỏ hàng
@@ -121,6 +147,7 @@ namespace Final.net.Controllers
             {
                 cart.Remove(cartItem);
                 SaveCartSession(cart);
+                ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
             }
 
             return Json(new { success = true, message = "Sản phẩm đã được xóa khỏi giỏ hàng!" });
@@ -144,6 +171,95 @@ namespace Final.net.Controllers
                 return new List<CartItem>();
             }
         }
+
+        [HttpGet]
+        public JsonResult GetCartItemCount()
+        {
+            var cart = GetCartItems();
+            return Json(new { count = cart.Sum(item => item.Quantity) });
+        }
+
+
+        [HttpPost]
+        public IActionResult EditCart(int productId, int sizeId, int crustId, int quantity)
+        {
+            var cart = GetCartItems();
+
+            var cartItem = cart.FirstOrDefault(item => item.ProductId == productId);
+            if (cartItem != null)
+            {
+                // Lấy thông tin Size và Crust từ database
+                var size = _context.Sizes.FirstOrDefault(s => s.SizeId == sizeId);
+                var crust = _context.Crusts.FirstOrDefault(c => c.CrustId == crustId);
+
+                if (size == null || crust == null)
+                {
+                    return Json(new { success = false, message = "Size hoặc Crust không hợp lệ." });
+                }
+
+                // Cập nhật thông tin sản phẩm
+                cartItem.SizeId = sizeId;
+                cartItem.CrustId = crustId;
+                cartItem.Size = size;
+                cartItem.Crust = crust;
+                cartItem.Quantity = quantity;
+            }
+
+            SaveCartSession(cart);
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
+
+            return Json(new { success = true, message = "Sản phẩm đã được cập nhật!" });
+        }
+
+
+
+
+
+
+
+        [HttpPost]
+        public IActionResult UpdateCartItem(int productId, int sizeId, int crustId, int newSizeId, int newCrustId, int quantity)
+        {
+            var cart = GetCartItems();
+
+            var cartItem = cart.FirstOrDefault(item =>
+                item.ProductId == productId &&
+                item.SizeId == sizeId &&
+                item.CrustId == crustId);
+
+            if (cartItem != null)
+            {
+                // Lấy thông tin size và crust mới từ database
+                var newSize = _context.Sizes.FirstOrDefault(s => s.SizeId == newSizeId);
+                var newCrust = _context.Crusts.FirstOrDefault(c => c.CrustId == newCrustId);
+
+                if (newSize == null || newCrust == null)
+                {
+                    return BadRequest("Size hoặc Crust không hợp lệ.");
+                }
+
+                // Cập nhật thông tin sản phẩm
+                cartItem.SizeId = newSizeId;
+                cartItem.CrustId = newCrustId;
+                cartItem.Size = newSize;
+                cartItem.Crust = newCrust;
+                cartItem.Quantity = quantity;
+            }
+
+            SaveCartSession(cart);
+            
+            return Json(new { success = true, message = "Sản phẩm đã được cập nhật!" });
+        }
+
+
+
+        public IActionResult RefreshCartIcon()
+        {
+            var cart = GetCartItems();
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
+            return PartialView("_CartIcon");
+        }
+
 
         // Phương thức lưu giỏ hàng vào Session
         private void SaveCartSession(List<CartItem> cart)

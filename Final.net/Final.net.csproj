@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Cart\_CartIcon.cshtml" />
+    <Content Remove="Views\Shared\_CartIcon.cshtml" />
     <Content Remove="Views\Shared\_LayoutDomino.cshtml" />
   </ItemGroup>
 
@@ -59,6 +61,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
