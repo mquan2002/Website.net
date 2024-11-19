@@ -63,10 +63,15 @@
         <div class="col-lg-3">
             <div class="header__cart">
                 <ul>
-                    <li><a asp-controller="Cart" asp-action="Index"><i class="fa fa-shopping-bag"></i> <span>@ViewBag.CartItemCount</span></a></li>
+                    <li>
+                        <a asp-controller="Cart" asp-action="Index">
+                            <i class="fa fa-shopping-bag"></i>
+                            <span>@ViewBag.CartItemCount</span>
+                        </a>
+                    </li>
                 </ul>
-                 
             </div>
+
         </div>
     </div>
 </div>

@@ -129,7 +129,8 @@ namespace Final.net.Controllers
             }
 
             SaveCartSession(cart);
-           
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
+
             return Json(new { success = true, message = "Sản phẩm đã được thêm vào giỏ hàng!" });
         }
 
@@ -205,7 +206,8 @@ namespace Final.net.Controllers
             }
 
             SaveCartSession(cart);
-            
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
+
             return Json(new { success = true, message = "Sản phẩm đã được cập nhật!" });
         }
 
@@ -251,6 +253,12 @@ namespace Final.net.Controllers
 
 
 
+        public IActionResult RefreshCartIcon()
+        {
+            var cart = GetCartItems();
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
+            return PartialView("_CartIcon");
+        }
 
 
         // Phương thức lưu giỏ hàng vào Session

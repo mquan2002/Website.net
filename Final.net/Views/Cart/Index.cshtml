@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Giỏ Hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var uniqueItemCount = Model.Select(item => item.ProductName).Distinct().Count();
+    
 }
 
  
@@ -10,7 +10,7 @@
 <div class="container" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
-        <span style="font-size: 0.9rem; color: #666;">@uniqueItemCount Món</span>
+        <span style="font-size: 0.9rem; color: #666;">@ViewBag.CartItemCount Món</span>
 
     </div>
 
@@ -111,6 +111,7 @@
             success: function (response) {
                 if (response.success) {
                     alert(response.message);
+                    refreshCartIcon();
                     // Reload lại trang giỏ hàng
                     location.reload();
                 } else {
@@ -147,6 +148,7 @@
             success: function (response) {
                 if (response.success) {
                     $('#editCartModal').modal('hide');
+                    refreshCartIcon();
                     location.reload(); // Tải lại trang
                 } else {
                     alert(response.message);
@@ -158,6 +160,18 @@
         });
     }
 
+    function refreshCartIcon() {
+        $.ajax({
+            url: '/Cart/RefreshCartIcon',
+            type: 'GET',
+            success: function (html) {
+                $('.header__cart').html(html);
+            },
+            error: function () {
+                console.error('Không thể làm mới icon giỏ hàng.');
+            }
+        });
+    }
 
    
 
