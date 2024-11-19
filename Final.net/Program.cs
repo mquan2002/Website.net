@@ -1,4 +1,4 @@
-using Final.net.Models;
+﻿using Final.net.Models;
 using Microsoft.EntityFrameworkCore;
 using Final.net.Areas.Admin.CategoryService;
 using Final.net.Areas.Admin.ProductService;
@@ -33,6 +33,12 @@ builder.Services.AddDbContext<PizzaStoreContext>(options =>
 
 // Thêm cấu hình cho Session
 builder.Services.AddSession(); // Thêm dịch vụ Session
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Sign/SignIn";
+        options.LogoutPath = "/Sign/Logout";
+    });
 
 //Service cho Cart
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -52,6 +58,8 @@ app.UseStaticFiles();
 
 // Sử dụng Session trong ứng dụng
 app.UseSession(); // Thêm dòng này để kích hoạt Session
+app.UseAuthentication(); // Authentication middleware
+app.UseAuthorization();  // Authorization middleware
 
 app.UseRouting();
 

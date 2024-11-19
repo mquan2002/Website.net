@@ -1,5 +1,5 @@
 ﻿<div class="header__top">
-    <div class="container">
+    @* <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="header__top__left">
@@ -32,13 +32,14 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> *@
 </div>
 <div class="container">
     <div class="row" style="background-color: #004666;">
         <div class="col-lg-3">
             <div class="header__logo">
-                <a asp-controller="Home" asp-action="Index"><img src="../LayoutDomino/img/domino-horizontal-dark.svg" alt=""></a>
+                <a asp-controller="Home" asp-action="Index"><img src="../LayoutDomino/img/domino-horizontal-dark.svg"
+                        alt=""></a>
             </div>
         </div>
         <div class="col-lg-6">
@@ -63,13 +64,63 @@
         <div class="col-lg-3">
             <div class="header__cart">
                 <ul>
-                    <li>
-                        <a asp-controller="Cart" asp-action="Index">
-                            <i class="fa fa-shopping-bag"></i>
-                            <span>@ViewBag.CartItemCount</span>
-                        </a>
-                    </li>
+                    @if (ViewBag.Username != null)
+                    {
+                        <li>
+                            <div class="header__top__right__auth">
+                                <a data-bs-toggle="modal" data-bs-target="#confirmLogoutModal">
+                                    <div class="wrap__logout" wrap__logout"">
+                                        <p><i class="fa fa-user"></i></p>
+                                        <div class="div__logout">
+                                            <p class="text__logout">Đăng xuất @ViewBag.Username</p>
+
+                                        </div>
+
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                        <li>
+                            <a asp-controller="Cart" asp-action="Index">
+                                <i class="fa fa-shopping-bag"></i>
+                                <span>@ViewBag.CartItemCount</span>
+                            </a>
+                        </li>
+
+
+                    }
+                    else
+                    {
+                        <li>
+                            <div class="header__top__right__auth">
+                                <a asp-controller="Sign" asp-action="SignIn"><i class="fa fa-user"></i> Login</a>
+                            </div>
+                        </li>
+
+                    }
                 </ul>
+
+                <!-- Logout Confirmation Modal -->
+                <div class="modal fade" id="confirmLogoutModal" tabindex="-1" aria-labelledby="confirmLogoutModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmLogoutModalLabel"> Đăng Xuất</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-left">
+
+                                Bạn Có Chắc Chắn Muốn Đăng Xuất?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <a asp-controller="Sign" asp-action="Logout" class="btn btn-danger">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>

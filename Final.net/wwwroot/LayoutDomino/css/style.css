@@ -3524,3 +3524,22 @@ ol {
 		font-size: 24px;
 	}
 }
+
+
+.wrap__logout {
+	display: flex;
+	justify-content: center;
+	text-align: center;
+
+
+} 
+
+.div__logout {
+	float: left;
+	width: auto;
+}
+.text__logout {
+	text-align: start;
+	color: black;
+	cursor: pointer;
+}

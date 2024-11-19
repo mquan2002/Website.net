@@ -1,4 +1,5 @@
 ﻿using Final.net.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +53,11 @@ namespace Final.net.Controllers
             // Đăng nhập thành công
             // Lưu thông tin đăng nhập (ví dụ: sử dụng session)
             HttpContext.Session.SetString("UserId", user.Id.ToString());
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("Email", user.Email);
+            HttpContext.Session.SetString("Address", user.Address);
+            HttpContext.Session.SetString("Phone", user.Phone);
+
 
             return RedirectToAction("Index", "Home");
         }
@@ -95,7 +101,17 @@ namespace Final.net.Controllers
             return RedirectToAction("SignIn");
 
         }
-           
+
+
+
+
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear(); // Clear session data
+            await HttpContext.SignOutAsync(); // Sign out user
+            return RedirectToAction("Index", "Home"); // Redirect to home page
+        }
+
 
 
     }
