@@ -5,10 +5,90 @@
 
 }
 
+@functions {
+    string ToClassName(string name)
+    {
+        return name.Replace(" ", "-").ToLower(); // Thay thế khoảng trắng bằng dấu gạch ngang
+    }
+}
+<section class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="hero__search" style="margin-bottom: -50px">
+                    <div class="hero__search__form">
+                        <form action="#">
+                            <div class="hero__search__categories">
+                                All Categories
+                                <span class="arrow_carrot-down"></span>
+                            </div>
+                            <input type="text" placeholder="What do you need?">
+                            <button type="submit" class="site-btn">SEARCH</button>
+                        </form>
+                    </div>
+                    <div class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__search__phone__text">
+                            <h5>1900 6099</h5>
+                            <span>support 24/7 time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ 
+<div id="toast" class="toast">
+    <div class="toast-body">Sản phẩm đã được thêm vào giỏ hàng!</div>
+</div>
+
+<section class="featured spad" style="padding-top: 15px">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <h2>Thực đơn</h2>
+                </div>
+                <div class="featured__controls">
+                    <ul>
+                        <li class="active" data-filter="*">All</li>
+                        @foreach (var category in Model)
+                        {
+                            <li data-filter=".@ToClassName(category.CategoryName)">@category.CategoryName</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row featured__filter">
+            @foreach (var category in Model)
+            {
+                foreach (var product in category.Products)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6 mix @ToClassName(category.CategoryName)">
+                        <div class="featured__item">
+                            <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
+                                <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
+                                </div>
+                            </a>
+                            <div class="featured__item__text">
+                                <h6><a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">@product.ProductName</a></h6>
+                                <h5>@product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+<div id="modalContainer"></div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function showAddToCartModal(productId) {
-        
         $.ajax({
             url: '/Cart/ShowAddToCartModal',
             type: 'GET',
@@ -27,8 +107,8 @@
             let opacity = 1;
             let fadeOutInterval = setInterval(function () {
                 if (opacity > 0) {
-                    opacity -= 0.05;  
-                    $('#toast').css('opacity', opacity);  
+                    opacity -= 0.05;
+                    $('#toast').css('opacity', opacity);
                 } else {
                     clearInterval(fadeOutInterval);  // Dừng fade-out khi opacity = 0
                     $('#toast').css('display', 'none');  // Ẩn toast khi hoàn thành
@@ -36,7 +116,6 @@
             }, 50);  // Mỗi 50ms giảm opacity 0.05
         }, 800);  // Màn hình hiển thị toast trong xs
     }
-
 
     function updateCartCount() {
         $.ajax({
@@ -88,62 +167,7 @@
             }
         });
     }
-
 </script>
-
-@functions {
-    string ToClassName(string name)
-    {
-        return name.Replace(" ", "-").ToLower(); // Thay thế khoảng trắng bằng dấu gạch ngang
-    }
-}
-
-<div id="toast" class="toast">
-    <div class="toast-body">Sản phẩm đã được thêm vào giỏ hàng!</div>
-</div>
-
-<section class="featured spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title">
-                    <h2>Thực đơn</h2>
-                </div>
-                <div class="featured__controls">
-                    <ul>
-                        <li class="active" data-filter="*">All</li>
-                        @foreach (var category in Model)
-                        {
-                            <li data-filter=".@ToClassName(category.CategoryName)">@category.CategoryName</li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="row featured__filter">
-            @foreach (var category in Model)
-            {
-                foreach (var product in category.Products)
-                {
-                    <div class="col-lg-3 col-md-4 col-sm-6 mix @ToClassName(category.CategoryName)">
-                        <div class="featured__item">
-                            <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
-                                <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
-                                </div>
-                            </a>
-                            <div class="featured__item__text">
-                                <h6><a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">@product.ProductName</a></h6>
-                                <h5>@product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h5>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-</section>
-
-<div id="modalContainer"></div>
 
 <style>
     .toast {
