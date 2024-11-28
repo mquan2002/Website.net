@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Admin\Data\**" />
+    <Compile Remove="Areas\Admin\Models\**" />
+    <Compile Remove="wwwroot\LayoutAdmin\pages\**" />
+    <Compile Remove="wwwroot\LayoutAdmin\PSD\**" />
+    <Content Remove="Areas\Admin\Data\**" />
+    <Content Remove="Areas\Admin\Models\**" />
+    <Content Remove="wwwroot\LayoutAdmin\pages\**" />
+    <Content Remove="wwwroot\LayoutAdmin\PSD\**" />
+    <EmbeddedResource Remove="Areas\Admin\Data\**" />
+    <EmbeddedResource Remove="Areas\Admin\Models\**" />
+    <EmbeddedResource Remove="wwwroot\LayoutAdmin\pages\**" />
+    <EmbeddedResource Remove="wwwroot\LayoutAdmin\PSD\**" />
+    <None Remove="Areas\Admin\Data\**" />
+    <None Remove="Areas\Admin\Models\**" />
+    <None Remove="wwwroot\LayoutAdmin\pages\**" />
+    <None Remove="wwwroot\LayoutAdmin\PSD\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Views\Cart\_AddToCartModal.cshtml.cs" />
   </ItemGroup>
 
@@ -72,19 +91,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Views\Blog\" />
-    <Folder Include="wwwroot\LayoutAdmin\pages\charts\" />
-    <Folder Include="wwwroot\LayoutAdmin\pages\forms\" />
-    <Folder Include="wwwroot\LayoutAdmin\pages\icons\" />
-    <Folder Include="wwwroot\LayoutAdmin\pages\samples\" />
-    <Folder Include="wwwroot\LayoutAdmin\pages\tables\" />
-    <Folder Include="wwwroot\LayoutAdmin\pages\ui-features\" />
-    <Folder Include="wwwroot\LayoutAdmin\PSD\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,160 @@
+﻿@model Final.net.Models.Blogs
+
+@{
+    ViewData["Title"] = "Edit Blog";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin2.cshtml";
+}
+
+@section Styles {
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                font-weight: bold;
+                color: #495057;
+            }
+
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+            .form-control:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.25rem rgba(38, 143, 255, 0.25);
+            }
+
+        .form-check-input {
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #004085;
+            }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
+
+        .form-check-label {
+            font-size: 16px;
+        }
+
+        .text-danger {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .form-check {
+            margin-top: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+    </style>
+}
+
+<h1>Edit Blog</h1>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" value="@Model.Title" required />
+    </div>
+
+    <div class="form-group">
+        <label for="LinkURL">Link URL</label>
+        <input type="url" class="form-control" id="LinkURL" name="LinkURL" value="@Model.LinkURL" required />
+    </div>
+
+    <div class="form-group">
+        <label for="ImageURL">Image URL</label>
+        <input type="text" class="form-control" id="ImageURL" name="ImageURL" value="@Model.ImageURL" required />
+        @if (!string.IsNullOrEmpty(Model.ImageURL))
+        {
+            <div class="form-group">
+                <label>Preview Image</label>
+                <img src="@Model.ImageURL" alt="Image Preview" class="img-fluid" style="max-width: 100%;" />
+            </div>
+        }
+
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="Active" name="Active" value="true" @(Model?.Active == true ? "checked" : "") />
+        <label class="form-check-label" for="Active">Active</label>
+    </div>
+
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+    </div>
+</form>
