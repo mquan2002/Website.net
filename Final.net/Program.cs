@@ -10,6 +10,11 @@ using Final.net.Areas.Admin.BlogService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register IHttpContextAccessor
+// builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddHttpContextAccessor();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -31,8 +36,8 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<BlogService>();
 
-// Add session service
-builder.Services.AddSession();
+// Thêm cấu hình cho Session
+builder.Services.AddSession(); // Thêm dịch vụ Session
 
 // Add Cart service
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
@@ -50,8 +55,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Use Session middleware
-app.UseSession();
+// Sử dụng Session trong ứng dụng
+app.UseSession(); // Thêm dòng này để kích hoạt Session
 
 app.UseRouting();
 

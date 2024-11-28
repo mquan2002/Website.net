@@ -1,4 +1,7 @@
-﻿using Final.net.Models;
+﻿using System.Security.Claims;
+using Final.net.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,23 +38,46 @@ namespace Final.net.Controllers
         {
             // Tìm user theo email
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.IsDeleted == false);
+
+
             if (user == null)
             {
                 ModelState.AddModelError("Username", "Username không tồn tại.");
                 return View();
             }
 
+            Console.WriteLine(password);
+
+
             // Kiểm tra mật khẩu
             var result = _passwordHasher.VerifyHashedPassword(null, user.Password, password);
             if (result == PasswordVerificationResult.Failed)
             {
+                Console.WriteLine(result);
+
                 ModelState.AddModelError("Password", "Mật khẩu không đúng.");
                 return View();
             }
 
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, username)
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            // Đăng nhập và lưu thông tin vào cookie
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
             // Đăng nhập thành công
             // Lưu thông tin đăng nhập (ví dụ: sử dụng session)
             HttpContext.Session.SetString("UserId", user.Id.ToString());
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("Email", user.Email);
+            HttpContext.Session.SetString("Address", user.Address);
+            HttpContext.Session.SetString("Phone", user.Phone);
+
 
             return RedirectToAction("Index", "Home");
         }
@@ -73,6 +99,10 @@ namespace Final.net.Controllers
                 ModelState.AddModelError("Username", "Username đã tồn tại.");
                 return View(newUser);
             }
+
+
+            Console.WriteLine(newUser.Password);
+
             if (!string.IsNullOrEmpty(newUser.Password))
             {
                 newUser.Password = _passwordHasher.HashPassword(null, newUser.Password);
@@ -85,7 +115,6 @@ namespace Final.net.Controllers
             }
 
 
-            newUser.Password = _passwordHasher.HashPassword(null, newUser.Password);
             newUser.RoleId = 2;
 
             _context.Users.Add(newUser);
@@ -95,7 +124,17 @@ namespace Final.net.Controllers
             return RedirectToAction("SignIn");
 
         }
-           
+
+
+
+
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear(); // Clear session data
+            await HttpContext.SignOutAsync(); // Sign out user
+            return RedirectToAction("Index", "Home"); // Redirect to home page
+        }
+
 
 
     }

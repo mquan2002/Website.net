@@ -18,6 +18,13 @@ namespace Final.net.Controllers
 
         public IActionResult Index()
         {
+            var username = HttpContext.Session.GetString("Username");
+            if (username == null)
+            {
+                return View();
+
+            }
+            ViewBag.Username = username;
             return View();
         }
 

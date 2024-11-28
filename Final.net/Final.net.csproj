@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Cart\_CartIcon.cshtml" />
+    <Content Remove="Views\Menu\_SearchResults.cshtml" />
+    <Content Remove="Views\Shared\_CartIcon.cshtml" />
     <Content Remove="Views\Shared\_LayoutDomino.cshtml" />
   </ItemGroup>
 
