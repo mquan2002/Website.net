@@ -14,29 +14,20 @@
 <section class="hero">
     <div class="container">
         <div class="row">
-            <div class="col">
-                <div class="hero__search" style="margin-bottom: -50px">
-                    <div class="hero__search__form">
-                        <form action="#">
-                            <div class="hero__search__categories">
-                                All Categories
-                                <span class="arrow_carrot-down"></span>
-                            </div>
-                            <input type="text" placeholder="What do you need?">
-                            <button type="submit" class="site-btn">SEARCH</button>
-                        </form>
+            <div class="col" style="margin-top:10px; display:flex; justify-content:center;">
+                <form id="searchForm">
+                    <div class="search-input-container">
+                        <i class="fa fa-search search-icon"></i>
+                        <input type="text" id="searchQuery" placeholder="What do you need?" onkeyup="searchProductsLive()">
                     </div>
-                    <div class="hero__search__phone">
-                        <div class="hero__search__phone__icon">
-                            <i class="fa fa-phone"></i>
-                        </div>
-                        <div class="hero__search__phone__text">
-                            <h5>1900 6099</h5>
-                            <span>support 24/7 time</span>
-                        </div>
-                    </div>
+                </form>
+
+
+                    <!-- Drop-down box hiển thị kết quả -->
+                    <div id="searchResults"></div>
                 </div>
-            </div>
+
+                
         </div>
     </div>
 </section>
@@ -167,6 +158,52 @@
             }
         });
     }
+
+    let debounceTimer;
+    function searchProductsLive() {
+        clearTimeout(debounceTimer); // Xóa timer trước đó
+        debounceTimer = setTimeout(() => {
+            const query = $('#searchQuery').val().trim(); // Lấy giá trị query
+            if (!query) {
+                $('#searchResults').hide(); // Ẩn dropdown nếu query trống
+                return;
+            }
+
+            $.ajax({
+                url: '/Menu/SearchLive', // Gọi API tìm kiếm
+                type: 'GET',
+                data: { query: query },
+                success: function (results) {
+                    console.log("Kết quả trả về:", results);
+                    if (results && results.length > 0) {
+                        let html = ''; // Khởi tạo nội dung drop-down
+                        results.forEach(product => {
+                            html += `
+                                <div style="padding: 10px; cursor: pointer; border-bottom: 1px solid #ddd;"
+                                     onclick="selectProduct(${product.productId})">
+                                    <img src="${product.imageUrl}" alt="${product.productName}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                                    <span>${product.productName}</span>
+                                    <span style="float: right; color: green;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</span>
+                                </div>`;
+                        });
+                        $('#searchResults').html(html).show(); // Hiển thị kết quả
+                    } else {
+                        $('#searchResults').html('<div style="padding: 10px; color: #999;">Không tìm thấy sản phẩm</div>').show();
+                    }
+                },
+                error: function () {
+                    console.error("Không thể tìm kiếm sản phẩm.");
+                }
+            });
+        }, 300); // Thực hiện sau 300ms (debounce)
+    }
+
+
+    function selectProduct(productId) {
+        showAddToCartModal(productId);
+    }
+
+
 </script>
 
 <style>
@@ -207,4 +244,80 @@
             font-size: 23px;
             font-weight: bold;
         }
+
+    .search-input-container {
+        position: relative;
+        width: 100%; 
+    }
+
+   
+    .search-icon {
+        position: absolute;
+        left: 15px; 
+        top: 50%;
+        transform: translateY(-50%); 
+        color: #ccc; 
+        font-size: 18px; 
+        pointer-events: none; 
+    }
+
+    #searchForm {
+        width: 100%;
+        margin: 0; 
+        padding: 0;
+        border-radius: 25px;
+        background: none; 
+        box-shadow: none; 
+        position: relative;
+    }
+
+    
+        #searchForm input[type="text"] {
+            width: 100%; 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 12px 15px 12px 50px; 
+            font-size: 16px; 
+            outline: none; 
+            transition: all 0.3s ease; 
+        } 
+
+            #searchForm input[type="text"]:focus {
+                border-color: #0056b3; 
+                box-shadow: 0 0 10px rgba(0, 91, 179, 0.2); 
+                width: 100%;
+            }
+
+
+    #searchResults {
+        position: absolute;
+        top: 100%; 
+        left: 15px;
+        
+        width: 97.4%; 
+        background-color: white; 
+        border: 1px solid #ddd; 
+        border-radius: 0 0 8px 8px; 
+        max-height: 300px; 
+        overflow-y: auto; 
+        z-index: 1000; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    
+
+        #searchResults::-webkit-scrollbar {
+            width: 8px; 
+        }
+
+        #searchResults::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+
+        #searchResults::-webkit-scrollbar-thumb {
+            background-color: #007bff; 
+            border-radius: 10px; 
+            border: 1px solid #ffffff; 
+        }
+
 </style>

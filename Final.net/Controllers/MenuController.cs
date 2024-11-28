@@ -13,10 +13,50 @@ namespace Final.net.Controllers
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
-            var categories = _context.Categories.Include(c => c.Products).ToList();
-            return View(categories);
+            try
+            {
+                var categories = _context.Categories.Include(c => c.Products).ToList();
+                return View(categories);
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi nếu cần
+                return StatusCode(500, "Lỗi khi tải dữ liệu menu.");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult SearchLive(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest("Query không hợp lệ.");
+            }
+
+            try
+            {
+                var results = _context.Products
+                    .Where(p => p.ProductName.ToLower().Contains(query.ToLower()))
+                    .Select(p => new
+                    {
+                        p.ProductId,
+                        p.ProductName,
+                        p.ImageUrl,
+                        p.Price
+                    })
+                    
+                    .ToList();
+
+                return Json(results);
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi nếu cần
+                return StatusCode(500, "Lỗi khi tìm kiếm sản phẩm.");
+            }
         }
     }
 }
