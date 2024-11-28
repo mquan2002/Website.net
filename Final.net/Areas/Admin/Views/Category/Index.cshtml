@@ -1,14 +1,14 @@
-@model IEnumerable<Final.net.Models.Category>
+﻿@model IEnumerable<Final.net.Models.Category>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h1>Index</h1>
+<h1 style="text-align:center">Danh mục sản phẩm</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary" >Thêm danh mục sản phẩm</a>
 </p>
 
 <table class="table">
@@ -30,7 +30,7 @@
                 @Html.DisplayNameFor(model => model.DeletedAt)
             </th>
             <th>
-                Action
+                Hành động
             </th>
         </tr>
     </thead>
@@ -56,22 +56,34 @@
     </tbody>
 </table>
 
+<!-- Pagination -->
 <div class="pagination">
     @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
     {
         var currentPage = (int)ViewData["CurrentPage"];
         var totalPages = (int)ViewData["TotalPages"];
 
-        // Previous page button
-        if (currentPage > 1)
-        {
-            <a asp-action="Index" asp-route-page="@(currentPage - 1)" class="btn btn-secondary">Previous</a>
-        }
+        <nav aria-label="Blog pagination">
+            <ul class="pagination justify-content-center">
+                <!-- Previous Page -->
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)">Trước</a>
+                </li>
 
-        // Next page button
-        if (currentPage < totalPages)
-        {
-            <a asp-action="Index" asp-route-page="@(currentPage + 1)" class="btn btn-secondary">Next</a>
-        }
+                <!-- Page Numbers -->
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                    </li>
+                }
+
+                <!-- Next Page -->
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)">Tiếp</a>
+                </li>
+            </ul>
+        </nav>
+
     }
 </div>
