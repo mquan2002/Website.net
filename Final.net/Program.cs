@@ -1,21 +1,23 @@
-using Final.net.Models;
+﻿using Final.net.Models;
 using Microsoft.EntityFrameworkCore;
 using Final.net.Areas.Admin.CategoryService;
 using Final.net.Areas.Admin.ProductService;
 using CloudinaryDotNet;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-﻿using Final.net.Models;
 using Final.net.Services;
+using Final.net.Areas.Admin.BlogService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Configure DbContext with a single registration
 builder.Services.AddDbContext<PizzaStoreContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+// Configure Cloudinary settings
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddSingleton(x =>
 {
@@ -23,24 +25,22 @@ builder.Services.AddSingleton(x =>
     var account = new Account(cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret);
     return new Cloudinary(account);
 });
-builder.Services.AddSingleton<CategoryService>();
-builder.Services.AddSingleton<ProductService>();
 
 
-// Thêm cấu hình DbContext cho PizzaStoreContext
-builder.Services.AddDbContext<PizzaStoreContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<CategoryService>(); 
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<BlogService>();
 
-// Thêm cấu hình cho Session
-builder.Services.AddSession(); // Thêm dịch vụ Session
+// Add session service
+builder.Services.AddSession();
 
-//Service cho Cart
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+// Add Cart service
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
 builder.Services.AddScoped<CartService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -50,25 +50,38 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Sử dụng Session trong ứng dụng
-app.UseSession(); // Thêm dòng này để kích hoạt Session
+// Use Session middleware
+app.UseSession();
 
 app.UseRouting();
 
 app.UseAuthorization();
 
+
+
+
+// Map area and default routes
 app.MapAreaControllerRoute(
-    name: "admin",
+    name: "admin_category",
     areaName: "Admin",
     pattern: "admin/{controller=Category}/{action=Index}/{id?}");
 
-
-app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+app.MapAreaControllerRoute(
+    name: "admin_blog",
+    areaName: "Admin",
+    pattern: "admin/{controller=Blog}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Thêm route cho Blog
+app.MapControllerRoute(
+    name: "blog",
+    pattern: "blog/{action=Index}/{id?}");  // Đóng ngoặc tại đây
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

@@ -72,9 +72,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Views\Blog\" />
     <Folder Include="wwwroot\LayoutAdmin\pages\charts\" />
     <Folder Include="wwwroot\LayoutAdmin\pages\forms\" />
     <Folder Include="wwwroot\LayoutAdmin\pages\icons\" />
