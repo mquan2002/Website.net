@@ -22,43 +22,6 @@ namespace Final.net.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Final.net.Models.Blogs", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ImageURL")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("LinkURL")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Blogs");
-                });
-
             modelBuilder.Entity("Final.net.Models.Category", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -252,7 +215,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 11, 28, 20, 10, 4, 673, DateTimeKind.Local).AddTicks(5574),
+                            CreatedDate = new DateTime(2024, 11, 17, 13, 8, 12, 753, DateTimeKind.Local).AddTicks(6977),
                             IsDeleted = false,
                             Name = "Admin",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -260,7 +223,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 11, 28, 20, 10, 4, 673, DateTimeKind.Local).AddTicks(5588),
+                            CreatedDate = new DateTime(2024, 11, 17, 13, 8, 12, 753, DateTimeKind.Local).AddTicks(6994),
                             IsDeleted = false,
                             Name = "User",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)

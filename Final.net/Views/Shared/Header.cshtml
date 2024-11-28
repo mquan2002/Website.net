@@ -1,80 +1,75 @@
-﻿<!-- Header Section -->
-<div class="header__top">
+﻿<div class="header__top">
     <div class="container">
         <div class="row">
-            <!-- Contact and Shipping Information -->
             <div class="col-lg-6 col-md-6">
                 <div class="header__top__left">
                     <ul>
-                        <li>Miễn phí vận chuyển cho tất cả đơn hàng trên 100.000VNĐ</li>
+                        <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
+                        <li>Free Shipping for all Order of $99</li>
                     </ul>
                 </div>
             </div>
-            <!-- Social Links, Language and Auth Links -->
             <div class="col-lg-6 col-md-6">
-                <div class="header__top__right">    
+                <div class="header__top__right">
                     <div class="header__top__right__social">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-twitter"></i></a>
+                        <a href="#"><i class="fa fa-linkedin"></i></a>
+                        <a href="#"><i class="fa fa-pinterest-p"></i></a>
                     </div>
                     <div class="header__top__right__language">
-                        <img src="../LayoutDomino/img/language.png" alt="Language">
-                        <div>Tiếng Việt</div>
+                        <img src="../LayoutDomino/img/language.png" alt="">
+                        <div>English</div>
                         <span class="arrow_carrot-down"></span>
                         <ul>
-                            <li><a href="#">Tiếng Tây Ban Nha</a></li>
-                            <li><a href="#">Tiếng Anh</a></li>
+                            <li><a href="#">Spanish</a></li>
+                            <li><a href="#">English</a></li>
                         </ul>
                     </div>
                     <div class="header__top__right__auth">
-                        <a asp-controller="Sign" asp-action="SignIn"><i class="fa fa-user"></i> Đăng nhập</a>
+                        <a asp-controller="Sign" asp-action="SignIn"><i class="fa fa-user"></i> Login</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Main Header Section -->
 <div class="container">
     <div class="row" style="background-color: #004666;">
-        <!-- Logo -->
         <div class="col-lg-3">
             <div class="header__logo">
-                <a asp-controller="Home" asp-action="Index"><img src="../LayoutDomino/img/domino-horizontal-dark.svg" alt="Logo"></a>
+                <a asp-controller="Home" asp-action="Index"><img src="../LayoutDomino/img/domino-horizontal-dark.svg" alt=""></a>
             </div>
         </div>
-
-        <!-- Navigation Menu -->
         <div class="col-lg-6">
             <nav class="header__menu">
                 <ul>
-                    <li class="active"><a asp-controller="Home">Trang chủ</a></li>
-                    <li><a asp-controller="Menu">Thực đơn</a></li>
+                    <li class="active"><a asp-controller="Home">Home</a></li>
+                    <li><a asp-controller="Menu">Menu</a></li>
                     <li>
-                        <a href="#">Trang</a>
+                        <a href="#">Pages</a>
                         <ul class="header__menu__dropdown">
-                            <li><a href="./shop-details.html">Chi tiết cửa hàng</a></li>
-                            <li><a href="./shoping-cart.html">Giỏ hàng</a></li>
-                            <li><a href="./checkout.html">Thanh toán</a></li>
+                            <li><a href="./shop-details.html">Shop Details</a></li>
+                            <li><a href="./shoping-cart.html">Shopping Cart</a></li>
+                            <li><a href="./checkout.html">Check Out</a></li>
+                            <li><a href="./blog-details.html">Blog Details</a></li>
                         </ul>
                     </li>
-                    <li><a asp-controller="Blog">Blog</a></li> 
-                    <li><a href="./contact.html">Liên hệ</a></li>
+                    <li><a href="./blog.html">Blog</a></li>
+                    <li><a href="./contact.html">Contact</a></li>
                 </ul>
             </nav>
         </div>
-
-        <!-- Cart Section -->
         <div class="col-lg-3">
             <div class="header__cart">
                 <ul>
                     <li><a asp-controller="Cart" asp-action="Index"><i class="fa fa-shopping-bag"></i> <span>@ViewBag.CartItemCount</span></a></li>
                 </ul>
+                 
             </div>
         </div>
     </div>
 </div>
-
-<!-- Hamburger Menu for Mobile -->
 <div class="humberger__open">
     <i class="fa fa-bars"></i>
 </div>

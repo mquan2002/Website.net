@@ -1,14 +1,14 @@
 @model IEnumerable<Final.net.Models.Product>
 
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h1 style="text-align:center"> Danh sách sản phẩm</h1>
+<h1>Index</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Thêm sản phẩm</a>
+    <a asp-action="Create">Create New</a>
 </p>
 
 <table class="table">
@@ -51,35 +51,23 @@
 </table>
 
 <!-- Phân trang -->
-
 <div class="pagination">
     @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
     {
         var currentPage = (int)ViewData["CurrentPage"];
         var totalPages = (int)ViewData["TotalPages"];
 
-        <nav aria-label="Blog pagination">
-            <ul class="pagination justify-content-center">
-                <!-- Previous Page -->
-                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)">Trước</a>
-                </li>
+        <!-- Nút trang trước -->
+        @if (currentPage > 1)
+        {
+            <a asp-action="Index" asp-route-page="@(currentPage - 1)" class="btn btn-secondary">Previous</a>
+        }
 
-                <!-- Page Numbers -->
-                @for (int i = 1; i <= totalPages; i++)
-                {
-                    <li class="page-item @(i == currentPage ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
-                    </li>
-                }
-
-                <!-- Next Page -->
-                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)">Tiếp</a>
-                </li>
-            </ul>
-        </nav>
-
+        <!-- Nút trang sau -->
+        @if (currentPage < totalPages)
+        {
+            <a asp-action="Index" asp-route-page="@(currentPage + 1)" class="btn btn-secondary">Next</a>
+        }
     }
 </div>
 
@@ -176,7 +164,24 @@
     .table img {
         max-width: 100px;
         height: auto;
-    
+    }
 
+    /* Thiết lập phân trang */
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
 
+    .pagination a {
+        padding: 8px 16px;
+        margin: 0 5px;
+        background-color: blue;
+        color: #333;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .pagination a:hover {
+        background-color: #ddd;
+    }
 </style>
