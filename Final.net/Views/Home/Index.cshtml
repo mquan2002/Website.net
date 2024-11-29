@@ -3,43 +3,24 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Hero Section Begin -->
-<section class="hero">
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <div class="hero__search">
-                    <div class="hero__search__form">
-                        <form action="#">
-                            <div class="hero__search__categories">
-                                All Categories
-                                <span class="arrow_carrot-down"></span>
-                            </div>
-                            <input type="text" placeholder="What do you need?">
-                            <button type="submit" class="site-btn">SEARCH</button>
-                        </form>
-                    </div>
-                    <div class="hero__search__phone">
-                        <div class="hero__search__phone__icon">
-                            <i class="fa fa-phone"></i>
-                        </div>
-                        <div class="hero__search__phone__text">
-                            <h5>1900 6099</h5>
-                            <span>support 24/7 time</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="margin-top: 30px;" class="hero__item set-bg" data-setbg="../LayoutDomino/img/hero/domino_banner_2.jpg">
-                </div>
-            </div>
-        </div>
+<section id="sliders" style="padding-top: 10px">
+    <div class="aspect-ratio-169">
+        <img src="../LayoutDomino/img/hero/domino_banner_2.jpg" alt="">
+        <img src="../LayoutDomino/img/banner/banner-1.png" alt="">
+        <img src="../LayoutDomino/img/hero/domino_banner_2.jpg" alt="">
+        <img src="../LayoutDomino/img/banner/banner-1.png" alt="">
+    </div>
+    <div class="dot-container">
+        <div class="dot activee"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
     </div>
 </section>
-<!-- Hero Section End -->
 <!-- Categories Section Begin -->
 <section class="categories">
     <div class="container">
-        <div class="menu_index">
+        <div class="menu_index" style="padding-top: 25px">
             <h2> Hôm Nay Ăn Gì? </h2>
         </div>
         <div class="row">
@@ -360,3 +341,87 @@
 </section>
 <!-- Blog Section End -->
 
+<script>
+    const imgItem = document.querySelectorAll(".aspect-ratio-169 img")
+    const imgItemContainer = document.querySelector(".aspect-ratio-169")
+    const dotItem = document.querySelectorAll(".dot")
+    let index = 0
+    let imgLeng = imgItem.length
+    let sliderInterval;
+
+    imgItem.forEach(function (image, i) {
+        image.style.left = i * 100 + "%" // Hiển thị % hình về bên trái
+        dotItem[i].addEventListener("click", function () {
+            slideRun(i)
+            index = i // Cập nhật `index` sau khi nhấn
+            resetInterval() // Reset lại interval
+        })
+    })
+
+    function slider() {
+        index++;
+        if (index >= imgLeng) { index = 0 }
+        slideRun(index)
+    }
+
+    function slideRun(i) {
+        imgItemContainer.style.left = "-" + i * 100 + "%"
+        const dotActive = document.querySelector(".activee")
+        dotActive.classList.remove("activee")
+        dotItem[i].classList.add("activee")
+    }
+
+    function resetInterval() {
+        clearInterval(sliderInterval); // Dừng interval hiện tại
+        sliderInterval = setInterval(slider, 2000); // Bắt đầu lại interval
+    }
+
+    // Bắt đầu interval
+    sliderInterval = setInterval(slider, 2000);
+</script>
+
+<style> 
+    #sliders {
+        padding-bottom: 30px;
+        overflow: hidden;
+        border-bottom: 2px solid #000;
+    }
+
+    .aspect-ratio-169 {
+        display: block;
+        position: relative;
+        padding-top: 45%;
+        transition: all 0.3s ease;
+    }
+
+    .aspect-ratio-169 img {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    .dot-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 6px;
+    }
+
+    .dot {
+        width: 15px;
+        height: 15px;
+        background-color: #cccccc;
+        border-radius: 50%;
+        margin-right: 12px;
+        cursor: pointer;
+    }
+
+    .activee {
+        background-color: #333333;
+    }
+</style>
+ 

@@ -1,0 +1,145 @@
+﻿@model Final.net.Models.Blogs
+
+@{
+    ViewData["Title"] = "Create Blog";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin2.cshtml";
+}
+
+@section Styles {
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                font-weight: bold;
+                color: #495057;
+            }
+
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+            .form-control:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.25rem rgba(38, 143, 255, 0.25);
+            }
+
+        .form-check-input {
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #004085;
+            }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
+
+        .form-check-label {
+            font-size: 16px;
+        }
+
+        .text-danger {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .form-check {
+            margin-top: 10px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+    </style>
+}
+
+<h1>Create Blog</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" value="@Model.Title" required />
+        @if (ViewData.ModelState.ContainsKey("Title") && ViewData.ModelState["Title"].Errors.Count > 0)
+        {
+            <div class="text-danger">@ViewData.ModelState["Title"].Errors[0].ErrorMessage</div>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="LinkURL">Link URL</label>
+        <input type="url" class="form-control" id="LinkURL" name="LinkURL" value="@Model.LinkURL" required />
+        @if (ViewData.ModelState.ContainsKey("LinkURL") && ViewData.ModelState["LinkURL"].Errors.Count > 0)
+        {
+            <div class="text-danger">@ViewData.ModelState["LinkURL"].Errors[0].ErrorMessage</div>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="ImageURL">Image URL</label>
+        <input type="url" class="form-control" id="ImageURL" name="ImageURL" value="@Model.ImageURL" required />
+        @if (ViewData.ModelState.ContainsKey("ImageURL") && ViewData.ModelState["ImageURL"].Errors.Count > 0)
+        {
+            <div class="text-danger">@ViewData.ModelState["ImageURL"].Errors[0].ErrorMessage</div>
+        }
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="Active" name="Active" value="true" @(Model?.Active == true ? "checked" : "") />
+        <label class="form-check-label" for="Active">Active</label>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+</form>

@@ -1,11 +1,10 @@
-@model IEnumerable<Final.net.Models.Category>
+﻿@model IEnumerable<Final.net.Models.Category>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
-ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") && ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 {
     <a href="../admin/Category">Quay lại trang quản lý</a>
 }
@@ -13,12 +12,24 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 
 <form method="get" asp-action="Index" class="form-horizontal" onsubmit="return validateForm();">
     <select name="searchType">
-        @* <option value="1" @(ViewData["SearchType"] != null && (int)ViewData["SearchType"] == 1 ? "selected" : "")>
-            Tìm kiếm theo Id
-        </option>
-        <option value="2" @(ViewData["SearchType"] != null && (int)ViewData["SearchType"] == 2 ? "selected" : "")>
-            Tìm kiếm theo tên
-        </option> *@
+        @if (ViewData["SearchType"] == "1" || Convert.ToInt32(ViewData["SearchType"]) == 0)
+        {
+            <option value="1" selected>
+                Tìm kiếm theo Id
+            </option>
+            <option value="2">
+                Tìm kiếm theo tên
+            </option>
+        }
+        else
+        {
+            <option value="1">
+                Tìm kiếm theo Id
+            </option>
+            <option value="2" selected>
+                Tìm kiếm theo tên
+            </option>
+        }
     </select>
 
     <input type="text" id="searchValue" name="searchValue" value="@(ViewData["SearchValue"] ?? "")"
@@ -28,9 +39,10 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 
 <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
+<h1 style="text-align:center">Quản lý Danh Mục</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
 
 @{
@@ -55,9 +67,6 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                     @Html.DisplayNameFor(model => model.UpdatedAt)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.DeletedAt)
-                </th>
-                <th>
                     Action
                 </th>
             </tr>
@@ -67,23 +76,23 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
             {
                 <tr>
                     <td>@Html.DisplayFor(modelItem => item.CategoryId)</td>
-                    <td>
+                    <td class="image-product">
                         <img style="width: 80px; height: auto; padding-right : 5px" src="@item.CategoryImage"
                             alt="Category Image">
                         @Html.DisplayFor(modelItem => item.CategoryName)
                     </td>
                     <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
                     <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
-                    <td>@Html.DisplayFor(modelItem => item.DeletedAt)</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-edit">Edit</a> 
+                        <a asp-action="Details" asp-route-id="@item.CategoryId" class="btn btn-details">Details</a> 
+                        <a asp-action="Delete" asp-route-id="@item.CategoryId" class="btn btn-delete">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+
     <div class="pagination">
         @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
         {
@@ -91,34 +100,67 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
             var totalPages = (int)ViewData["TotalPages"];
             var searchType = ViewData["searchType"];
             var searchValue = ViewData["searchValue"];
-            if (searchType == "0" || searchValue == "")
-            {
-                if (currentPage > 1)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage - 1)" class="btn btn-secondary">Previous</a>
-                }
 
-                if (currentPage < totalPages)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage + 1)" class="btn btn-secondary">Next</a>
-                }
-            }
-            else
-            {
-                if (currentPage > 1)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-searchType="@searchType"
-                        asp-route-searchValue="@searchValue" class="btn btn-secondary">Previous</a>
-                }
+            <nav aria-label="Blog pagination">
+                <ul class="pagination justify-content-center">
+                    @{
+                        int range = 3;
+                        int startPage = Math.Max(1, currentPage - 1);
+                        int endPage = Math.Min(totalPages, startPage + range - 1);
+                        if (endPage - startPage + 1 < range)
+                        {
+                            startPage = Math.Max(1, endPage - range + 1);
+                        }
+                    }
+                    @if (searchType == "0" || searchValue == "")
+                    {
+                        <li class="page-item @(currentPage == 1 ? "d-none" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)">Trước</a>
+                        </li>
 
-                if (currentPage < totalPages)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-searchType="@searchType"
-                        asp-route-searchValue="@searchValue" class="btn btn-secondary">Next</a>
-                }
-            }
+
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "disabled" : "")" @(totalPages == 1 ? "d-none" : "")>
+                                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(currentPage == totalPages ? "d-none" : "") @(totalPages == 1 ? "d-none" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)">Tiếp</a>
+                        </li>
+                    }
+                    else
+                    {
+
+                        <li class="page-item @(currentPage == 1 ? "d-none" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)"
+                                asp-route-searchType="@searchType" asp-route-searchValue="@searchValue"
+                                class="btn btn-secondary">Trước</a>
+                        </li>
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "disabled" : "") @(totalPages == 1 ? "d-none" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchType="@searchType"
+                                    asp-route-searchValue="@searchValue">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(currentPage == totalPages ? "d-none" : "") @(totalPages == 1 ? "d-none" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)"
+                                asp-route-searchType="@searchType" asp-route-searchValue="@searchValue">Tiếp</a>
+                        </li>
+                    }
+
+                </ul>
+                <p>
+                    Page @ViewData["CurrentPage"] of @ViewData["totalPages"]
+                </p>
+            </nav>
         }
     </div>
+
 }
 
 
@@ -205,6 +247,68 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 
     .pagination a:hover {
         background-color: #ddd;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 4px;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-edit {
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #4CAF50;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-edit:hover {
+        background-color: #45a049;
+    }
+
+    .btn-details {
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-details:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-delete {
+        background-color: #f44336;
+        color: white;
+        border: 1px solid #f44336;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-delete:hover {
+        background-color: #e53935;
+    }
+
+    .table td a {
+        margin-right: 10px;
+    }
+
+    .table .image-product {
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    .table .image-product {
+        max-width: 100px;
+        height: auto;
+    }
+
+    .table .image-product {
+        word-wrap: break-word;
+        white-space: normal;
+        max-width: 200px;
     }
 </style>
 

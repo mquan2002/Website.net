@@ -17,6 +17,31 @@
     <link rel="stylesheet" href="../../LayoutAdmin/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="../../LayoutAdmin/assets/images/favicon.ico" />
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center; /* Căn giữa */
+            align-items: center;
+            margin-top: 20px; /* Khoảng cách từ phần trên */
+        }
+
+        .page-item {
+            margin: 0 5px; /* Khoảng cách giữa các trang */
+        }
+
+        .page-link {
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+
+        .page-item.disabled .page-link,
+        .page-item.active .page-link {
+            background-color: #007bff; /* Màu nền cho trang hiện tại hoặc disabled */
+            color: white;
+        }
+
+    </style>
+
 </head>
 <body>
     <div class="container-scroller">
@@ -197,7 +222,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                            <span class="menu-title">Quản lý sản phẩm</span>
+                            <span class="menu-title">Quản lý Chức năng</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-crosshairs-gps menu-icon"></i>
                         </a>
@@ -205,6 +230,19 @@
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item"> <a class="nav-link" href="../../admin/Category">Danh mục sản phẩm </a></li>
                                 <li class="nav-item"> <a class="nav-link" href="../../admin/Product">Sản phẩm</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic-1" aria-expanded="false" aria-controls="ui-basic-1">
+                            <span class="menu-title">Quản lý nội dung</span>
+                            <i class="menu-arrow"></i>
+                            <i class="mdi mdi-crosshairs-gps menu-icon"></i>
+                        </a>
+                        <div class="collapse" id="ui-basic-1">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="../../admin/Blog">Quản lý blog </a></li>
+          
                             </ul>
                         </div>
                     </li>

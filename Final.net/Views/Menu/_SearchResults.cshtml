@@ -1,0 +1,29 @@
+﻿@model List<Category>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Không tìm thấy sản phẩm phù hợp.</p>
+}
+else
+{
+    <div class="row featured__filter">
+        @foreach (var category in Model)
+        {
+            foreach (var product in category.Products)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mix @category.CategoryName">
+                    <div class="featured__item">
+                        <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
+                            <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
+                            </div>
+                        </a>
+                        <div class="featured__item__text">
+                            <h6><a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">@product.ProductName</a></h6>
+                            <h5>@product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h5>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}

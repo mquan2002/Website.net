@@ -28,7 +28,7 @@ namespace Final.net.Areas_Admin_Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index(int page = 1, int searchType = 0, string searchValue = "")
         {
-            const int pageSize = 2;
+            const int pageSize = 1;
             IQueryable<Category> query = _context.Categories;
 
             if (searchType == 1 && !int.TryParse(searchValue, out int categoryId22222221))
@@ -44,7 +44,7 @@ namespace Final.net.Areas_Admin_Controllers
                         query = query.Where(c => c.CategoryId == categoryId);
                     }
                 }
-                else if (searchType == 2) // Tìm kiếm theo tên
+                else if (searchType == 2)
                 {
                     query = query.Where(c => c.CategoryName.Contains(searchValue));
                 }
@@ -58,7 +58,7 @@ namespace Final.net.Areas_Admin_Controllers
                 .ToListAsync();
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
-            ViewData["SearchType"] = searchType;
+            ViewData["SearchType"] = searchType ;
             ViewData["SearchValue"] = searchValue;
             ViewData["TotalCategory"] = totalCategories;
 
