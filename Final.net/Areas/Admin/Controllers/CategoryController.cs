@@ -61,6 +61,7 @@ namespace Final.net.Areas_Admin_Controllers
             ViewData["SearchType"] = searchType ;
             ViewData["SearchValue"] = searchValue;
             ViewData["TotalCategory"] = totalCategories;
+            ViewData["SearchTypeName"] = searchType == 1 ? "Id" : "tên";
 
             return View(categories);
         }

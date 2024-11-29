@@ -36,6 +36,16 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
         placeholder="Tìm kiếm tại đây">
     <button type="submit">Search</button>
 </form>
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+{
+    <div style="display : flex; align-items: center;">
+
+        <p>Kết quả tìm kiếm theo @ViewData["SearchTypeName"] : </p>
+        <p style=" color : red; padding-left: 5px;"> @ViewData["SearchValue"]</p>
+        <p style="padding-left: 5px;">(@ViewData["TotalProduct"] sản phẩm được tìm thấy)</p>
+    </div>
+}
 
 <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
@@ -82,7 +92,7 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                     <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
                     <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.ProductId" >Edit</a> |
+                        <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
                         <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
                     </td>
@@ -149,6 +159,12 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                         </li>
                     }
                 </ul>
+                @if (Convert.ToInt32(@ViewData["TotalPage"]) > 0)
+                {
+                    <p>
+                        Page @ViewData["CurrentPage"] of @ViewData["totalPages"]
+                    </p>
+                }
             </nav>
         }
     </div>
@@ -305,3 +321,26 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
         box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
     }
 </style>
+
+
+<script>
+    function validateForm() {
+        const searchType = document.querySelector('select[name="searchType"]').value;
+        const searchValue = document.querySelector('#searchValue').value;
+        const errorMessage = document.querySelector('#error-message');
+
+        if (searchType === "1" && isNaN(searchValue)) {
+            errorMessage.style.display = "block";
+            errorMessage.textContent = "Vui lòng nhập Id là một số.";
+            return false;
+        }
+
+        errorMessage.style.display = "none";
+        return true;
+    }
+
+    document.querySelector('select[name="searchType"]').addEventListener('change', function () {
+        const searchInput = document.querySelector('#searchValue');
+        searchInput.value = "";
+    });
+</script>

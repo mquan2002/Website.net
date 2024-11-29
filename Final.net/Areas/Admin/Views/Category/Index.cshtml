@@ -4,7 +4,8 @@
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") && ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 {
     <a href="../admin/Category">Quay lại trang quản lý</a>
 }
@@ -36,6 +37,17 @@
         placeholder="Tìm kiếm tại đây">
     <button type="submit">Search</button>
 </form>
+
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+{
+    <div style="display : flex; align-items: center;">
+        
+        <p>Kết quả tìm kiếm theo @ViewData["SearchTypeName"] : </p>
+        <p style=" color : red; padding-left: 5px;"> @ViewData["SearchValue"] </p>
+        <p style="padding-left: 5px;">(@ViewData["TotalCategory"] thể loại được tìm thấy)</p>
+    </div>
+}
 
 <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
@@ -84,8 +96,8 @@
                     <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
                     <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-edit">Edit</a> 
-                        <a asp-action="Details" asp-route-id="@item.CategoryId" class="btn btn-details">Details</a> 
+                        <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-edit">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.CategoryId" class="btn btn-details">Details</a>
                         <a asp-action="Delete" asp-route-id="@item.CategoryId" class="btn btn-delete">Delete</a>
                     </td>
                 </tr>
@@ -154,9 +166,12 @@
                     }
 
                 </ul>
-                <p>
-                    Page @ViewData["CurrentPage"] of @ViewData["totalPages"]
-                </p>
+                @if(Convert.ToInt32(@ViewData["TotalPage"]) > 0)
+                {
+                    <p>
+                        Page @ViewData["CurrentPage"] of @ViewData["totalPages"]
+                    </p>
+                }
             </nav>
         }
     </div>
