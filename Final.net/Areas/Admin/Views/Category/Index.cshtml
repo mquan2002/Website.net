@@ -4,74 +4,229 @@
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+{
+    <a href="../admin/Category">Quay lại trang quản lý</a>
+}
 
-<h1>Index</h1>
+
+<form method="get" asp-action="Index" class="form-horizontal" onsubmit="return validateForm();">
+    <select name="searchType">
+        @* <option value="1" @(ViewData["SearchType"] != null && (int)ViewData["SearchType"] == 1 ? "selected" : "")>
+            Tìm kiếm theo Id
+        </option>
+        <option value="2" @(ViewData["SearchType"] != null && (int)ViewData["SearchType"] == 2 ? "selected" : "")>
+            Tìm kiếm theo tên
+        </option> *@
+    </select>
+
+    <input type="text" id="searchValue" name="searchValue" value="@(ViewData["SearchValue"] ?? "")"
+        placeholder="Tìm kiếm tại đây">
+    <button type="submit">Search</button>
+</form>
+
+<div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeletedAt)
-            </th>
-            <th>
-                Action
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@{
+    var totalCategory = ViewData["TotalCategory"] as int? ?? 0;
+}
+@if (totalCategory > 0)
+{
+
+    <table class="table">
+        <thead>
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.CategoryId)</td>
-                <td>
-                    <img style="width: 80px; height: auto; padding-right : 5px" src="@item.CategoryImage" alt="Category Image">
-                    @Html.DisplayFor(modelItem => item.CategoryName)
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
-                <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
-                <td>@Html.DisplayFor(modelItem => item.DeletedAt)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
-                </td>
-            </tr>   
-        }
-    </tbody>
-</table>
-
-<div class="pagination">
-    @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
-    {
-        var currentPage = (int)ViewData["CurrentPage"];
-        var totalPages = (int)ViewData["TotalPages"];
-
-        // Previous page button
-        if (currentPage > 1)
+                <th>
+                    @Html.DisplayNameFor(model => model.CategoryId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CategoryName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreatedAt)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UpdatedAt)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DeletedAt)
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.CategoryId)</td>
+                    <td>
+                        <img style="width: 80px; height: auto; padding-right : 5px" src="@item.CategoryImage"
+                            alt="Category Image">
+                        @Html.DisplayFor(modelItem => item.CategoryName)
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DeletedAt)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="pagination">
+        @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
         {
-            <a asp-action="Index" asp-route-page="@(currentPage - 1)" class="btn btn-secondary">Previous</a>
-        }
+            var currentPage = (int)ViewData["CurrentPage"];
+            var totalPages = (int)ViewData["TotalPages"];
+            var searchType = ViewData["searchType"];
+            var searchValue = ViewData["searchValue"];
+            if (searchType == "0" || searchValue == "")
+            {
+                if (currentPage > 1)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage - 1)" class="btn btn-secondary">Previous</a>
+                }
 
-        // Next page button
-        if (currentPage < totalPages)
-        {
-            <a asp-action="Index" asp-route-page="@(currentPage + 1)" class="btn btn-secondary">Next</a>
+                if (currentPage < totalPages)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage + 1)" class="btn btn-secondary">Next</a>
+                }
+            }
+            else
+            {
+                if (currentPage > 1)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-searchType="@searchType"
+                        asp-route-searchValue="@searchValue" class="btn btn-secondary">Previous</a>
+                }
+
+                if (currentPage < totalPages)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-searchType="@searchType"
+                        asp-route-searchValue="@searchValue" class="btn btn-secondary">Next</a>
+                }
+            }
         }
+    </div>
+}
+
+
+
+<style>
+    .form-horizontal {
+        width: : 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0;
     }
-</div>
+
+    select {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        font-size: 16px;
+        color: #333;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"] {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #333;
+        flex: 1;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #1a73e8;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #0056c2;
+    }
+
+    button[type="submit"]:focus {
+        outline: none;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination a {
+        padding: 8px 16px;
+        margin: 0 5px;
+        background-color: blue;
+        color: #333;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .pagination a:hover {
+        background-color: #ddd;
+    }
+</style>
+
+
+<script>
+    function validateForm() {
+        const searchType = document.querySelector('select[name="searchType"]').value;
+        const searchValue = document.querySelector('#searchValue').value;
+        const errorMessage = document.querySelector('#error-message');
+
+        if (searchType === "1" && isNaN(searchValue)) {
+            errorMessage.style.display = "block";
+            errorMessage.textContent = "Vui lòng nhập Id là một số.";
+            return false;
+        }
+
+        errorMessage.style.display = "none";
+        return true;
+    }
+
+    document.querySelector('select[name="searchType"]').addEventListener('change', function () {
+        const searchInput = document.querySelector('#searchValue');
+        searchInput.value = "";
+    });
+</script>

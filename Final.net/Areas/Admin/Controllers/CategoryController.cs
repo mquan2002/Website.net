@@ -26,21 +26,42 @@ namespace Final.net.Areas_Admin_Controllers
 
         // GET: Category
         [HttpGet("")]
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, int searchType = 0, string searchValue = "")
         {
-            const int pageSize = 5; 
+            const int pageSize = 2;
+            IQueryable<Category> query = _context.Categories;
 
-            var totalCategories = await _context.Categories.CountAsync();
-
+            if (searchType == 1 && !int.TryParse(searchValue, out int categoryId22222221))
+            {
+                ViewData["Error"] = "Id danh mục sản phẩm phải là 1 số"; 
+            }
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                if (searchType == 1) 
+                {
+                    if (int.TryParse(searchValue, out int categoryId))
+                    {
+                        query = query.Where(c => c.CategoryId == categoryId);
+                    }
+                }
+                else if (searchType == 2) // Tìm kiếm theo tên
+                {
+                    query = query.Where(c => c.CategoryName.Contains(searchValue));
+                }
+            }
+            var totalCategories = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalCategories / (double)pageSize);
 
-            var categories = await _context.Categories
-                .Skip((page - 1) * pageSize) 
+            var categories = await query
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
-
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
+            ViewData["SearchType"] = searchType;
+            ViewData["SearchValue"] = searchValue;
+            ViewData["TotalCategory"] = totalCategories;
+
             return View(categories);
         }
 
