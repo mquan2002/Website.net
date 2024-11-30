@@ -27,6 +27,7 @@ namespace Final.net.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult SignUp()
         {
             return View();
@@ -37,7 +38,9 @@ namespace Final.net.Controllers
         public async Task<IActionResult> SignIn(string username, string password)
         {
             // Tìm user theo email
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.IsDeleted == false);
+            var user = await _context.Users
+                        .Include(u => u.Role)
+                        .FirstOrDefaultAsync(u => u.Username == username && u.IsDeleted == false);
 
 
             if (user == null)
@@ -61,7 +64,8 @@ namespace Final.net.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Role, user.Role.Name)
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -83,9 +87,18 @@ namespace Final.net.Controllers
         }
 
         // Đăng ký
-        [HttpPost]
-        public async Task<IActionResult> SignUp([Bind("Username,Password,Email,Address,Phone")] User newUser)
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> SignUp([Bind("Username,Password,Email,Address,Phone")] User newUser, string passwordConfirm)
         {
+
+            ViewData["PasswordConfirm"] = passwordConfirm;
+
+            if (newUser.Password != passwordConfirm)
+            {
+                ModelState.AddModelError("PasswordConfirm", "Mật khẩu xác nhận không trùng khớp.");
+                return View(newUser);
+            }
+
 
             //if (!ModelState.IsValid)
             //{
@@ -101,7 +114,6 @@ namespace Final.net.Controllers
             }
 
 
-            Console.WriteLine(newUser.Password);
 
             if (!string.IsNullOrEmpty(newUser.Password))
             {

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Final.net.Areas.Admin.Views.HomeAdmin
 {
@@ -24,13 +25,53 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(int page = 1, string searchQuery = "")
         {
-            var pizzaStoreContext = _context.Users
-            .Include(u => u.Role)
-            .Where(u => u.IsDeleted == false);
-            return View(await pizzaStoreContext.ToListAsync());
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            // Check if the user has admin role
+            if (userRole != "Admin")
+            {
+                return Unauthorized("Bạn không có quyền truy cập trang này.");
+            }
+
+            const int pageSize = 5;  // Number of users per page
+
+            // Query the users, optionally filter by search query
+            var query = _context.Users
+                                .Where(u => u.IsDeleted == false);
+
+            // Apply search filters if any
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                // query = query.Where(u => u.Username.Contains(searchQuery) || u.Email.Contains(searchQuery) || u.Phone.Contains(searchQuery));
+                query = query.Where(u => u.Username.Contains(searchQuery));
+            }
+
+            // Calculate the total number of users (with search filters applied)
+            var totalUsers = await query.CountAsync();
+
+            // Calculate the total number of pages
+            var totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+
+            // Get the users for the current page (with search filters applied)
+            var users = await query
+                                .Include(u => u.Role)
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync();
+
+            // Pass pagination and search query to the view
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["SearchQuery"] = searchQuery;
+
+            return View(users);
         }
+
+
+
 
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)

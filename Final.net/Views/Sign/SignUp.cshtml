@@ -42,6 +42,11 @@
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">lock</span>
                     <input type="password" placeholder="Confirm Password" id="passwordConfirm" name="passwordConfirm">
+                    @if (ViewData.ModelState["PasswordConfirm"] != null &&
+                    ViewData.ModelState["PasswordConfirm"].Errors.Count > 0)
+                    {
+                        <span class="text-danger">@ViewData.ModelState["PasswordConfirm"].Errors[0].ErrorMessage</span>
+                    }
                 </div>
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">pin_drop</span>
@@ -66,9 +71,9 @@
                 <p style="font-size: 14px; text-align: center; margin-bottom: 1px">Đã có tài khoản?</p>
             </form>
 
-                <a asp-action="SignIn">
-                    <p style="text-decoration: underline; font-size: 14px; text-align: center;">Đăng nhập</p>
-                </a>
+            <a asp-action="SignIn">
+                <p style="text-decoration: underline; font-size: 14px; text-align: center;">Đăng nhập</p>
+            </a>
         </div>
     </div>
 

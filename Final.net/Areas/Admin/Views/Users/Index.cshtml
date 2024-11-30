@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var currentPage = ViewData["CurrentPage"] as int? ?? 1;
+    var totalPages = ViewData["TotalPages"] as int? ?? 1;
 
 }
 
@@ -11,6 +13,17 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form method="get" action="@Url.Action("Index")">
+    <div class="input-group mb-3">
+        <input type="text" name="searchQuery" class="form-control" placeholder="Tìm kiếm người dùng"
+            value="@ViewData["SearchQuery"]" />
+        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+    </div>
+</form>
+
+
+
 <table class="table">
     <thead>
         <tr>
@@ -75,3 +88,34 @@
         }
     </tbody>
 </table>
+
+
+<!-- Phân trang -->
+<div>
+    <ul class="pagination">
+        <!-- Nút trang đầu tiên -->
+        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = 1 })">Đầu</a>
+        </li>
+
+        <!-- Nút trang trước -->
+        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = currentPage - 1 })">Trước</a>
+        </li>
+
+        <!-- Hiển thị số trang hiện tại -->
+        <li class="page-item active">
+            <span class="page-link">@currentPage</span>
+        </li>
+
+        <!-- Nút trang tiếp theo -->
+        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = currentPage + 1 })">Tiếp</a>
+        </li>
+
+        <!-- Nút trang cuối cùng -->
+        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = totalPages })">Cuối</a>
+        </li>
+    </ul>
+</div>
