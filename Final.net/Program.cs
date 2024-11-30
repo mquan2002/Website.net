@@ -32,15 +32,30 @@ builder.Services.AddSingleton(x =>
 });
 
 
-builder.Services.AddScoped<CategoryService>(); 
+builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<BlogService>();
 
 // Thêm cấu hình cho Session
-builder.Services.AddSession(); // Thêm dịch vụ Session
+// Thêm cấu hình cho Session
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;  // Đảm bảo cookie hoạt động đúng trên mọi nền tảng
+});
+
+
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Sign/SignIn";
+        options.LogoutPath = "/Sign/Logout";
+    });
+
 
 // Add Cart service
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<CartService>();
 
 var app = builder.Build();
@@ -59,7 +74,7 @@ app.UseStaticFiles();
 app.UseSession(); // Thêm dòng này để kích hoạt Session
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 
