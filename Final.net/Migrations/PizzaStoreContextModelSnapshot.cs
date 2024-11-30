@@ -336,7 +336,6 @@ namespace Final.net.Migrations
                 {
                     b.Navigation("Users");
                 });
-#pragma warning restore 612, 618
         }
     }
 }

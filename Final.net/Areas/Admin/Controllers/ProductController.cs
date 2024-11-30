@@ -26,22 +26,46 @@ namespace Final.net.Areas_Admin_Controllers
 
         // GET: Product
         [HttpGet("")]
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, int searchType = 0, string searchValue = "")
         {
-            const int pageSize = 5;  
+            const int pageSize = 5;
+            IQueryable<Product> query = _context.Products;
 
-            var totalProducts = await _context.Products.CountAsync();
+            if (searchType == 1 && !int.TryParse(searchValue, out int product222))
+            {
+                ViewData["Error"] = "Id sản phẩm phải là 1 số";
+            }
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                if (searchType == 1)
+                {
+                    if (int.TryParse(searchValue, out int productId))
+                    {
+                        query = query.Where(p => p.ProductId == productId);
+                    }
+                }
+                else if (searchType == 2) // Tìm kiếm theo tên
+                {
+                    query = query.Where(p => p.ProductName.Contains(searchValue));
+                }
+            }
+            var totalProducts = await query.CountAsync();
 
             var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
 
-            var products = await _context.Products
-                .Skip((page - 1) * pageSize)  
-                .Take(pageSize) 
-                .Include(p => p.Category)   
+            var products = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Include(p => p.Category)
                 .ToListAsync();
 
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
+             ViewData["SearchType"] = searchType ;
+            ViewData["SearchValue"] = searchValue;
+            ViewData["TotalProduct"] = totalProducts;
+            ViewData["SearchTypeName"] = searchType == 1 ? "Id" : "tên";
+
             return View(products);
         }
 

@@ -1,0 +1,64 @@
+﻿/* Tạo một lớp CSS để cải thiện các trang Form */
+.form-container {
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Thêm khoảng cách giữa các trường input */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Tạo các nút đẹp */
+.btn-custom {
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+    .btn-custom:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
+/* Styling cho các form control (input, textarea, select) */
+.form-control {
+    border-radius: 4px;
+    box-shadow: none;
+    border: 1px solid #ced4da;
+}
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+/* Đặt style cho các bảng chi tiết (Details) */
+.table-custom {
+    width: 100%;
+    margin-top: 30px;
+}
+
+    .table-custom th, .table-custom td {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .table-custom th {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .table-custom tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+/* Xử lý các thông báo (error messages) */
+.text-danger {
+    color: #dc3545;
+}

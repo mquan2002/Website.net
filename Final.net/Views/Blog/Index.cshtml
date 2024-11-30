@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Final.net.Models.Blogs>
+
+@{
+    ViewData["Title"] = "Blog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    /* Basic Reset for Margin and Padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+/* Title Styling */
+h1 {
+    text-align: center;
+    margin: 50px 0;
+    font-size: 36px;
+    color: #333;
+}
+
+/* Blog List Styling */
+.blog-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+/* Individual Blog Item Styling */
+.blog-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.blog-item:hover {
+    transform: translateY(-10px);
+}
+
+/* Blog Title Styling */
+.blog-item h2 {
+    font-size: 22px;
+    margin: 20px;
+    color: #004666;
+    font-weight: bold;
+}
+
+/* Image Styling */
+.blog-item img {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* Date Styling */
+.blog-item p {
+    margin: 10px 20px;
+    font-size: 14px;
+    color: #888;
+}
+
+/* Read More Link Styling */
+.blog-item a {
+    display: inline-block;
+    margin: 20px;
+    padding: 8px 16px;
+    background-color: #004666;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.blog-item a:hover {
+    background-color: #00334d;
+}
+
+</style>
+<h1>@ViewData["Title"]</h1>
+
+<div class="blog-list">
+    @foreach (var blog in Model)
+    {
+        <div class="blog-item">
+            <h2>@blog.Title</h2> <!-- Hiển thị tiêu đề bài viết -->
+            <img src="@blog.ImageURL" alt="@blog.Title" class="img-fluid" /> <!-- Hiển thị hình ảnh -->
+            <p>@blog.CreatedAt.ToString("dd MMM yyyy")</p> <!-- Hiển thị ngày tạo -->
+            <a href="@Url.Action("Details", "Blog", new { id = blog.Id })">Read More</a> <!-- Liên kết đến trang chi tiết -->
+        </div>
+    }
+</div>

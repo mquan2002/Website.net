@@ -7,71 +7,170 @@
     
 }
 
-<h1>Index</h1>
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+{
+    <a href="../admin/Product">Quay lại trang quản lý sản phẩm</a>
+}
+<form method="get" asp-action="Index" class="form-horizontal" onsubmit="return validateForm();">
+    <select name="searchType">
+        @if (ViewData["SearchType"] == "1" || Convert.ToInt32(ViewData["SearchType"]) == 0)
+        {
+            <option value="1" selected>
+                Tìm kiếm theo Id
+            </option>
+            <option value="2">
+                Tìm kiếm theo tên
+            </option>
+        }
+        else
+        {
+            <option value="1">
+                Tìm kiếm theo Id
+            </option>
+            <option value="2" selected>
+                Tìm kiếm theo tên
+            </option>
+        }
+    </select>
+
+    <input type="text" id="searchValue" name="searchValue" value="@(ViewData["SearchValue"] ?? "")"
+        placeholder="Tìm kiếm tại đây">
+    <button type="submit">Search</button>
+</form>
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+{
+    <div style="display : flex; align-items: center;">
+
+        <p>Kết quả tìm kiếm theo @ViewData["SearchTypeName"] : </p>
+        <p style=" color : red; padding-left: 5px;"> @ViewData["SearchValue"]</p>
+        <p style="padding-left: 5px;">(@ViewData["TotalProduct"] sản phẩm được tìm thấy)</p>
+    </div>
+}
+
+<div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+<h1 style="text-align:center">Quản lý sản phẩm</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.ProductId)</th>
-            <th>@Html.DisplayNameFor(model => model.ProductName)</th>
-            <th>@Html.DisplayNameFor(model => model.Price)</th>
-            <th>@Html.DisplayNameFor(model => model.Description)</th>
-            <th>@Html.DisplayNameFor(model => model.Category)</th>
-            <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
-            <th>@Html.DisplayNameFor(model => model.UpdatedAt)</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+
+@{
+    var totalProduct = ViewData["TotalProduct"] as int? ?? 0;
+}
+@if (totalProduct > 0)
+{
+
+    <table class="table">
+        <thead>
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.ProductId)</td>
-                <td class="product_image">
-                    <img class="product-image" style="width: 80px; height: auto; padding-right: 5px" src="@item.ImageUrl"
-                        alt="Product Image">
-                    <span class="product-name">@Html.DisplayFor(modelItem => item.ProductName)</span>
-
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.Price)</td>
-                <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
-                <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
-                <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
-                </td>
+                <th>@Html.DisplayNameFor(model => model.ProductId)</th>
+                <th>@Html.DisplayNameFor(model => model.ProductName)</th>
+                <th>@Html.DisplayNameFor(model => model.Price)</th>
+                <th>@Html.DisplayNameFor(model => model.Description)</th>
+                <th>@Html.DisplayNameFor(model => model.Category)</th>
+                <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
+                <th>@Html.DisplayNameFor(model => model.UpdatedAt)</th>
+                <th>Action</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.ProductId)</td>
+                    <td class="product_image">
+                        <img class="product-image" style="width: 80px; height: auto; padding-right: 5px" src="@item.ImageUrl"
+                            alt="Product Image">
+                        <span class="product-name">@Html.DisplayFor(modelItem => item.ProductName)</span>
 
-<!-- Phân trang -->
-<div class="pagination">
-    @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
-    {
-        var currentPage = (int)ViewData["CurrentPage"];
-        var totalPages = (int)ViewData["TotalPages"];
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-        <!-- Nút trang trước -->
-        @if (currentPage > 1)
+    <!-- Phân trang -->
+    <div class="pagination">
+        @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
         {
-            <a asp-action="Index" asp-route-page="@(currentPage - 1)" class="btn btn-secondary">Previous</a>
-        }
+            var currentPage = (int)ViewData["CurrentPage"];
+            var totalPages = (int)ViewData["TotalPages"];
+            var searchType = ViewData["searchType"];
+            var searchValue = ViewData["searchValue"];
+            <nav aria-label="Blog pagination">
+                <ul class="pagination justify-content-center">
+                    @{
+                        int range = 3;
+                        int startPage = Math.Max(1, currentPage - 1);
+                        int endPage = Math.Min(totalPages, startPage + range - 1);
+                        if (endPage - startPage + 1 < range)
+                        {
+                            startPage = Math.Max(1, endPage - range + 1);
+                        }
+                    }
+                    @if (searchType == "0" || searchValue == "")
+                    {
+                        <li class="page-item @(currentPage == 1 ? "d-none" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)">Trước</a>
+                        </li>
 
-        <!-- Nút trang sau -->
-        @if (currentPage < totalPages)
-        {
-            <a asp-action="Index" asp-route-page="@(currentPage + 1)" class="btn btn-secondary">Next</a>
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "disabled" : "")" @(totalPages == 1 ? "d-none" : "")>
+                                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(currentPage == totalPages ? "d-none" : "" )">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)">Tiếp</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item @(currentPage == 1 ? "d-none" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)"
+                                asp-route-searchType="@searchType" asp-route-searchValue="@searchValue">Trước</a>
+                        </li>
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+
+                            <li class="page-item @(i == currentPage ? "disabled" : "") @(totalPages == 1 ? "d-none" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchType="@searchType"
+                                    asp-route-searchValue="@searchValue">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(currentPage == totalPages ? "d-none" : "") @(totalPages == 1 ? "d-none" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)"
+                                asp-route-searchType="@searchType" asp-route-searchValue="@searchValue">Tiếp</a>
+                        </li>
+                    }
+                </ul>
+                @if (Convert.ToInt32(@ViewData["TotalPage"]) > 0)
+                {
+                    <p>
+                        Page @ViewData["CurrentPage"] of @ViewData["totalPages"]
+                    </p>
+                }
+            </nav>
         }
-    }
-</div>
+    </div>
+}
 
 
 <style>
@@ -110,24 +209,16 @@
         display: block;
         text-align: center;
         font-weight: bold;
-        /* Để tên sản phẩm dễ nhận diện */
         margin-top: 5px;
-        /* Thêm khoảng cách giữa ảnh và tên sản phẩm */
     }
 
     .table img {
         display: block;
-        /* Đảm bảo ảnh chiếm một dòng riêng */
         margin-left: auto;
-        /* Căn giữa ảnh theo chiều ngang */
         margin-right: auto;
-        /* Căn giữa ảnh theo chiều ngang */
         max-width: 80px;
-        /* Giới hạn kích thước ảnh */
         height: auto;
-        /* Đảm bảo tỷ lệ ảnh không bị biến dạng */
         margin-bottom: 5px;
-        /* Thêm khoảng cách giữa ảnh và tên sản phẩm */
     }
 
     .table th:nth-child(4),
@@ -162,28 +253,96 @@
         width: 10%;
     }
 
-    /* Chỉnh sửa hiển thị hình ảnh trong cột Product Image */
     .table img {
         max-width: 100px;
         height: auto;
     }
 
-    /* Thiết lập phân trang */
-    .pagination {
-        margin-top: 20px;
-        text-align: center;
+    .form-horizontal {
+        width: : 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0;
     }
 
-    .pagination a {
-        padding: 8px 16px;
-        margin: 0 5px;
-        background-color: blue;
+    select {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        font-size: 16px;
         color: #333;
-        border-radius: 5px;
-        text-decoration: none;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
     }
 
-    .pagination a:hover {
-        background-color: #ddd;
+    select:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"] {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #333;
+        flex: 1;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #1a73e8;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #0056c2;
+    }
+
+    button[type="submit"]:focus {
+        outline: none;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
     }
 </style>
+
+
+<script>
+    function validateForm() {
+        const searchType = document.querySelector('select[name="searchType"]').value;
+        const searchValue = document.querySelector('#searchValue').value;
+        const errorMessage = document.querySelector('#error-message');
+
+        if (searchType === "1" && isNaN(searchValue)) {
+            errorMessage.style.display = "block";
+            errorMessage.textContent = "Vui lòng nhập Id là một số.";
+            return false;
+        }
+
+        errorMessage.style.display = "none";
+        return true;
+    }
+
+    document.querySelector('select[name="searchType"]').addEventListener('change', function () {
+        const searchInput = document.querySelector('#searchValue');
+        searchInput.value = "";
+    });
+</script>
