@@ -151,12 +151,13 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
                 return NotFound();
             }
 
-            // Check if the username already exists for another user (excluding current user)
-            var usernameExisting = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username && u.Id != id);
+            // Kiểm tra xem Username đã tồn tại hay chưa (trừ user hiện tại)
+            var usernameExisting = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == user.Username && u.Id != id);
 
             if (usernameExisting != null)
             {
-                // Username already exists
+                // Username đã tồn tại
                 ModelState.AddModelError("Username", "Username đã tồn tại.");
                 ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
                 return View(user);
@@ -164,28 +165,49 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
 
             try
             {
-                // Fetch the existing user record to preserve non-edited fields
+                // Lấy bản ghi user hiện tại từ database
                 var existingUser = await _context.Users.FindAsync(id);
-
                 if (existingUser == null)
                 {
                     return NotFound();
                 }
 
-                // Map updated properties from user DTO to the existing user entity
-                existingUser.Username = user.Username;
-                existingUser.RoleId = user.RoleId;
-                existingUser.IsDeleted = user.IsDeleted;
-                existingUser.UpdatedDate = DateTime.Now; // Set UpdatedDate to the current date/time
-
-                // If a new password is provided, hash and update it
-                if (!string.IsNullOrEmpty(user.Password))
+                // Cập nhật chỉ các trường thay đổi
+                if (existingUser.Username != user.Username)
                 {
-                    existingUser.Password = _passwordHasher.HashPassword(null, user.Password);
+                    existingUser.Username = user.Username;
                 }
 
-                // Update the user entity in the database
-                _context.Update(existingUser);
+
+                if (existingUser.RoleId != user.RoleId)
+                {
+                    existingUser.RoleId = user.RoleId;
+                }
+
+                if (user.IsDeleted != existingUser.IsDeleted)
+                {
+                    existingUser.IsDeleted = user.IsDeleted;
+                }
+
+                if (existingUser.Password != user.Password)
+                {
+                    // Hash và cập nhật mật khẩu nếu mật khẩu mới được cung cấp
+                    if (!string.IsNullOrEmpty(user.Password))
+                    {
+                        var hashedPassword = _passwordHasher.HashPassword(null, user.Password);
+                        if (existingUser.Password != hashedPassword)
+                        {
+                            existingUser.Password = hashedPassword;
+                        }
+                    }
+                }
+
+                // Cập nhật trường UpdatedDate
+                existingUser.UpdatedDate = DateTime.Now;
+
+                // Chỉ cập nhật các trường thay đổi
+                _context.Entry(existingUser).State = EntityState.Modified;
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -202,6 +224,7 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
 
             return RedirectToAction(nameof(Index));
         }
+
 
 
         // GET: Users/Delete/5
