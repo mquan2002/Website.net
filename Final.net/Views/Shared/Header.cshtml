@@ -50,7 +50,7 @@
                         <li>
                             <a asp-controller="Cart" asp-action="Index">
                                 <i class="fa fa-shopping-bag"></i>
-                                <span>@ViewBag.CartItemCount</span>
+                                <span>@ViewBag.CartItemCount</span>                              
                             </a>
                         </li>
 
@@ -96,3 +96,9 @@
 <div class="humberger__open">
     <i class="fa fa-bars"></i>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    console.log("CartItemCount:", @ViewBag.CartItemCount);
+</script>

@@ -253,13 +253,7 @@ namespace Final.net.Controllers
 
 
 
-        public IActionResult RefreshCartIcon()
-        {
-            var cart = GetCartItems();
-            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
-            return PartialView("_CartIcon");
-        }
-
+      
 
         // Phương thức lưu giỏ hàng vào Session
         private void SaveCartSession(List<CartItem> cart)

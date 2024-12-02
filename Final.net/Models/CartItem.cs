@@ -16,7 +16,7 @@ namespace Final.net.Models
 
         // Tổng giá (bao gồm số lượng)
         public double TotalPrice => Price * Quantity;
-        public int Quantity { get; set; } = 1; // Thiết lập số lượng mặc định là 1
+        public int Quantity { get; set; }
         public required string ImageUrl { get; set; }
 
         public int SizeId { get; set; }

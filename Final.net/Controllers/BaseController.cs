@@ -14,8 +14,12 @@ namespace Final.net.Controllers
 
         public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
         {
+            // Lấy danh sách sản phẩm trong giỏ hàng
             var cart = _cartService.GetCartItems();
-            ViewBag.CartItemCount = cart.Count;
+
+            // Cập nhật tổng số lượng sản phẩm
+            ViewBag.CartItemCount = cart?.Sum(item => item.Quantity) ?? 0;
+
             base.OnActionExecuting(context);
         }
     }

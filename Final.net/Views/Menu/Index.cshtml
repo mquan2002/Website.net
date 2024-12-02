@@ -135,7 +135,7 @@
                     $('#addToCartModal').modal('hide');
                     showToast(response.message);
                     updateCartCount(); // Cập nhật số lượng giỏ hàng
-                    refreshCartIcon();
+                   
                 } else {
                     alert(response.message);
                 }
@@ -146,18 +146,7 @@
         });
     }
 
-    function refreshCartIcon() {
-        $.ajax({
-            url: '/Cart/RefreshCartIcon',
-            type: 'GET',
-            success: function (html) {
-                $('.header__cart').html(html);
-            },
-            error: function () {
-                console.error('Không thể làm mới icon giỏ hàng.');
-            }
-        });
-    }
+   
 
     let debounceTimer;
     function searchProductsLive() {

@@ -73,7 +73,7 @@
             success: function (response) {
                 if (response.success) {
                     alert(response.message);
-                    refreshCartIcon();
+                    
                     // Reload lại trang giỏ hàng
                     location.reload();
                 } else {
@@ -110,7 +110,7 @@
             success: function (response) {
                 if (response.success) {
                     $('#editCartModal').modal('hide');
-                    refreshCartIcon();
+                    
                     location.reload(); // Tải lại trang
                 } else {
                     alert(response.message);
@@ -122,18 +122,7 @@
         });
     }
 
-    function refreshCartIcon() {
-        $.ajax({
-            url: '/Cart/RefreshCartIcon',
-            type: 'GET',
-            success: function (html) {
-                $('.header__cart').html(html);
-            },
-            error: function () {
-                console.error('Không thể làm mới icon giỏ hàng.');
-            }
-        });
-    }
+   
 
    
 
