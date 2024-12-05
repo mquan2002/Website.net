@@ -5,8 +5,6 @@
     
 }
 
- 
-
 <div class="container" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
@@ -28,10 +26,21 @@
                 </p>
                 <div style="font-size: 0.85rem;">
                     <a href="javascript:void(0);" onclick="showEditModal(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a>
-                    <span style="margin: 0 10px; color: #ccc;">|</span> 
-                    <a href="javascript:void(0);" onclick="removeFromCart(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Xóa</a>
-                </div>
+                    <span style="margin: 0 10px; color: #ccc;">|</span>
+                    <a href="javascript:void(0);" onclick="openModal(@item.ProductId)" style="color: #007bff; text-decoration: none;">Xóa</a>
 
+                    <!-- Xac nhan xoa -->
+                    <div id="deleteModal-@item.ProductId" class="modal-custom">
+                        <div class="modal-content-custom">
+                            <h3>Xóa sản phẩm</h3>
+                            <p>Bạn có muốn xóa sản phẩm không?</p>
+                            <div class="modal-buttons">
+                                <button class="btn-confirm" onclick="removeFromCart(@item.ProductId, @item.SizeId, @item.CrustId)">Xác nhận</button>
+                                <button class="btn-cancel" onclick="closeModal(@item.ProductId)">Hủy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
@@ -39,7 +48,7 @@
             </div>
         </div>
     }
-
+    
     <div class="voucher-section" style="display: flex; gap: 10px; margin-top: 20px;">
         <input type="text" placeholder="Nhập Mã Khuyến Mãi" style="flex: 1; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: 1px solid #ddd;">
         <button style="width: 100px; font-weight: bold; background-color: #007bff; color: white; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: none;">Áp Dụng</button>
@@ -61,21 +70,21 @@
 
 <div id="modalContainer"></div>
 
+<div id="toast" class="toast">
+    <div class="toast-body">message trong controller</div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function removeFromCart(productId, sizeId, crustId) {
-        if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) return;
-
         $.ajax({
             url: '/Cart/RemoveFromCart',
             type: 'POST',
             data: { productId: productId, sizeId: sizeId, crustId: crustId },
             success: function (response) {
-                if (response.success) {
-                    alert(response.message);
-                    
+                if (response.success) {   
                     // Reload lại trang giỏ hàng
-                    location.reload();
+                    showToast(response.message);
                 } else {
                     alert("Không thể xóa sản phẩm. Vui lòng thử lại.");
                 }
@@ -100,31 +109,100 @@
             }
         });
     }
-
-    function updateCartItem() {
-        var form = $('#editCartItemForm');
-        $.ajax({
-            url: '/Cart/UpdateCartItem',
-            type: 'POST',
-            data: form.serialize(),
-            success: function (response) {
-                if (response.success) {
-                    $('#editCartModal').modal('hide');
-                    
-                    location.reload(); // Tải lại trang
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function () {
-                alert('Có lỗi xảy ra khi cập nhật sản phẩm.');
-            }
-        });
+    
+    function openModal(productId) {
+        document.getElementById(`deleteModal-${productId}`).style.display = "flex";
     }
 
-   
+    function closeModal(productId) {
+        document.getElementById(`deleteModal-${productId}`).style.display = "none";
+    }
 
-   
-
-
+    function showToast(message) {
+        $('#toast .toast-body').text(message);
+        $('#toast').css('display', 'block');
+        setTimeout(function () {
+            let opacity = 1;
+            let fadeOutInterval = setInterval(function () {
+                if (opacity > 0) {
+                    opacity -= 0.05;
+                    $('#toast').css('opacity', opacity);
+                } else {
+                    clearInterval(fadeOutInterval);  // Dừng fade-out khi opacity = 0
+                    $('#toast').css('display', 'none');  // Ẩn toast khi hoàn thành
+                    location.reload();
+                }
+            }, 50);  // Mỗi 50ms giảm opacity 0.05
+        }, 100);  // Màn hình hiển thị toast trong xs
+    }
 </script>
+
+
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+        opacity: 1;
+        z-index: 9999;
+    }
+
+    .modal-custom {
+        display: none; /* Ẩn mặc định */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ */
+        z-index: 9999; /* Luôn trên cùng */
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content-custom {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .btn-confirm {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-cancel {
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-confirm:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-cancel:hover {
+        background-color: #5a6268;
+    }
+</style>

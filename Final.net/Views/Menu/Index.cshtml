@@ -33,7 +33,7 @@
 </section>
  
 <div id="toast" class="toast">
-    <div class="toast-body">Sản phẩm đã được thêm vào giỏ hàng!</div>
+    <div class="toast-body">message trong controller</div>
 </div>
 
 <section class="featured spad" style="padding-top: 15px">
@@ -91,7 +91,7 @@
         });
     }
 
-    function showToast(message) {
+    function showToast(message, callback) {
         $('#toast .toast-body').text(message);
         $('#toast').css('display', 'block');
         setTimeout(function () {
@@ -103,9 +103,12 @@
                 } else {
                     clearInterval(fadeOutInterval);  // Dừng fade-out khi opacity = 0
                     $('#toast').css('display', 'none');  // Ẩn toast khi hoàn thành
+                    if (typeof callback === "function") {
+                        callback();
+                    }
                 }
             }, 50);  // Mỗi 50ms giảm opacity 0.05
-        }, 800);  // Màn hình hiển thị toast trong xs
+        }, 100);  // Màn hình hiển thị toast trong xs
     }
 
     function updateCartCount() {
@@ -132,8 +135,9 @@
             data: form.serialize(),
             success: function (response) {
                 if (response.success) {
-                    $('#addToCartModal').modal('hide');
-                    showToast(response.message);
+                    showToast(response.message, function () {
+                        $('#addToCartModal').modal('hide'); // Đóng modal sau khi toast tắt
+                    });
                     updateCartCount(); // Cập nhật số lượng giỏ hàng
                    
                 } else {
@@ -145,8 +149,6 @@
             }
         });
     }
-
-   
 
     let debounceTimer;
     function searchProductsLive() {
@@ -239,7 +241,6 @@
         width: 100%; 
     }
 
-   
     .search-icon {
         position: absolute;
         left: 15px; 
