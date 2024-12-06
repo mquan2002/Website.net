@@ -127,9 +127,8 @@ ol {
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
+    border-radius: 5px; 
+    font-weight: bold; 
     font-size: 16px;
     transition: background-color 0.3s;
     margin: 40px;
