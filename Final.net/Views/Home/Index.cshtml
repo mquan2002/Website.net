@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<section id="sliders" style="padding-top: 10px">
+<section id="sliders" style="padding-top: 15px">
     <div class="aspect-ratio-169">
         <img src="../LayoutDomino/img/hero/domino_banner_2.jpg" alt="">
         <img src="../LayoutDomino/img/banner/banner-1.png" alt="">
@@ -18,7 +18,7 @@
     </div>
 </section>
 <!-- Categories Section Begin -->
-<section class="categories">
+<section class="categories" style=" border-bottom: 2px solid #000;; margin: 20px 0; padding-top: 15px">
     <div class="container">
         <div class="menu_index" style="padding-top: 25px">
             <h2> Hôm Nay Ăn Gì? </h2>
@@ -27,39 +27,40 @@
             <div class="categories__slider owl-carousel">
                 <div class="col-lg-3">
                     <div class="categories__item set-bg" data-setbg="../LayoutDomino/img/categories/cat-1.png">
-                        <h5><a href="#">Cheese Burger</a></h5>
+                        <h5><a>Cheese Burger</a></h5>
                     </div>
                 </div>
                 <div class="col-lg-3">
                     <div class="categories__item set-bg" data-setbg="../LayoutDomino/img/categories/cat-2.png">
-                        <h5><a href="#">Lime Pesto</a></h5>
+                        <h5><a>Lime Pesto</a></h5>
                     </div>
                 </div>
                 <div class="col-lg-3">
                     <div class="categories__item set-bg" data-setbg="../LayoutDomino/img/categories/cat-3.png">
-                        <h5><a href="#">Cheesy Maddess</a></h5>
+                        <h5><a>Cheesy Maddess</a></h5>
                     </div>
                 </div>
                 <div class="col-lg-3">
                     <div class="categories__item set-bg" data-setbg="../LayoutDomino/img/categories/cat-4.png">
-                        <h5><a href="#">Seafood</a></h5>
+                        <h5><a>Seafood</a></h5>
                     </div>
                 </div>
                 <div class="col-lg-3">
                     <div class="categories__item set-bg" data-setbg="../LayoutDomino/img/categories/cat-5.png">
-                        <h5><a href="#">Pizzamin</a></h5>
+                        <h5><a>Pizzamin</a></h5>
                     </div>
                 </div>
             </div>
         </div>
         <div class="btn_seemore_display">
-            <a asp-controller="Menu"><button class="btn_seemore">See More</button></a>
+            <button class="btn_seemore" onclick="window.location.href='@Url.Action("Index", "Menu")'">See More</button>
         </div>
     </div>
 </section>
+
 <!-- Categories Section End -->
 
-<!-- Banner Begin -->
+@* <!-- Banner Begin -->
 <div class="banner">
     <div class="container">
         <div class="row">
@@ -76,8 +77,9 @@
         </div>
     </div>
 </div>
-<!-- Banner End -->
-<!-- Latest Product Section Begin -->
+<!-- Banner End --> *@
+
+@* <!-- Latest Product Section Begin -->
 <section class="latest-product spad">
     <div class="container">
         <div class="row">
@@ -279,7 +281,8 @@
         </div>
     </div>
 </section>
-<!-- Latest Product Section End -->
+<!-- Latest Product Section End --> *@
+
 <!-- Blog Section Begin -->
 <section class="from-blog spad">
     <div class="container">
