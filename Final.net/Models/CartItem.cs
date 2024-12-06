@@ -6,7 +6,11 @@ namespace Final.net.Models
 {
     public class CartItem 
     {
+        public int CartItemId { get; set; }
+
         public int ProductId { get; set; }
+
+        public Product Product { get; set; }
         public string ProductName { get; set; } = string.Empty;
 
         public double BasePrice { get; set; } // Giá gốc của sản phẩm

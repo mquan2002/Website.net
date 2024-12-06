@@ -9,7 +9,6 @@ public partial class Payment
 
     public string Method { get; set; } = null!;
 
-    public DateTime PaymentDate { get; set; }
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public double? AmountPaid { get; set; }
 }
