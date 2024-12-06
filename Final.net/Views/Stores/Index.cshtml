@@ -1,0 +1,92 @@
+﻿@{
+    ViewData["Title"] = "Danh sách cửa hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>@ViewData["Title"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên cửa hàng</th>
+            <th>Địa chỉ</th>
+            <th>Mô tả</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var store in Model)
+        {
+            <tr>
+                <td>@store.Name</td>
+                <td>@store.Address</td>
+                <td>@store.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Container for map to ensure proper spacing and layout -->
+<div style="position: relative; height: 80vh; margin-bottom: 50px;">
+    <div id="map" style="height: 100%; width: 100%; border-radius: 10px;"></div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANikJbHGEqE8QbOEtOBOvAXOoUjMy8rIA&callback=initMap" async defer></script>
+
+<script>
+    var stores = [];
+
+    // Lấy thông tin cửa hàng và tọa độ từ API
+    fetch('/stores/GetStoresWithCoordinates')
+        .then(response => response.json())
+        .then(data => {
+            stores = data;
+            initMap();
+        })
+        .catch(error => console.log(error));
+
+    // Hàm khởi tạo bản đồ
+    function initMap() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var userLat = position.coords.latitude;
+                var userLng = position.coords.longitude;
+
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: userLat, lng: userLng },
+                    zoom: 12
+                });
+
+                // Tạo marker cho vị trí của người dùng
+                var userMarker = new google.maps.Marker({
+                    position: { lat: userLat, lng: userLng },
+                    map: map,
+                    title: "Bạn đang ở đây"
+                });
+
+                // Vẽ các cửa hàng trên bản đồ
+                stores.forEach(function (store) {
+                    var storeLat = store.Latitude;
+                    var storeLng = store.Longitude;
+
+                    // Nếu không có tọa độ, bỏ qua
+                    if (storeLat && storeLng) {
+                        var storeMarker = new google.maps.Marker({
+                            position: { lat: storeLat, lng: storeLng },
+                            map: map,
+                            title: store.Name
+                        });
+
+                        var infoWindow = new google.maps.InfoWindow({
+                            content: `<h3>${store.Name}</h3><p>${store.Address}</p><p>${store.Description}</p>`
+                        });
+
+                        storeMarker.addListener('click', function () {
+                            infoWindow.open(map, storeMarker);
+                        });
+                    }
+                });
+            });
+        } else {
+            alert("Geolocation không hỗ trợ trên trình duyệt này.");
+        }
+    }
+</script>

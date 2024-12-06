@@ -95,10 +95,14 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Thêm route cho Blog
 app.MapControllerRoute(
     name: "blog",
-    pattern: "blog/{action=Index}/{id?}");  // Đóng ngoặc tại đây
+    pattern: "blog/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "stores",
+    pattern: "stores/{action=Index}/{id?}");
+
 
 app.MapControllerRoute(
     name: "areas",

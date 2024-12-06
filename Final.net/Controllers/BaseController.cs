@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Final.net.Controllers
 {
-    public class BaseController : Controller
+    public class BaseController : Microsoft.AspNetCore.Mvc.Controller
     {
         protected readonly CartService _cartService;
 

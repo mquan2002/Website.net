@@ -9,7 +9,7 @@ using Final.net.Models;
 
 namespace Final.net.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly PizzaStoreContext _context;
 

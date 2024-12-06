@@ -4,6 +4,7 @@ using Final.net.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Final.net.Migrations
 {
     [DbContext(typeof(PizzaStoreContext))]
-    partial class PizzaStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20241206005237_CreateStoresTable")]
+    partial class CreateStoresTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,7 +255,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 12, 6, 7, 58, 45, 291, DateTimeKind.Local).AddTicks(917),
+                            CreatedDate = new DateTime(2024, 12, 6, 7, 52, 36, 596, DateTimeKind.Local).AddTicks(359),
                             IsDeleted = false,
                             Name = "Admin",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -260,7 +263,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 12, 6, 7, 58, 45, 291, DateTimeKind.Local).AddTicks(964),
+                            CreatedDate = new DateTime(2024, 12, 6, 7, 52, 36, 596, DateTimeKind.Local).AddTicks(372),
                             IsDeleted = false,
                             Name = "User",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -268,7 +271,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2024, 12, 6, 7, 58, 45, 291, DateTimeKind.Local).AddTicks(965),
+                            CreatedDate = new DateTime(2024, 12, 6, 7, 52, 36, 596, DateTimeKind.Local).AddTicks(373),
                             IsDeleted = false,
                             Name = "Staff",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)

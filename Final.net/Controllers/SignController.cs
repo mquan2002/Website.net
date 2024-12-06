@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Final.net.Controllers
 {
-    public class SignController : Controller
+    public class SignController : Microsoft.AspNetCore.Mvc.Controller
     {
 
         private readonly PizzaStoreContext _context;

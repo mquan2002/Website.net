@@ -3,7 +3,7 @@ using System.Text.Encodings.Web;
 
 namespace Final.net.Controllers;
 
-public class HelloWorldController : Controller
+public class HelloWorldController : Microsoft.AspNetCore.Mvc.Controller
 {
     // 
     // GET: /HelloWorld/
