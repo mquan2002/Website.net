@@ -94,6 +94,12 @@
             @Html.DisplayFor(model => model.Address)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SDT)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SDT)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.TotalAmount)
         </dt>
         <dd class="col-sm-10">
@@ -109,13 +115,19 @@
             @Html.DisplayNameFor(model => model.Payment)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Payment.Method)
+            @Html.DisplayFor(model => model.PaymentId)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Delivery)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Delivery.DeliveryStatus)
+            @Html.DisplayFor(model => model.DeliveryId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserId)
         </dd>
     </dl>
 

@@ -169,7 +169,7 @@
                 <input type = "file" asp-for="ImageUrl" class="form-control" />
                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
             </div> *@
-            @* <div>
+             @* <div>
                 <img src="@Model.ImageUrl" alt="Current Category Image" style="max-width: 100px;" />
             </div> *@
             <div class="form-group">
@@ -181,6 +181,12 @@
                 <label asp-for="Delivery" class="control-label"></label>
                 <select asp-for="DeliveryId" class="form-control" asp-items="ViewBag.DeliveryId"></select>
                 <span asp-validation-for="DeliveryId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="User" class="control-label"></label>
+                <input readonly asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
             </div>
 
             <div class="form-group">

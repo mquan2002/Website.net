@@ -303,7 +303,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 12, 7, 1, 42, 6, 324, DateTimeKind.Local).AddTicks(264),
+                            CreatedDate = new DateTime(2024, 12, 7, 3, 10, 33, 493, DateTimeKind.Local).AddTicks(7315),
                             IsDeleted = false,
                             Name = "Admin",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -311,7 +311,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 12, 7, 1, 42, 6, 324, DateTimeKind.Local).AddTicks(278),
+                            CreatedDate = new DateTime(2024, 12, 7, 3, 10, 33, 493, DateTimeKind.Local).AddTicks(7332),
                             IsDeleted = false,
                             Name = "User",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -319,7 +319,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2024, 12, 7, 1, 42, 6, 324, DateTimeKind.Local).AddTicks(279),
+                            CreatedDate = new DateTime(2024, 12, 7, 3, 10, 33, 493, DateTimeKind.Local).AddTicks(7333),
                             IsDeleted = false,
                             Name = "Staff",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
