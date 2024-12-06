@@ -2,18 +2,140 @@
 
 @{
     ViewData["Title"] = "Edit";
-            Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin2.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin2.cshtml";
 
 }
 
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: #495057;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        /* Full height of the viewport */
+    }
+
+    .container {
+        width: 80%;
+        max-width: 900px;
+        /* Set a maximum width to avoid too wide content */
+        background-color: white;
+        padding: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        color: #007bff;
+        text-align: center;
+    }
+
+    h4 {
+        color: #007bff;
+        font-size: 1.4em;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        width: 100%;
+        /* Ensure full width */
+    }
+
+    .form-group label {
+        font-weight: bold;
+        font-size: 1em;
+        display: block;
+        /* Makes label take up full width */
+        width: 100%;
+        /* Ensures the label stretches fully */
+        margin-bottom: 5px;
+        /* Adds space between label and input */
+    }
+
+    .form-control {
+        width: 100%;
+        /* Makes input fields fill the container */
+        padding: 12px;
+        /* Increases the padding for a larger input box */
+        font-size: 1em;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        background-color: #fff;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 1em;
+        border-radius: 4px;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: white;
+        text-align: center;
+        width: 100%;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        text-align: center;
+        width: 100%;
+    }
+
+    .image-preview {
+        max-width: 100px;
+        margin-top: 10px;
+    }
+
+    .pagination {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination a {
+        padding: 8px 15px;
+        border: 1px solid #007bff;
+        margin: 0 5px;
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .pagination a:hover {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
 
 <h1>Edit</h1>
 
 <h4>Orders</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" method = "post" enctype="multipart/form-data">
+    <div class="col-md-12">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="OrderId" />
             <div class="form-group">
@@ -25,6 +147,12 @@
                 <label asp-for="Address" class="control-label"></label>
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SDT" class="control-label"></label>
+                <input asp-for="SDT" class="form-control" />
+                <span asp-validation-for="SDT" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="TotalAmount" class="control-label"></label>
@@ -41,7 +169,7 @@
                 <input type = "file" asp-for="ImageUrl" class="form-control" />
                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
             </div> *@
-             @* <div>
+            @* <div>
                 <img src="@Model.ImageUrl" alt="Current Category Image" style="max-width: 100px;" />
             </div> *@
             <div class="form-group">
@@ -56,6 +184,11 @@
             </div>
 
             <div class="form-group">
+                <label asp-for="User" class="control-label"></label>
+                <input readonly asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -67,5 +200,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
