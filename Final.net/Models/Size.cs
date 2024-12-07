@@ -10,4 +10,6 @@ public partial class Size
     public string SizeName { get; set; } = null!;
 
     public double? SizeCost { get; set; }
+
+    public ICollection<CartItem> CartItems { get; set; }
 }

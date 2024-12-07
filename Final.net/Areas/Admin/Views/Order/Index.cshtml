@@ -1,0 +1,299 @@
+@model IEnumerable<Final.net.Models.Order>
+
+@{
+    ViewData["Title"] = "Order List";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@* <p>
+    <a asp-action="Create" class="btn btn-primary">Create New Order</a>
+</p> *@
+
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+{
+    <a href="../admin/Order">Quay lại trang quản lý sản phẩm</a>
+}
+<form method="get" asp-action="Index" class="form-horizontal" onsubmit="return validateForm();">
+    <select name="searchType">
+        @if (ViewData["SearchType"] == "1" || Convert.ToInt32(ViewData["SearchType"]) == 0)
+        {
+            <option value="1" selected>
+                Tìm kiếm theo Id
+            </option>
+            <option value="2">
+                Tìm kiếm theo Số điện thoại
+            </option>
+        }
+        else
+        {
+            <option value="1">
+                Tìm kiếm theo Id
+            </option>
+            <option value="2" selected>
+                Tìm kiếm theo Số điện thoại
+            </option>
+        }
+    </select>
+
+    <input type="text" id="searchValue" name="searchValue" value="@(ViewData["SearchValue"] ?? "")"
+        placeholder="Tìm kiếm tại đây">
+    <button type="submit">Search</button>
+</form>
+
+@if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
+ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
+{
+    <div style="display : flex; align-items: center;">
+
+        <p>Kết quả tìm kiếm theo @ViewData["SearchTypeName"] : </p>
+        <p style=" color : red; padding-left: 5px;"> @ViewData["SearchValue"]</p>
+        <p style="padding-left: 5px;">(@ViewData["TotalOrder"] đơn hàng được tìm thấy)</p>
+    </div>
+}
+
+<div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+<h1 style="text-align:center">Order</h1>
+
+@{
+    var totalOrder = ViewData["TotalOrder"] as int? ?? 0;
+}
+@if (totalOrder > 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Address</th>
+                <th>Số điện thoại</th>
+                <th>Total Amount</th>
+                <th>Order Date</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Cus</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.OrderId</td>
+                    <td>@item.Address</td>
+                    <td>@item.SDT</td>
+                    <td>@item.TotalAmount</td>
+                    <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Payment.Method</td>
+                    <td>@item.Delivery.DeliveryStatus</td>
+                    <td>@item.User.Username</td>
+
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Phân trang -->
+    <div class="pagination">
+        @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
+        {
+            var currentPage = (int)ViewData["CurrentPage"];
+            var totalPages = (int)ViewData["TotalPages"];
+
+            <!-- Nút trang trước -->
+            @if (currentPage > 1)
+            {
+                <a asp-action="Index" asp-route-page="@(currentPage - 1)" class="btn btn-secondary">Previous</a>
+            }
+
+            <!-- Nút trang sau -->
+            @if (currentPage < totalPages)
+            {
+                <a asp-action="Index" asp-route-page="@(currentPage + 1)" class="btn btn-secondary">Next</a>
+            }
+        }
+    </div>
+}
+@if (totalOrder == 0)
+{
+    <p class="text-center text-danger">Không tìm thấy Đơn hàng nào phù hợp với từ khóa.</p>
+}
+
+
+<style>
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .table th:nth-child(1),
+    .table td:nth-child(1) {
+        width: 1%;
+    }
+
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+        width: 30%;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .table th:nth-child(3),
+    .table td:nth-child(3) {
+        width: 5%;
+    }
+
+
+    /* Cập nhật cách hiển thị tên sản phẩm dưới ảnh */
+    .table .product-name {
+        display: block;
+        text-align: center;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .table img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 80px;
+        height: auto;
+        margin-bottom: 5px;
+    }
+
+    .table th:nth-child(4),
+    .table td:nth-child(4) {
+        width: 25%;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .table th:nth-child(5),
+    .table td:nth-child(5) {
+        width: 10%;
+    }
+
+    .table th:nth-child(6),
+    .table td:nth-child(6) {
+        width: 10%;
+    }
+
+    .table th:nth-child(7),
+    .table td:nth-child(7) {
+        width: 10%;
+    }
+
+    .table th:nth-child(8),
+    .table td:nth-child(8) {
+        width: 10%;
+    }
+
+    .table th:nth-child(9),
+    .table td:nth-child(9) {
+        width: 10%;
+    }
+
+    .table img {
+        max-width: 100px;
+        height: auto;
+    }
+
+    .form-horizontal {
+        width: : 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0;
+    }
+
+    select {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        font-size: 16px;
+        color: #333;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"] {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #333;
+        flex: 1;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #1a73e8;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #1a73e8;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #0056c2;
+    }
+
+    button[type="submit"]:focus {
+        outline: none;
+        box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+</style>
+
+
+<script>
+    function validateForm() {
+        const searchType = document.querySelector('select[name="searchType"]').value;
+        const searchValue = document.querySelector('#searchValue').value;
+        const errorMessage = document.querySelector('#error-message');
+
+        if (searchType === "1" && isNaN(searchValue)) {
+            errorMessage.style.display = "block";
+            errorMessage.textContent = "Vui lòng nhập Id là một số.";
+            return false;
+        }
+
+        errorMessage.style.display = "none";
+        return true;
+    }
+
+    document.querySelector('select[name="searchType"]').addEventListener('change', function () {
+        const searchInput = document.querySelector('#searchValue');
+        searchInput.value = "";
+    });
+</script>

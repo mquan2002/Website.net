@@ -39,6 +39,8 @@ public partial class PizzaStoreContext : DbContext
     public DbSet<Store> Stores { get; set; }
 
 
+    public virtual DbSet<CartItem> CartItems { get; set; }
+
 
 
 
@@ -54,9 +56,39 @@ public partial class PizzaStoreContext : DbContext
             entity.Property(e => e.DeliveryStatus).HasMaxLength(20);
         });
 
+
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(ci => ci.CartItemId); // Định nghĩa khóa chính
+
+            entity.HasOne(ci => ci.Size)
+                .WithMany(s => s.CartItems)
+                .HasForeignKey(ci => ci.SizeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(ci => ci.Crust)
+                .WithMany(c => c.CartItems)
+                .HasForeignKey(ci => ci.CrustId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(ci => ci.Product)
+                .WithMany(p => p.CartItems)
+                .HasForeignKey(ci => ci.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.Property(e => e.PaymentStatus).HasMaxLength(10);
+            entity.HasOne(o => o.Payment)
+                  .WithMany(p => p.Orders)
+                  .HasForeignKey(o => o.PaymentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(o => o.Delivery)
+                  .WithMany(d => d.Orders)
+                  .HasForeignKey(o => o.DeliveryId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Category>(entity =>
