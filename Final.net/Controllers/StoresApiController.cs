@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Final.net.Models; 
-
+using Final.net.Models;
+using Newtonsoft.Json;
 
 namespace Final.net.Controllers
 {
@@ -15,13 +15,24 @@ namespace Final.net.Controllers
         {
             _context = context;
         }
+
         // API GET để lấy tất cả cửa hàng
         [HttpGet]
         public async Task<IActionResult> GetStores()
         {
             var stores = await _context.Stores.ToListAsync();
+
+            if (stores == null || stores.Count == 0)
+            {
+                return NotFound();  // Trả về lỗi nếu không có cửa hàng
+            }
+
+            // Log dữ liệu (trong môi trường phát triển)
+            Console.WriteLine("Stores Data: " + JsonConvert.SerializeObject(stores));
+
             return Ok(stores);
         }
+
 
         // API GET để lấy cửa hàng theo ID
         [HttpGet("{id}")]
@@ -36,4 +47,3 @@ namespace Final.net.Controllers
         }
     }
 }
-

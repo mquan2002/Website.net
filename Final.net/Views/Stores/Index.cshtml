@@ -24,69 +24,58 @@
     </tbody>
 </table>
 
-<!-- Container for map to ensure proper spacing and layout -->
+<!-- Container for map -->
 <div style="position: relative; height: 80vh; margin-bottom: 50px;">
-    <div id="map" style="height: 100%; width: 100%; border-radius: 10px;"></div>
+    <div id="map" style="height: 80vh; width: 100%; border-radius: 10px;"></div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANikJbHGEqE8QbOEtOBOvAXOoUjMy8rIA&callback=initMap" async defer></script>
+<!-- Leaflet.js CSS và JavaScript -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
     var stores = [];
-
-    // Lấy thông tin cửa hàng và tọa độ từ API
-    fetch('/stores/GetStoresWithCoordinates')
-        .then(response => response.json())
-        .then(data => {
-            stores = data;
-            initMap();
+    // Lấy thông tin cửa hàng từ API
+    fetch('/api/stores')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('API Error: ' + response.status);
+            }
+            return response.text(); // Đọc phản hồi như văn bản
         })
-        .catch(error => console.log(error));
+        .then(data => {
+            try {
+                const stores = JSON.parse(data);  // Chuyển đổi thành JSON
+                if (!stores || stores.length === 0) {
+                    console.log('Không có cửa hàng.');
+                    return; // Nếu không có cửa hàng, dừng lại
+                }
+                initMap(stores); // Tiến hành hiển thị bản đồ
+            } catch (error) {
+                console.error('Lỗi phân tích JSON:', error);
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi lấy dữ liệu:', error);
+        });
 
-    // Hàm khởi tạo bản đồ
-    function initMap() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var userLat = position.coords.latitude;
-                var userLng = position.coords.longitude;
 
-                var map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: userLat, lng: userLng },
-                    zoom: 12
-                });
+    function initMap(stores) {
+        var map = L.map('map').setView([10.762622, 106.660172], 12); // Vị trí mặc định (Hồ Chí Minh)
 
-                // Tạo marker cho vị trí của người dùng
-                var userMarker = new google.maps.Marker({
-                    position: { lat: userLat, lng: userLng },
-                    map: map,
-                    title: "Bạn đang ở đây"
-                });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-                // Vẽ các cửa hàng trên bản đồ
-                stores.forEach(function (store) {
-                    var storeLat = store.Latitude;
-                    var storeLng = store.Longitude;
-
-                    // Nếu không có tọa độ, bỏ qua
-                    if (storeLat && storeLng) {
-                        var storeMarker = new google.maps.Marker({
-                            position: { lat: storeLat, lng: storeLng },
-                            map: map,
-                            title: store.Name
-                        });
-
-                        var infoWindow = new google.maps.InfoWindow({
-                            content: `<h3>${store.Name}</h3><p>${store.Address}</p><p>${store.Description}</p>`
-                        });
-
-                        storeMarker.addListener('click', function () {
-                            infoWindow.open(map, storeMarker);
-                        });
-                    }
-                });
-            });
-        } else {
-            alert("Geolocation không hỗ trợ trên trình duyệt này.");
-        }
+        stores.forEach(function (store) {
+            if (store.latitude && store.longitude) {
+                var marker = L.marker([store.latitude, store.longitude]).addTo(map);
+                marker.bindPopup(`<h3>${store.name}</h3><p>${store.address}</p><p>${store.description}</p>`);
+            } else {
+                console.warn(`Cửa hàng "${store.name}" không có tọa độ hợp lệ.`);
+            }
+        });
     }
+
 </script>
