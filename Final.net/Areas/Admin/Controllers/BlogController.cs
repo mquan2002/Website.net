@@ -23,6 +23,11 @@ namespace Final.net.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index(int page = 1)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             const int pageSize = 5;
             var totalBlogs = await _context.Blogs.CountAsync();
             var totalPages = (int)Math.Ceiling(totalBlogs / (double)pageSize);
@@ -42,6 +47,11 @@ namespace Final.net.Areas.Admin.Controllers
         [HttpGet("Create")]
         public IActionResult Create()
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             return View(new Blogs());
         }
 
@@ -50,6 +60,11 @@ namespace Final.net.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Blogs blog)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -73,6 +88,11 @@ namespace Final.net.Areas.Admin.Controllers
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(int? id)
         {
+           var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -91,6 +111,11 @@ namespace Final.net.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Blogs blog)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id != blog.Id)
             {
                 return NotFound();
@@ -136,6 +161,11 @@ namespace Final.net.Areas.Admin.Controllers
         [HttpGet("Detail/{id}")]
         public async Task<IActionResult> Details(int? id)
         {
+           var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -157,6 +187,11 @@ namespace Final.net.Areas.Admin.Controllers
         [HttpGet("Delete/{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -176,6 +211,11 @@ namespace Final.net.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             var blog = await _context.Blogs.FindAsync(id);
             if (blog != null)
             {
