@@ -16,9 +16,11 @@
             type: 'POST',
             data: form.serialize(),
             success: function (response) {
-                if (response.success) {
-                    $('#editCartModal').modal('hide');
-                    location.reload(); // Reload lại trang để cập nhật giỏ hàng
+                 if (response.success) {
+                     showToast(response.message, function () {
+                         $('#editCartModal').modal('hide'); // Đóng modal sau khi toast tắt
+                        location.reload();
+                });
                 } else {
                     alert(response.message);
                 }
@@ -28,13 +30,33 @@
             }
         });
     }
+
+    function showToast(message, callback) {
+        $('#toast .toast-body').text(message);
+        $('#toast').css('display', 'block');
+        setTimeout(function () {
+            let opacity = 1;
+            let fadeOutInterval = setInterval(function () {
+                if (opacity > 0) {
+                    opacity -= 0.05;
+                    $('#toast').css('opacity', opacity);
+                } else {
+                    clearInterval(fadeOutInterval);  // Dừng fade-out khi opacity = 0
+                    $('#toast').css('display', 'none');  // Ẩn toast khi hoàn thành
+                    if (typeof callback === "function") {
+                        callback(); // Gọi hàm callback (nếu có)
+                    }
+                }
+            }, 50);  // Mỗi 50ms giảm opacity 0.05
+        }, 100);  // Màn hình hiển thị toast trong xs
+    }
 </script>
 
 <div class="modal" tabindex="-1" role="dialog" id="editCartModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Điều chỉnh sản phẩm</h5>     
+                <h5 class="modal-title">Điều chỉnh sản phẩm</h5>   
             </div>
             <div class="modal-body">
                 <div class="text-center mb-3">
@@ -89,3 +111,23 @@
         </div>
     </div>
 </div>
+
+<div id="toast" class="toast">
+    <div class="toast-body">message trong controller</div>
+</div>
+
+<style>
+   .toast
+        {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+        opacity: 1;
+        z-index: 9999;
+    }
+</style>

@@ -11,71 +11,75 @@
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
         <span style="font-size: 0.9rem; color: #666;">@ViewBag.CartItemCount Món</span>
-
     </div>
-
-    @foreach (var item in Model)
+    @if (@ViewBag.CartItemCount == 0)
     {
-        <div class="cart-item" style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
-            <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 80px; height: 80px; border-radius: 5px; object-fit: cover; margin-right: 15px;">
-
-            <div style="flex: 1;">
-                <p style="font-weight: bold; font-size: 1rem; color: #333; margin: 0;">
-                    x @item.Quantity @item.ProductName
-                </p>
-                <p style="font-size: 0.85rem; color: #777; margin: 5px 0;">
-                    Cỡ: @(item.Size != null ? item.Size.SizeName : "Không xác định") | Đế: @(item.Crust != null ? item.Crust.CrustName : "Không xác định")
-                </p>
-                <div style="font-size: 0.85rem;">
-                    <a href="javascript:void(0);" onclick="showEditModal(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a>
-                    <span style="margin: 0 10px; color: #ccc;">|</span> 
-                    <a href="javascript:void(0);" onclick="removeFromCart(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Xóa</a>
-                </div>
-
-            </div>
-
-            <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
-                @item.TotalPrice.ToString("N0")₫
-            </div>
+        <div style="text-align: center; padding: 20px;">
+            <img src="../LayoutDomino/img/emptycart.png" alt="Giỏ hàng trống" style="max-width: 50%; height: auto;">
+            <p style="font-size: 1rem; color: #777; margin-top: 10px;">Giỏ hàng của bạn hiện đang trống</p>
         </div>
     }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            <div class="cart-item" style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
+                <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 80px; height: 80px; border-radius: 5px; object-fit: cover; margin-right: 15px;">
 
-    <div class="voucher-section" style="display: flex; gap: 10px; margin-top: 20px;">
-        <input type="text" placeholder="Nhập Mã Khuyến Mãi" style="flex: 1; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: 1px solid #ddd;">
-        <button style="width: 100px; font-weight: bold; background-color: #007bff; color: white; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: none;">Áp Dụng</button>
-    </div>
+                <div style="flex: 1;">
+                    <p style="font-weight: bold; font-size: 1rem; color: #333; margin: 0;">
+                        x @item.Quantity @item.ProductName
+                    </p>
+                    <p style="font-size: 0.85rem; color: #777; margin: 5px 0;">
+                        Cỡ: @(item.Size != null ? item.Size.SizeName : "Không xác định") | Đế: @(item.Crust != null ? item.Crust.CrustName : "Không xác định")
+                    </p>
+                    <div style="font-size: 0.85rem;">
+                        <a href="javascript:void(0);" onclick="showEditModal(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a>
+                        <span style="margin: 0 10px; color: #ccc;">|</span>
+                        <a href="javascript:void(0);" onclick="openModal(@item.ProductId)" style="color: #007bff; text-decoration: none;">Xóa</a>
+                        <!-- Xac nhan xoa -->
+                        <div id="deleteModal-@item.ProductId" class="modal-custom">
+                            <div class="modal-content-custom">
+                                <h3>Xóa sản phẩm</h3>
+                                <p>Bạn có muốn xóa sản phẩm không?</p>
+                                <div class="modal-buttons">
+                                    <button class="btn-confirm" onclick="removeFromCart(@item.ProductId, @item.SizeId, @item.CrustId)">Xác nhận</button>
+                                    <button class="btn-cancel" onclick="closeModal(@item.ProductId)">Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="cart-summary" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;">
-        <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Tổng: <span style="font-weight: bold;">@Model.Sum(item => item.TotalPrice).ToString("N0")₫</span></p>
-        <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm K.Mãi: <span style="font-weight: bold;">0₫</span></p>
-        <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm Vouchers: <span style="font-weight: bold;">0₫</span></p>
-        <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Phí Giao Hàng: <span style="font-weight: bold;">0₫</span></p>
-    </div>
+                <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
+                    @item.TotalPrice.ToString("N0")₫
+                </div>
+            </div>
+        }
 
-    <div class="checkout-section" style="text-align: center; margin-top: 20px;">
-        <button style="background-color: #e31b23; color: white; padding: 10px; font-size: 1rem; font-weight: bold; border-radius: 5px; width: 100%; border: none;">
-            Thanh Toán @Model.Sum(item => item.TotalPrice).ToString("N0")₫
+        <button class="btn btn-primary" onclick="window.location.href='@Url.Action("checkout", "Cart", new { orderId = ViewBag.OrderId })'">
+            Thanh toán
         </button>
-    </div>
+    }
 </div>
 
 <div id="modalContainer"></div>
 
+<div id="toast" class="toast">
+    <div class="toast-body">message trong controller</div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function removeFromCart(productId, sizeId, crustId) {
-        if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) return;
-
         $.ajax({
             url: '/Cart/RemoveFromCart',
             type: 'POST',
             data: { productId: productId, sizeId: sizeId, crustId: crustId },
             success: function (response) {
                 if (response.success) {
-                    alert(response.message);
-                    
                     // Reload lại trang giỏ hàng
-                    location.reload();
+                    showToast(response.message);
                 } else {
                     alert("Không thể xóa sản phẩm. Vui lòng thử lại.");
                 }
@@ -101,30 +105,99 @@
         });
     }
 
-    function updateCartItem() {
-        var form = $('#editCartItemForm');
-        $.ajax({
-            url: '/Cart/UpdateCartItem',
-            type: 'POST',
-            data: form.serialize(),
-            success: function (response) {
-                if (response.success) {
-                    $('#editCartModal').modal('hide');
-                    
-                    location.reload(); // Tải lại trang
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function () {
-                alert('Có lỗi xảy ra khi cập nhật sản phẩm.');
-            }
-        });
+    function openModal(productId) {
+        document.getElementById(`deleteModal-${productId}`).style.display = "flex";
     }
 
-   
+    function closeModal(productId) {
+        document.getElementById(`deleteModal-${productId}`).style.display = "none";
+    }
 
-   
-
-
+    function showToast(message) {
+        $('#toast .toast-body').text(message);
+        $('#toast').css('display', 'block');
+        setTimeout(function () {
+            let opacity = 1;
+            let fadeOutInterval = setInterval(function () {
+                if (opacity > 0) {
+                    opacity -= 0.05;
+                    $('#toast').css('opacity', opacity);
+                } else {
+                    clearInterval(fadeOutInterval);  // Dừng fade-out khi opacity = 0
+                    $('#toast').css('display', 'none');  // Ẩn toast khi hoàn thành
+                    location.reload();
+                }
+            }, 50);  // Mỗi 50ms giảm opacity 0.05
+        }, 100);  // Màn hình hiển thị toast trong xs
+    }
 </script>
+
+
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+        opacity: 1;
+        z-index: 9999;
+    }
+
+    .modal-custom {
+        display: none; /* Ẩn mặc định */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ */
+        z-index: 9999; /* Luôn trên cùng */
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content-custom {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .btn-confirm {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-cancel {
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-confirm:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-cancel:hover {
+        background-color: #5a6268;
+    }
+</style>

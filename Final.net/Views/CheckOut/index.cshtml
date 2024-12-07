@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Check Out";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model List<Order>
+
+}
+
+
+@{
+    ViewData["Title"] = "Order Tracking";
+}
+
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100vh;">
+    <h2 style="margin-bottom: 20px;">Tra cứu đơn hàng</h2>
+
+    <form id="searchForm" style="text-align: center;">
+        <input type="text" id="orderId" name="orderId" placeholder="Enter Order ID"
+            style="width: 300px; padding: 10px; font-size: 16px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px;" />
+        <br />
+        <button type="submit"
+            style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+            Search
+        </button>
+    </form>
+
+    <div id="result" style="margin-top: 20px; font-size: 16px; color: #333;"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Ngừng gửi form khi nhấn Enter trong input
+        $('#orderId').on('keypress', function (e) {
+            if (e.which === 13) {  // Phím Enter
+                e.preventDefault(); // Ngừng hành động gửi form
+                $('#searchForm').submit(); // Gọi sự kiện submit
+            }
+        });
+
+        // Sự kiện khi nhấn nút Search
+        $('#searchForm').on('submit', function (e) {
+            e.preventDefault(); // Ngừng form gửi lại trang
+
+            const orderId = $('#orderId').val();
+            $('#result').text('Searching...'); // Hiển thị thông báo tìm kiếm
+
+            $.ajax({
+                url: '/CheckOut/Search',
+                type: 'POST',
+                data: { orderId: orderId },
+                success: function (response) {
+                    if (response.success) {
+                        $('#result').html(`
+                            <div style="font-size: 18px; margin-bottom: 20px; text-align: center;">
+                                <strong style="color: #007BFF;">Đơn Hàng của bạn: ${response.data.deliveryStatus}</strong>
+                            </div>
+
+                            <!-- Table for Order Details -->
+                            <table style="width: 100%; max-width: 600px; margin: 0 auto; padding: 10px; border-collapse: collapse; background-color: #f9f9f9;">
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Order ID:</td>
+                                    <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.orderId}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Delivery Method:</td>
+                                    <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.method}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Address:</td>
+                                    <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.address}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Customer Name:</td>
+                                    <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.username}</td>
+                                </tr>
+                            </table>
+
+                        `);
+                    } else {
+                        $('#result').text(response.message); // Hiển thị thông báo lỗi
+                    }
+                },
+                error: function () {
+                    $('#result').text('An error occurred while processing your request.');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div style="margin-top: 20px; text-align: center;">
+        <p>@ViewBag.Message</p>
+    </div>
+}

@@ -13,15 +13,7 @@
                 <ul>
                     <li class="active"><a asp-controller="Home">Home</a></li>
                     <li><a asp-controller="Menu">Menu</a></li>
-                    <li>
-                        <a href="#">Pages</a>
-                        <ul class="header__menu__dropdown">
-                            <li><a href="./shop-details.html">Shop Details</a></li>
-                            <li><a href="./shoping-cart.html">Shopping Cart</a></li>
-                            <li><a href="./checkout.html">Check Out</a></li>
-                            <li><a href="./blog-details.html">Blog Details</a></li>
-                        </ul>
-                    </li>
+                    <li> <a asp-controller="CheckOut">Check Out</a></li>
                     <li><a asp-controller="Blog">Blog</a></li>
                     <li><a href="./contact.html">Contact</a></li>
                 </ul>
@@ -36,13 +28,12 @@
                         <li>
                             <div class="header__top__right__auth">
                                 <a data-bs-toggle="modal" data-bs-target="#confirmLogoutModal">
-                                    <div class="wrap__logout" wrap__logout"">
-                                        <p><i class="fa fa-user"></i></p>
-                                        <div class="div__logout">
-                                            <p class="text__logout">Đăng xuất @User.Identity.Name</p>
-
+                                    <div class="wrap__logout">
+                                        <div class="div__logout">                                 
+                                            <p class="text__logout">
+                                                <i class="fa fa-sign-out"> Đăng xuất @User.Identity.Name</i>
+                                            </p>
                                         </div>
-
                                     </div>
                                 </a>
                             </div>
@@ -53,15 +44,19 @@
                                 <span>@ViewBag.CartItemCount</span>                              
                             </a>
                         </li>
-
-
                     }
                     else
                     {
                         <li>
-                            <div class="header__top__right__auth">
-                                <a asp-controller="Sign" asp-action="SignIn"><i class="fa fa-user"></i> Login</a>
-                            </div>
+                            <a asp-controller="Sign" asp-action="SignIn">
+                                <div class="wrap__logout">
+                                    <div class="div__logout">
+                                        <p class="text__logout">
+                                            <i class="fa fa-user"> Login</i>
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
                         </li>
 
                     }
@@ -102,3 +97,25 @@
 <script>
     console.log("CartItemCount:", @ViewBag.CartItemCount);
 </script>
+
+<style>
+    .wrap__logout {
+        padding: 5px 10px; /* Khoảng cách nhỏ gọn */
+        padding-top: 17px; 
+        border-radius: 5px; /* Bo góc */
+        font-size: 14px; /* Kích thước chữ */
+        display: flex; /* Sử dụng Flexbox để căn giữa nội dung */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        height: 40px; /* Đặt chiều cao cố định (tuỳ chỉnh theo ý bạn) */
+        line-height: 1; /* Loại bỏ khoảng cách không cần thiết giữa các dòng */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Hiệu ứng mượt */
+        margin: 0; /* Loại bỏ khoảng cách bên ngoài */
+    }
+
+    .wrap__logout:hover {
+        background-color: #fff; /* Nền trắng */
+        color: #000; /* Chữ đen */
+        cursor: pointer; /* Thêm hiệu ứng con trỏ */
+     }
+</style>

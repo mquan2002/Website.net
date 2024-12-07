@@ -8,4 +8,6 @@ public partial class Crust
     public int CrustId { get; set; }
 
     public string CrustName { get; set; } = null!;
+
+    public ICollection<CartItem> CartItems { get; set; }
 }

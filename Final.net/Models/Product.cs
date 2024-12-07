@@ -28,5 +28,8 @@ public partial class Product
     public DateTime? UpdatedAt { get; set; }
 
     public DateTime? DeletedAt { get; set; }
+
+    public ICollection<CartItem> CartItems { get; set; }
+
 }
 
