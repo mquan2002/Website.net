@@ -22,9 +22,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Chọn Kích cỡ, Đế bánh và Số lượng</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 <div class="text-center mb-3">
@@ -71,7 +68,14 @@
 
                     <!-- Submit button -->
                     <div class="form-group" style="padding-left: 137px">
-                        <button type="button" class="btn_seemore" onclick="addToCart()" style="margin: 10px" >Thêm vào giỏ hàng</button>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button type="button" class="btn_seemore" onclick="addToCart()" style="margin: 10px">Thêm vào giỏ hàng</button>
+                        }
+                        else
+                        {
+                            <div class="login"><a asp-controller="Sign" asp-action="SignIn"> Đăng nhập để thêm vào giỏ</a> </div>
+                        }
                     </div>
 
                 </form>
@@ -80,3 +84,9 @@
     </div>
 </div>
 
+<style>
+    .login a:hover {
+        text-decoration: underline; /* Gạch chân khi rê chuột */
+        color: black; /* Giữ màu chữ không đổi */
+    }
+</style>
