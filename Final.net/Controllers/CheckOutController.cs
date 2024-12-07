@@ -1,15 +1,16 @@
 using Final.net.Models;
+using Final.net.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 
 namespace Final.net.Controllers
 {
-    public class CheckOutController : Controller
+    public class CheckOutController : BaseController
     {
         private readonly PizzaStoreContext _context;
 
-        public CheckOutController(PizzaStoreContext context)
+        public CheckOutController(CartService cartService, PizzaStoreContext context) : base(cartService)
         {
             _context = context;
         }
