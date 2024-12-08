@@ -28,16 +28,21 @@ namespace Final.net.Areas_Admin_Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index(int page = 1, int searchType = 0, string searchValue = "")
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             const int pageSize = 1;
             IQueryable<Category> query = _context.Categories;
 
             if (searchType == 1 && !int.TryParse(searchValue, out int categoryId22222221))
             {
-                ViewData["Error"] = "Id danh mục sản phẩm phải là 1 số"; 
+                ViewData["Error"] = "Id danh mục sản phẩm phải là 1 số";
             }
             if (!string.IsNullOrEmpty(searchValue))
             {
-                if (searchType == 1) 
+                if (searchType == 1)
                 {
                     if (int.TryParse(searchValue, out int categoryId))
                     {
@@ -58,7 +63,7 @@ namespace Final.net.Areas_Admin_Controllers
                 .ToListAsync();
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
-            ViewData["SearchType"] = searchType ;
+            ViewData["SearchType"] = searchType;
             ViewData["SearchValue"] = searchValue;
             ViewData["TotalCategory"] = totalCategories;
             ViewData["SearchTypeName"] = searchType == 1 ? "Id" : "tên";
@@ -71,6 +76,11 @@ namespace Final.net.Areas_Admin_Controllers
         [HttpGet("Detail/{id}")]
         public async Task<IActionResult> Details(int? id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -90,6 +100,11 @@ namespace Final.net.Areas_Admin_Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             return View();
         }
 
@@ -98,6 +113,11 @@ namespace Final.net.Areas_Admin_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category, IFormFile CategoryImage)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (await _context.Categories.AnyAsync(c => c.CategoryName.ToLower() == category.CategoryName.ToLower()))
             {
                 ModelState.AddModelError("CategoryName", "Thể loại này đã tồn tại.");
@@ -141,6 +161,11 @@ namespace Final.net.Areas_Admin_Controllers
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(int? id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -160,6 +185,11 @@ namespace Final.net.Areas_Admin_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Category category, IFormFile? CategoryImage)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id != category.CategoryId)
             {
                 return NotFound();
@@ -218,6 +248,11 @@ namespace Final.net.Areas_Admin_Controllers
         [HttpGet("Delete/{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -238,6 +273,11 @@ namespace Final.net.Areas_Admin_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             var categoryInUse = await _context.Products.AnyAsync(p => p.CategoryId == id);
 
             if (categoryInUse)

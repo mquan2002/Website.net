@@ -28,14 +28,25 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1, string searchQuery = "")
         {
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            // Check if the user has admin role
-            if (userRole != "Admin")
+            // var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            // // Check if the user has admin role
+            // var currentUserRole = HttpContext.Session.GetString("RoleId");
+            // // if(currentUserRole)
+            // if (userRole != "Admin")
+            // {
+            //     return Unauthorized("Bạn không có quyền truy cập trang này.");
+            // }
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
             {
-                return Unauthorized("Bạn không có quyền truy cập trang này.");
+                return NotFound();
             }
-
+            if (currentUserRole == "3")
+            {
+                return Unauthorized("Bạn không có quyền sử dụng chức năng này.");
+            }
             const int pageSize = 5;  // Number of users per page
 
             // Query the users, optionally filter by search query
@@ -76,6 +87,11 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -95,6 +111,11 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         // GET: Users/Create
         public IActionResult Create()
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
             return View();
         }
@@ -106,6 +127,11 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Username,Password,Email,Address,Phone,RoleId")] User user)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             // Check if the username already exists
             if (await _context.Users.AnyAsync(u => u.Username == user.Username))
             {
@@ -125,6 +151,11 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -146,6 +177,11 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Username,Password,RoleId,Id")] User user)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id != user.Id)
             {
                 return NotFound();
@@ -230,6 +266,11 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -251,6 +292,13 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            Console.WriteLine(currentUserRole);
+            if (currentUserRole != "1" && currentUserRole != "3")
+            {
+                return NotFound();
+            }
+
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
