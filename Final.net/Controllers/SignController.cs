@@ -49,6 +49,8 @@ namespace Final.net.Controllers
                         .Include(u => u.Role)
                         .FirstOrDefaultAsync(u => u.Username == username && u.IsDeleted == false && u.RoleId == 2);
 
+            // print user
+            Console.WriteLine(user);
 
             if (user == null)
             {
@@ -98,7 +100,23 @@ namespace Final.net.Controllers
         public async Task<IActionResult> SignUp([Bind("Username,Password,Email,Address,Phone")] User newUser, string passwordConfirm)
         {
 
+
+            // Check validation errors for specific fields
+            if (ModelState["Username"]?.Errors.Count > 0 ||
+                ModelState["Password"]?.Errors.Count > 0 ||
+                ModelState["Email"]?.Errors.Count > 0)
+            {
+                return View(newUser); // Return the view with specific field validation errors
+            }
+
             ViewData["PasswordConfirm"] = passwordConfirm;
+
+            if (newUser.Password.Length < 6)
+            {
+                ModelState.AddModelError("Password", "Mật khẩu không được bé hơn 6 ký tự");
+                return View(newUser);
+            }
+
 
             if (newUser.Password != passwordConfirm)
             {
@@ -107,10 +125,10 @@ namespace Final.net.Controllers
             }
 
 
-            //if (!ModelState.IsValid)
-            //{
-            //    return View(newUser); // Return the view with validation errors
-            //}
+
+
+
+
 
             // Kiểm tra xem email đã tồn tại chưa
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == newUser.Username);
