@@ -42,35 +42,48 @@ namespace Final.net.Controllers
         {
             if (string.IsNullOrEmpty(orderId))
             {
-                return Json(new { success = false, message = "Please enter a valid order ID." });
+                return Json(new { success = false, message = "Hãy nhập ID đơn hàng hoặc Số điện thoại" });
             }
 
-            var order = await _context.Orders
+            try
+            {
+                var isPhoneNumber = orderId.All(char.IsDigit) && orderId.Length >= 10;
+
+                var order = await _context.Orders
                 .Include(o => o.Payment)
                 .Include(o => o.Delivery)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.OrderId.ToString() == orderId);
+                .FirstOrDefaultAsync(o =>
+                isPhoneNumber
+                    ? o.SDT == orderId  // Tìm theo số điện thoại
+                    : o.OrderId.ToString() == orderId);
 
-            if (order != null)
-            {
-                return Json(new
+                if (order != null)
                 {
-                    success = true,
-                    message = $"Order {order.OrderId}: Payment - {order.Payment.Method}, Delivery - {order.Delivery.DeliveryStatus}, Customer - {order.User.Username}",
-                    data = new
+                    return Json(new
                     {
-                        order.OrderId,
-                        order.Payment.Method,
-                        order.Address,
-                        order.Delivery.DeliveryStatus,
-                        order.User.Username,
-                    }
-                });
+                        success = true,
+                        message = $"Order {order.OrderId}: Payment - {order.Payment.Method}, Delivery - {order.Delivery.DeliveryStatus}, Customer - {order.User.Username}",
+                        data = new
+                        {
+                            order.OrderId,
+                            order.Payment.Method,
+                            order.Address,
+                            order.Delivery.DeliveryStatus,
+                            order.User.Username,
+                        }
+                    });
+                }
+                else
+                {
+                    return Json(new { success = false, message = $"Order {orderId} not found." });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Order {orderId} not found." });
+                return Json(new { success = false, message = "Đã có lỗi khi chạy, hãy thử lại", error = ex.Message });
             }
+
         }
 
     }
