@@ -14,14 +14,12 @@ namespace Final.Areas.Admin
         [Route("index")]
         public IActionResult Index()
         {
-
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if (userRole == "User")
+            // var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var currentUserRole = HttpContext.Session.GetString("RoleId");
+            if (currentUserRole != "1" && currentUserRole != "3")
             {
-                return Unauthorized("Bạn không có quyền truy cập trang này.");
+                return NotFound();
             }
-
 
             return View();
         }

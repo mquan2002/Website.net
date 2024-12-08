@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 
-    
+
 }
 
 @if (ViewContext.HttpContext.Request.Query.ContainsKey("SearchType") &&
@@ -52,9 +52,20 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
 <h1 style="text-align:center">Quản lý sản phẩm</h1>
-
+@{
+    var roleId = ViewData["RoleId"] as string;
+}
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+
+
+    @if (roleId != "3")
+    {
+        <a asp-action="Create" class="btn btn-primary">Tạo mới</a>
+    }
+    else
+    {
+        <button class="btn btn-primary btn-create" disabled>Tạo mới</button>
+    }
 </p>
 
 
@@ -94,9 +105,26 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                     <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
                     <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                        @if (roleId != "3")
+                        {
+                            <a class="btn btn-primary btn-no-disabled" asp-action="Edit" asp-route-id="@item.ProductId">Edit</a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary btn-disabled" disabled>Edit</button>
+                        }
+                        |
+                        <a class="btn btn-success btn-no-disabled" asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+
+                        @if (roleId != "3")
+                        {
+                            <a class="btn btn-danger btn-no-disabled" asp-action="Delete"
+                                asp-route-id="@item.ProductId">Delete</a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-danger btn-disabled" disabled>Delete</button>
+                        }
                     </td>
                 </tr>
             }
@@ -245,7 +273,7 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 
     .table th:nth-child(8),
     .table td:nth-child(8) {
-        width: 10%;
+        width: 12%;
     }
 
     .table th:nth-child(9),
@@ -321,6 +349,23 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
     button[type="submit"]:focus {
         outline: none;
         box-shadow: 0 0 4px rgba(26, 115, 232, 0.5);
+    }
+
+    .btn-create:hover {
+        cursor: not-allowed;
+
+    }
+
+    .btn-disabled {
+        width: 50px;
+        padding: 4px 7px;
+        font-size: 11px;
+    }
+
+    .btn-no-disabled {
+        width: 50px;
+        padding: 4px 7px;
+        font-size: 11px;
     }
 </style>
 
