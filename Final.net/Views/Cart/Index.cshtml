@@ -56,10 +56,7 @@
                 </div>
             </div>
         }
-
-        <button class="btn btn-primary" onclick="window.location.href='@Url.Action("checkout", "Cart", new { orderId = ViewBag.OrderId })'">
-            Thanh toán
-        </button>
+        <a href="/Cart/Payment" class="btn btn-primary">Thanh Toán</a>
     }
 </div>
 

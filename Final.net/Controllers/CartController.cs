@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Linq;
 using Final.net.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Final.net.Controllers
 {
@@ -12,10 +13,13 @@ namespace Final.net.Controllers
     {
         private const string CartSessionKey = "CartSession";
         private readonly PizzaStoreContext _context;
+        private readonly EmailService _emailService;
 
-        public CartController(CartService cartService, PizzaStoreContext context) : base(cartService)
+        // Constructor with PizzaStoreContext and EmailService injected
+        public CartController(CartService cartService, PizzaStoreContext context, EmailService emailService) : base(cartService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // Phương thức để hiển thị giỏ hàng
@@ -156,7 +160,7 @@ namespace Final.net.Controllers
         // Phương thức lấy danh sách sản phẩm trong giỏ hàng từ Session
         private List<CartItem> GetCartItems()
         {
-            var session = HttpContext.Session.GetString(CartSessionKey);
+            var session = HttpContext.Session.GetString("CartSession");
             if (string.IsNullOrEmpty(session))
             {
                 return new List<CartItem>();
@@ -171,6 +175,7 @@ namespace Final.net.Controllers
                 return new List<CartItem>();
             }
         }
+
 
         [HttpGet]
         public JsonResult GetCartItemCount()
@@ -247,13 +252,172 @@ namespace Final.net.Controllers
             }
 
             SaveCartSession(cart);
-            
+
             return Json(new { success = true, message = "Sản phẩm đã được cập nhật!" });
+        }
+        [HttpGet]
+        public IActionResult Payment()
+        {
+            // Lấy userId từ session
+            var userId = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var cart = GetCartItems();
+            double totalPrice = cart.Sum(item => item.BasePrice * item.Quantity);
+            ViewBag.TotalPrice = totalPrice;
+
+            return View(user);
+        }
+        [HttpPost]
+        public IActionResult ConfirmPayment(User updatedUser, string paymentMethod, string notes)
+        {
+            var userId = int.Parse(HttpContext.Session.GetString("UserId") ?? "0");
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            if (string.IsNullOrEmpty(notes))
+            {
+                notes = ""; // or some default value
+            }
+
+            updatedUser.Notes = notes;
+
+            // Check if the address is empty or null
+            if (string.IsNullOrWhiteSpace(user.Address))
+            {
+                return BadRequest("Vui lòng cung cấp địa chỉ giao hàng.");
+            }
+
+            // Cập nhật thông tin người dùng
+            user.Address = string.IsNullOrWhiteSpace(updatedUser.Address) ? user.Address : updatedUser.Address;
+            user.Phone = string.IsNullOrWhiteSpace(updatedUser.Phone) ? user.Phone : updatedUser.Phone;
+            _context.SaveChanges();
+
+            // Lấy giỏ hàng từ Session
+            var cart = GetCartItems();
+
+            if (!cart.Any())
+            {
+                return BadRequest("Giỏ hàng trống.");
+            }
+
+            double totalPrice = cart.Sum(item => item.BasePrice * item.Quantity);
+
+            // Get or create a delivery for the user
+            var delivery = _context.Deliveries.FirstOrDefault(d => d.DeliveryId == userId && d.DeliveryStatus == "Pending");
+            if (delivery == null)
+            {
+                // Create a new delivery record if not found
+                delivery = new Delivery
+                {
+                   
+                    DeliveryStatus = "Pending",
+                    
+                };
+                _context.Deliveries.Add(delivery);
+                _context.SaveChanges();
+            }
+
+            var payment = _context.Payments.FirstOrDefault(p => p.Method == paymentMethod);
+            if (payment == null)
+            {
+                // Create a new payment record if not found
+                payment = new Payment
+                {
+                    Method = paymentMethod,
+                  
+                };
+                _context.Payments.Add(payment);
+                _context.SaveChanges(); // Save changes to generate PaymentId
+            }
+
+            var newOrder = new Order
+            {
+                UserId = userId,
+                TotalAmount = totalPrice,
+                OrderDate = DateTime.Now,
+                PaymentStatus = "Pending",
+                PaymentMethod = paymentMethod,  // Sử dụng thông tin phương thức thanh toán từ form
+                Notes = notes,
+                Address = user.Address,
+                SDT = user.Phone,
+                DeliveryId = delivery.DeliveryId,  // Add the DeliveryId to the Order
+                PaymentId = payment.PaymentId
+            };
+
+            _context.Orders.Add(newOrder);
+
+            // Truy vấn lại các đối tượng từ cơ sở dữ liệu và thực hiện xóa
+            var cartItemsToDelete = _context.CartItems
+                .Where(c => cart.Select(i => i.CartItemId).Contains(c.CartItemId))
+                .ToList();
+
+            _context.CartItems.RemoveRange(cartItemsToDelete);
+            _context.SaveChanges();
+
+            // Tạo nội dung email
+            string productDetails = string.Join("", cart.Select(item =>
+                $"<tr>" +
+                $"<td>{item.ProductName}</td>" +
+                $"<td>{item.Size?.SizeName ?? "N/A"}</td>" +
+                $"<td>{item.Crust?.CrustName ?? "N/A"}</td>" +
+                $"<td>{item.Quantity}</td>" +
+                $"<td>{item.TotalPrice:N0} VND</td>" +
+                $"</tr>"));
+
+            string emailBody = $@"
+<h1>Cảm ơn bạn đã đặt hàng tại Pizza Store!</h1>
+<p><strong>Tên khách hàng:</strong> {user.Username}</p>
+<p><strong>Email:</strong> {user.Email}</p>
+<p><strong>Địa chỉ giao hàng:</strong> {user.Address}</p>
+<p><strong>Số điện thoại:</strong> {user.Phone}</p>
+<p><strong>Tổng tiền:</strong> {totalPrice:N0} VND</p>
+<br/>
+<h2>Chi tiết đơn hàng:</h2>
+<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse;'>
+    <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Kích thước</th>
+            <th>Loại</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        {productDetails}
+    </tbody>
+</table>
+<br/>
+<p>Đơn hàng của bạn đang được xử lý và sẽ sớm được giao.</p>
+<p>Chúc bạn ngon miệng!</p>";
+
+            // Gửi email
+            _emailService.SendEmail(user.Email, "Xác nhận đơn hàng", emailBody);
+            TempData["SuccessMessage"] = "Thanh toán thành công! Cảm ơn bạn đã mua hàng.";
+            return RedirectToAction("PaymentSuccess");
+        }
+
+        [HttpGet]
+        public IActionResult PaymentSuccess()
+        {
+            ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            return View();
         }
 
 
 
-      
+
+
+
 
         // Phương thức lưu giỏ hàng vào Session
         private void SaveCartSession(List<CartItem> cart)

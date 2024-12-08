@@ -36,10 +36,9 @@ public partial class PizzaStoreContext : DbContext
 
     public virtual DbSet<Blogs> Blogs { get; set; }
 
-    public DbSet<Store> Stores { get; set; }
-
-
     public virtual DbSet<CartItem> CartItems { get; set; }
+
+    public virtual DbSet<Store> Stores { get; set; }
 
 
 

@@ -32,6 +32,7 @@ builder.Services.AddSingleton(x =>
 });
 
 
+builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<BlogService>();

@@ -6,7 +6,8 @@
 
         public String Address { get; set; }
 
-        public String SDT { get; set; }
+   
+        public string SDT { get; set; }
         public double? TotalAmount { get; set; }
         public DateTime OrderDate { get; set; }
         public int PaymentId { get; set; }
@@ -14,6 +15,11 @@
 
         public int DeliveryId { get; set; }
         public virtual Delivery? Delivery { get; set; }
+
+        public string PaymentStatus { get; set; } = null!;
+        public string PaymentMethod { get; internal set; }
+
+        public string Notes { get; internal set; }
 
         public int UserId { get; set; }
 

@@ -6,78 +6,66 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Final.net.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCoordinatesToStores : Migration
+    public partial class AddNotesToUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<double>(
-                name: "Latitude",
-                table: "Stores",
-                type: "float",
-                nullable: false,
-                defaultValue: 0.0);
-
-            migrationBuilder.AddColumn<double>(
-                name: "Longitude",
-                table: "Stores",
-                type: "float",
-                nullable: false,
-                defaultValue: 0.0);
+            migrationBuilder.AddColumn<string>(
+                name: "Notes",
+                table: "Users",
+                type: "nvarchar(max)",
+                nullable: true);
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "CreatedDate",
-                value: new DateTime(2024, 12, 7, 2, 43, 56, 125, DateTimeKind.Local).AddTicks(1008));
+                value: new DateTime(2024, 12, 9, 2, 42, 18, 329, DateTimeKind.Local).AddTicks(3436));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "CreatedDate",
-                value: new DateTime(2024, 12, 7, 2, 43, 56, 125, DateTimeKind.Local).AddTicks(1023));
+                value: new DateTime(2024, 12, 9, 2, 42, 18, 329, DateTimeKind.Local).AddTicks(3452));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "CreatedDate",
-                value: new DateTime(2024, 12, 7, 2, 43, 56, 125, DateTimeKind.Local).AddTicks(1024));
+                value: new DateTime(2024, 12, 9, 2, 42, 18, 329, DateTimeKind.Local).AddTicks(3453));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Latitude",
-                table: "Stores");
-
-            migrationBuilder.DropColumn(
-                name: "Longitude",
-                table: "Stores");
+                name: "Notes",
+                table: "Users");
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "CreatedDate",
-                value: new DateTime(2024, 12, 6, 7, 58, 45, 291, DateTimeKind.Local).AddTicks(917));
+                value: new DateTime(2024, 12, 9, 1, 57, 49, 217, DateTimeKind.Local).AddTicks(9117));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "CreatedDate",
-                value: new DateTime(2024, 12, 6, 7, 58, 45, 291, DateTimeKind.Local).AddTicks(964));
+                value: new DateTime(2024, 12, 9, 1, 57, 49, 217, DateTimeKind.Local).AddTicks(9130));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "CreatedDate",
-                value: new DateTime(2024, 12, 6, 7, 58, 45, 291, DateTimeKind.Local).AddTicks(965));
+                value: new DateTime(2024, 12, 9, 1, 57, 49, 217, DateTimeKind.Local).AddTicks(9131));
         }
     }
 }

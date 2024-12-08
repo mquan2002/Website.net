@@ -184,11 +184,23 @@ namespace Final.net.Migrations
                     b.Property<int>("DeliveryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PaymentId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SDT")
                         .IsRequired()
@@ -303,7 +315,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 12, 7, 3, 10, 33, 493, DateTimeKind.Local).AddTicks(7315),
+                            CreatedDate = new DateTime(2024, 12, 9, 2, 42, 18, 329, DateTimeKind.Local).AddTicks(3436),
                             IsDeleted = false,
                             Name = "Admin",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -311,7 +323,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 12, 7, 3, 10, 33, 493, DateTimeKind.Local).AddTicks(7332),
+                            CreatedDate = new DateTime(2024, 12, 9, 2, 42, 18, 329, DateTimeKind.Local).AddTicks(3452),
                             IsDeleted = false,
                             Name = "User",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -319,7 +331,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2024, 12, 7, 3, 10, 33, 493, DateTimeKind.Local).AddTicks(7333),
+                            CreatedDate = new DateTime(2024, 12, 9, 2, 42, 18, 329, DateTimeKind.Local).AddTicks(3453),
                             IsDeleted = false,
                             Name = "Staff",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -399,6 +411,9 @@ namespace Final.net.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()

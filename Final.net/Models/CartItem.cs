@@ -4,7 +4,7 @@ using Final.net.Models;
 
 namespace Final.net.Models
 {
-    public class CartItem 
+    public class CartItem
     {
         public int CartItemId { get; set; }
 
@@ -30,7 +30,7 @@ namespace Final.net.Models
         public Crust Crust { get; set; } // Không nullable nếu tất cả sản phẩm cần Crust
 
         // Phương thức tính tổng giá cho một mục giỏ hàng, bao gồm giá cơ bản và các chi phí thêm từ Size
-        
+
 
 
         // Định dạng giá thành VND

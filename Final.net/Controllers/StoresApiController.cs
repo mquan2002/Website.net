@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Final.net.Models;
-using Newtonsoft.Json;
 
 namespace Final.net.Controllers
 {
@@ -16,34 +15,23 @@ namespace Final.net.Controllers
             _context = context;
         }
 
-        // API GET để lấy tất cả cửa hàng
         [HttpGet]
         public async Task<IActionResult> GetStores()
         {
             var stores = await _context.Stores.ToListAsync();
 
-            if (stores == null || stores.Count == 0)
+            // Chuyển đổi tọa độ từ số nguyên sang số thực
+            var storesWithCorrectCoordinates = stores.Select(store => new
             {
-                return NotFound();  // Trả về lỗi nếu không có cửa hàng
-            }
+                store.Id,
+                store.Name,
+                store.Address,
+                store.Description,
+                latitude = store.Latitude / 1000000.0,  // Chuyển đổi tọa độ vĩ độ
+                longitude = store.Longitude / 1000000.0  // Chuyển đổi tọa độ kinh độ
+            }).ToList();
 
-            // Log dữ liệu (trong môi trường phát triển)
-            Console.WriteLine("Stores Data: " + JsonConvert.SerializeObject(stores));
-
-            return Ok(stores);
-        }
-
-
-        // API GET để lấy cửa hàng theo ID
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetStore(int id)
-        {
-            var store = await _context.Stores.FindAsync(id);
-            if (store == null)
-            {
-                return NotFound();
-            }
-            return Ok(store);
+            return Ok(storesWithCorrectCoordinates);
         }
     }
 }

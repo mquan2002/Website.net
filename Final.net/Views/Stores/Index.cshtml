@@ -2,8 +2,10 @@
     ViewData["Title"] = "Danh sách cửa hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <h1>@ViewData["Title"]</h1>
 
+<!-- Table for store details -->
 <table class="table">
     <thead>
         <tr>
@@ -24,54 +26,52 @@
     </tbody>
 </table>
 
-<!-- Container for map -->
-<div style="position: relative; height: 80vh; margin-bottom: 50px;">
-    <div id="map" style="height: 80vh; width: 100%; border-radius: 10px;"></div>
-</div>
+<!-- Google Maps Container -->
+<div id="map" style="height: 80vh; width: 100%; border-radius: 10px;"></div>
 
-<!-- Leaflet.js CSS và JavaScript -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet JS và CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
 <script>
-    var stores = [];
-    // Lấy thông tin cửa hàng từ API
-    fetch('/api/stores')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('API Error: ' + response.status);
+    fetch('/api/storesAPI')
+        .then(response => response.json())
+        .then(stores => {
+            if (!stores || stores.length === 0) {
+                console.warn('No store data available.');
+                return;
             }
-            return response.text(); // Đọc phản hồi như văn bản
+            initMap(stores); // Khởi tạo bản đồ với dữ liệu cửa hàng
         })
-        .then(data => {
-            try {
-                const stores = JSON.parse(data);  // Chuyển đổi thành JSON
-                if (!stores || stores.length === 0) {
-                    console.log('Không có cửa hàng.');
-                    return; // Nếu không có cửa hàng, dừng lại
-                }
-                initMap(stores); // Tiến hành hiển thị bản đồ
-            } catch (error) {
-                console.error('Lỗi phân tích JSON:', error);
-            }
-        })
-        .catch(error => {
-            console.error('Lỗi khi lấy dữ liệu:', error);
-        });
-
+        .catch(error => console.error('Error fetching stores:', error));
 
     function initMap(stores) {
-        var map = L.map('map').setView([10.762622, 106.660172], 12); // Vị trí mặc định (Hồ Chí Minh)
+        var map = L.map('map').setView([10.8231, 106.6297], 12); // Vị trí mặc định là Hồ Chí Minh
 
+        // Thêm tile layer từ OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        // Thêm marker cho mỗi cửa hàng
         stores.forEach(function (store) {
             if (store.latitude && store.longitude) {
                 var marker = L.marker([store.latitude, store.longitude]).addTo(map);
-                marker.bindPopup(`<h3>${store.name}</h3><p>${store.address}</p><p>${store.description}</p>`);
+
+                var popupContent = `
+                        <h3>${store.name}</h3>
+                        <p>${store.address}</p>
+                        <p>${store.description}</p>
+                    `;
+                marker.bindPopup(popupContent);
+
+                // Hiển thị hình ảnh khi di chuột vào marker
+                marker.on('mouseover', function () {
+                    marker.openPopup();
+                });
+                marker.on('mouseout', function () {
+                    marker.closePopup();
+                });
             } else {
                 console.warn(`Cửa hàng "${store.name}" không có tọa độ hợp lệ.`);
             }
