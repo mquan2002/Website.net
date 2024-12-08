@@ -31,13 +31,13 @@
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">person</span>
                     <input type="text" placeholder="User Name" id="Username" name="Username">
-                    <span asp-validation-for="Username" class="text-danger"></span>
+                    <span asp-validation-for="Username" class="text-danger text__error "></span>
 
                 </div>
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">lock</span>
                     <input type="password" placeholder="Enter Password" id="Password" name="Password">
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <span asp-validation-for="Password" class="text-danger text__error"></span>
                 </div>
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">lock</span>
@@ -45,25 +45,25 @@
                     @if (ViewData.ModelState["PasswordConfirm"] != null &&
                     ViewData.ModelState["PasswordConfirm"].Errors.Count > 0)
                     {
-                        <span class="text-danger">@ViewData.ModelState["PasswordConfirm"].Errors[0].ErrorMessage</span>
+                        <span class="text-danger text__error">@ViewData.ModelState["PasswordConfirm"].Errors[0].ErrorMessage</span>
                     }
                 </div>
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">pin_drop</span>
                     <input type="text" placeholder="Enter your address" id="Address" name="Address">
-                    <span asp-validation-for="Address" class="text-danger"></span>
+                    <span asp-validation-for="Address" class="text-danger text__error"></span>
 
                 </div>
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">mail</span>
                     <input type="text" placeholder="Enter your email" id="Email" name="Email">
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <span asp-validation-for="Email" class="text-danger text__error"></span>
 
                 </div>
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">smartphone</span>
                     <input type="text" placeholder="Enter your phone number" id="Phone" name="Phone">
-                    <span asp-validation-for="Phone" class="text-danger"></span>
+                    <span asp-validation-for="Phone" class="text-danger text__error"></span>
 
                 </div>
 

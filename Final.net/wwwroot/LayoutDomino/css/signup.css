@@ -131,3 +131,8 @@
     color: #dc3545;
 }
 
+.text__error {
+    font-size: 15px;
+    margin-left: 10px;
+}
+
