@@ -1,23 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Final.net.Models;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
-public class StoresController : Controller
+namespace Final.net.Controllers
 {
-    private readonly PizzaStoreContext _context;
-
-    public StoresController(PizzaStoreContext context)
+    public class StoresController : Controller
     {
-        _context = context;
-    }
+        private readonly PizzaStoreContext _context;
 
-    public IActionResult Index()
-    {
-        var stores = _context.Stores.ToList();
-        return View(stores);
+        public StoresController(PizzaStoreContext context)
+        {
+            _context = context;
+        }
+
+        // Hiển thị trang bản đồ
+        [HttpGet]
+        public async Task<IActionResult> Index(string address = null)
+        {
+            var stores = await _context.Stores.ToListAsync();
+
+            // Chuyển đổi tọa độ từ số nguyên sang số thực
+            var storesWithCoordinates = stores.Select(store => new
+            {
+                store.Id,
+                store.Name,
+                store.Address,
+                store.Description,
+                latitude = store.Latitude / 1000000.0,  // Chuyển đổi tọa độ vĩ độ
+                longitude = store.Longitude / 1000000.0  // Chuyển đổi tọa độ kinh độ
+            }).ToList();
+
+
+            return View();
+        }
     }
 }
-

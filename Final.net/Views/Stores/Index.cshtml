@@ -3,79 +3,294 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>@ViewData["Title"]</h1>
 
-<!-- Table for store details -->
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tên cửa hàng</th>
-            <th>Địa chỉ</th>
-            <th>Mô tả</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var store in Model)
-        {
-            <tr>
-                <td>@store.Name</td>
-                <td>@store.Address</td>
-                <td>@store.Description</td>
-            </tr>
+<style>
+    /* Nút Tìm */
+    #findLocationBtn {
+        cursor: pointer;
+    }
+
+    /* Nút Xác nhận */
+    #confirmBtn {
+        cursor: pointer;
+    }
+
+    /* Nút Chỉnh sửa */
+    #editBtn {
+        cursor: pointer;
+    }
+
+    /* Hiệu ứng cursor cho các mục trong danh sách cửa hàng */
+    #storeItems li {
+        cursor: pointer;
+    }
+
+        /* Thêm hiệu ứng hover cho các mục trong danh sách cửa hàng */
+        #storeItems li:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
         }
-    </tbody>
-</table>
 
-<!-- Google Maps Container -->
-<div id="map" style="height: 80vh; width: 100%; border-radius: 10px;"></div>
+    /* Thêm hiệu ứng cursor cho các marker trên bản đồ */
+    .leaflet-marker-icon {
+        cursor: pointer;
+    }
+</style>
+
+<div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+    <!-- Địa chỉ đã nhập -->
+    <div id="enteredAddress" style="font-size: 16px; font-weight: bold; margin-bottom: 20px;"></div>
+
+    <!-- Tên cửa hàng đã chọn -->
+    <div id="selectedStore" style="font-size: 16px; font-weight: bold;"></div>
+    <!-- Thêm hai nút giao hàng dưới bản đồ -->
+    <div id="delivery-options" style="text-align: center; margin-top: 10px; display: none;">
+        <button id="homeDeliveryBtn" class="btn btn-success" style="margin-right: 10px;">Giao hàng tận nơi</button>
+        <button id="pickupBtn" class="btn btn-warning">Đặt đến lấy</button>
+    </div>
+</div>
+
+
+<div style="display: flex; height: 80vh; margin-top: 20px;">
+    <!-- Map Section -->
+    <div id="map" style="flex: 3; border-radius: 10px; margin-right: 10px;">
+        <div id="input-overlay" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+            <input type="text" id="addressInput" class="form-control" placeholder="Nhập địa chỉ của bạn" style="width: 300px; display: inline-block;" />
+            <button id="findLocationBtn" class="btn btn-primary" style="margin-left: 10px;">Tìm</button>
+        </div>
+    </div>
+
+    <!-- Store List Section -->
+    <div id="store-list" style="flex: 1; background-color: #f8f9fa; overflow-y: auto; padding: 10px; border-radius: 10px;">
+        <ul id="storeItems" style="list-style: none; padding: 0;"></ul>
+    </div>
+</div>
+
+
+
+
+
+<!-- Confirm Overlay -->
+<div id="confirm-overlay"
+     style="position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none; /* Ẩn bảng xác nhận mặc định */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;">
+    <div class="confirm-box"
+         style="background: white;
+                border-radius: 10px;
+                padding: 20px;
+                width: 400px;
+                text-align: center;
+                box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);">
+        <h2 style="margin-bottom: 10px;">Xác nhận địa chỉ</h2>
+        <p id="confirmedAddress" style="margin-bottom: 20px; font-size: 16px;">Địa chỉ của bạn sẽ hiển thị ở đây.</p>
+        <div style="display: flex; justify-content: space-around;">
+            <button id="confirmBtn"
+                    class="btn btn-primary"
+                    style="padding: 10px 20px;
+                           border: none;
+                           border-radius: 5px;
+                           background-color: #007bff;
+                           color: white;
+                           cursor: pointer;
+                           font-size: 16px;">
+                Xác nhận
+            </button>
+            <button id="editBtn"
+                    class="btn btn-secondary"
+                    style="padding: 10px 20px;
+                           border: none;
+                           border-radius: 5px;
+                           background-color: #6c757d;
+                           color: white;
+                           cursor: pointer;
+                           font-size: 16px;">
+                Chỉnh sửa
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- Leaflet JS và CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
 <script>
-    fetch('/api/storesAPI')
+    let userMarker;
+    let storeMarkers = [];  // Mảng lưu các marker của cửa hàng
+    let stores = [];
+    const storesAPIUrl = '/api/storesAPI';
+    const confirmOverlay = document.getElementById('confirm-overlay');
+    const confirmedAddress = document.getElementById('confirmedAddress');
+    const enteredAddress = document.getElementById('enteredAddress');
+    const selectedStore = document.getElementById('selectedStore');
+
+
+    // Hàm tính khoảng cách giữa hai tọa độ
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Bán kính Trái Đất (km)
+        const dLat = (lat2 - lat1) * (Math.PI / 180);
+        const dLon = (lon2 - lon1) * (Math.PI / 180);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) *
+            Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Khoảng cách (km)
+    }
+
+    // Khởi tạo bản đồ
+    const map = L.map('map').setView([10.8231, 106.6297], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Fetch dữ liệu cửa hàng từ API
+    fetch(storesAPIUrl)
         .then(response => response.json())
         .then(stores => {
             if (!stores || stores.length === 0) {
-                console.warn('No store data available.');
+                console.warn('Không có dữ liệu cửa hàng.');
                 return;
             }
-            initMap(stores); // Khởi tạo bản đồ với dữ liệu cửa hàng
+            initMapAndList(stores);
         })
-        .catch(error => console.error('Error fetching stores:', error));
+        .catch(error => console.error('Lỗi khi lấy danh sách cửa hàng:', error));
 
-    function initMap(stores) {
-        var map = L.map('map').setView([10.8231, 106.6297], 12); // Vị trí mặc định là Hồ Chí Minh
-
-        // Thêm tile layer từ OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Thêm marker cho mỗi cửa hàng
-        stores.forEach(function (store) {
+    function initMapAndList(stores) {
+        // Hiển thị các cửa hàng trên bản đồ
+        stores.forEach(store => {
             if (store.latitude && store.longitude) {
-                var marker = L.marker([store.latitude, store.longitude]).addTo(map);
+                const marker = L.marker([store.latitude, store.longitude]).addTo(map);
+                marker.bindPopup(`<strong>${store.name}</strong><br>${store.address}<br>${store.description}`);
 
-                var popupContent = `
-                        <h3>${store.name}</h3>
-                        <p>${store.address}</p>
-                        <p>${store.description}</p>
-                    `;
-                marker.bindPopup(popupContent);
-
-                // Hiển thị hình ảnh khi di chuột vào marker
-                marker.on('mouseover', function () {
-                    marker.openPopup();
-                });
-                marker.on('mouseout', function () {
-                    marker.closePopup();
-                });
-            } else {
-                console.warn(`Cửa hàng "${store.name}" không có tọa độ hợp lệ.`);
+                storeMarkers.push({ store, marker });  // Lưu marker và thông tin cửa hàng
             }
         });
-    }
 
+        // Xử lý tìm kiếm địa chỉ
+        document.getElementById('findLocationBtn').addEventListener('click', function () {
+            const addressInput = document.getElementById('addressInput').value.trim();
+            if (!addressInput) {
+                alert('Vui lòng nhập địa chỉ!');
+                return;
+            }
+
+            // Gọi API Geocoding
+            fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addressInput)}&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        alert('Không tìm thấy vị trí phù hợp.');
+                        return;
+                    }
+
+                    const { lat, lon } = data[0];
+                    const userLat = parseFloat(lat);
+                    const userLon = parseFloat(lon);
+
+                    map.setView([userLat, userLon], 15);
+
+                    // Thêm marker đỏ cho địa chỉ người dùng
+                    if (userMarker) map.removeLayer(userMarker);
+                    userMarker = L.marker([userLat, userLon]).addTo(map)
+                        .bindPopup(`Địa chỉ của bạn: ${addressInput}`).openPopup();
+
+                    // Cập nhật danh sách cửa hàng theo khoảng cách
+                    const sortedStores = stores.map(store => {
+                        const distance = calculateDistance(userLat, userLon, store.latitude, store.longitude);
+                        return { ...store, distance };
+                    }).sort((a, b) => a.distance - b.distance);
+
+                    updateStoreList(sortedStores);
+
+                    // Hiển thị bảng xác nhận
+                    confirmedAddress.textContent = `Địa chỉ của bạn: ${addressInput}`;
+                    enteredAddress.textContent = `Địa chỉ đã nhập: ${addressInput}`; // Hiển thị địa chỉ đã nhập
+                    confirmOverlay.style.display = 'flex'; // Hiển thị bảng xác nhận
+                })
+                .catch(error => {
+                    console.error('Geocoding error:', error);
+                    alert('Có lỗi xảy ra khi tìm kiếm địa chỉ.');
+                });
+        });
+
+        // Xử lý khi người dùng xác nhận địa chỉ
+        document.getElementById('confirmBtn').addEventListener('click', function () {
+            alert('Địa chỉ đã được xác nhận!');
+            confirmOverlay.style.display = 'none'; // Ẩn bảng xác nhận
+            // Hiển thị các nút giao hàng khi đã nhập địa chỉ và chọn cửa hàng
+            if (selectedStore) {
+                document.getElementById('delivery-options').style.display = 'block';
+            }
+        });
+
+        // Chỉnh sửa địa chỉ
+        document.getElementById('editBtn').addEventListener('click', function () {
+            confirmOverlay.style.display = 'none'; // Ẩn bảng xác nhận
+            document.getElementById('addressInput').focus();
+        });
+
+        // Xử lý khi người dùng click vào cửa hàng
+        function handleStoreClick(store) {
+            const storeLat = store.latitude;
+            const storeLon = store.longitude;
+
+            // Di chuyển bản đồ đến vị trí của cửa hàng
+            map.setView([storeLat, storeLon], 15);
+
+            // Nếu marker của người dùng tồn tại, giữ lại trên bản đồ
+            if (!userMarker) {
+                userMarker = L.marker([userLat, userLon]).addTo(map)
+                    .bindPopup(`Địa chỉ của bạn: ${addressInput}`).openPopup();
+            }
+
+            // Di chuyển marker của cửa hàng
+            const storeMarker = L.marker([storeLat, storeLon]).addTo(map)
+                .bindPopup(`<strong>${store.name}</strong><br>${store.address}<br>${store.description}`).openPopup();
+
+            // Hiển thị tên cửa hàng được chọn
+            selectedStore.textContent = `Cửa hàng đã chọn: ${store.name}`;
+
+            document.getElementById('delivery-options').style.display = 'block';
+        }
+
+        // Hàm cập nhật danh sách cửa hàng
+        function updateStoreList(stores) {
+            const storeList = document.getElementById('storeItems');
+            storeList.innerHTML = ''; // Xóa danh sách cũ
+
+            stores.forEach(store => {
+                const listItem = document.createElement('li');
+                listItem.style.marginBottom = '15px';
+                listItem.style.padding = '10px';
+                listItem.style.border = '1px solid #ddd';
+                listItem.style.borderRadius = '5px';
+
+                listItem.innerHTML = `
+                <strong>${store.name}</strong><br>
+                <span>Địa chỉ: ${store.address}</span><br>
+                <span>Mô tả: ${store.description}</span><br>
+                <span>Khoảng cách: ${store.distance.toFixed(2)} km</span>
+            `;
+
+                // Thêm sự kiện click vào mỗi mục cửa hàng
+                listItem.addEventListener('click', function () {
+                    handleStoreClick(store);
+                });
+
+                storeList.appendChild(listItem);
+            });
+        }
+
+    }
 </script>

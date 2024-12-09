@@ -31,6 +31,8 @@ namespace Final.net.Controllers
                 longitude = store.Longitude / 1000000.0  // Chuyển đổi tọa độ kinh độ
             }).ToList();
 
+
+
             return Ok(storesWithCorrectCoordinates);
         }
     }
