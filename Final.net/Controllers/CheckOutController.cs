@@ -10,9 +10,9 @@ namespace Final.net.Controllers
     {
         private readonly PizzaStoreContext _context;
 
-        public CheckOutController(CartService cartService, PizzaStoreContext context) : base(cartService)
+        public CheckOutController(PizzaStoreContext context) : base(context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: Orders
@@ -30,6 +30,7 @@ namespace Final.net.Controllers
                 .Include(o => o.Payment) // Bao gồm bảng Payment
                 .Include(o => o.Delivery) // Bao gồm bảng Payment
                 .Include(o => o.User)
+                .Include(o => o.OrderItems)
                 .ToListAsync(); // Trả về danh sách Orders thực sự
 
             // ViewData["CurrentPage"] = page;

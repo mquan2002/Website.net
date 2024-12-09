@@ -1,5 +1,4 @@
 ﻿using Final.net.Models;
-using Final.net.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,22 +7,22 @@ namespace Final.net.Controllers
 {
     public class MenuController : BaseController
     {
-        private readonly PizzaStoreContext _context;
-        public MenuController(CartService cartService, PizzaStoreContext context) : base(cartService)
+        public MenuController(PizzaStoreContext context) : base(context)
         {
-            _context = context;
         }
 
         public IActionResult Index()
         {
             try
             {
+                // Lấy danh sách các danh mục cùng sản phẩm
                 var categories = _context.Categories.Include(c => c.Products).ToList();
                 return View(categories);
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi nếu cần
+                // Ghi log lỗi nếu cần (tùy thuộc vào logger bạn đang dùng)
+                Console.WriteLine($"Lỗi khi tải dữ liệu menu: {ex.Message}");
                 return StatusCode(500, "Lỗi khi tải dữ liệu menu.");
             }
         }
@@ -38,6 +37,7 @@ namespace Final.net.Controllers
 
             try
             {
+                // Tìm kiếm sản phẩm theo tên
                 var results = _context.Products
                     .Where(p => p.ProductName.ToLower().Contains(query.ToLower()))
                     .Select(p => new
@@ -47,14 +47,14 @@ namespace Final.net.Controllers
                         p.ImageUrl,
                         p.Price
                     })
-                    
                     .ToList();
 
                 return Json(results);
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi nếu cần
+                // Ghi log lỗi nếu cần (tùy thuộc vào logger bạn đang dùng)
+                Console.WriteLine($"Lỗi khi tìm kiếm sản phẩm: {ex.Message}");
                 return StatusCode(500, "Lỗi khi tìm kiếm sản phẩm.");
             }
         }

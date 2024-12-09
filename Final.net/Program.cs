@@ -55,9 +55,6 @@ builder.Services.AddAuthentication("Cookies")
     });
 
 
-// Add Cart service
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<CartService>();
 
 var app = builder.Build();
 

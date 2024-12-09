@@ -1,27 +1,32 @@
 ﻿@model List<Final.net.Models.CartItem>
 @{
     ViewData["Title"] = "Giỏ Hàng";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    
-}
 
- 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
 
 <div class="container" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
         <span style="font-size: 0.9rem; color: #666;">@ViewBag.CartItemCount Món</span>
+
     </div>
+
     @if (@ViewBag.CartItemCount == 0)
+
     {
         <div style="text-align: center; padding: 20px;">
             <img src="../LayoutDomino/img/emptycart.png" alt="Giỏ hàng trống" style="max-width: 50%; height: auto;">
             <p style="font-size: 1rem; color: #777; margin-top: 10px;">Giỏ hàng của bạn hiện đang trống</p>
         </div>
     }
+
     else
+
     {
         @foreach (var item in Model)
+
         {
             <div class="cart-item" style="display: flex; align-items: center; margin-bottom: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);">
                 <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 80px; height: 80px; border-radius: 5px; object-fit: cover; margin-right: 15px;">
@@ -37,6 +42,7 @@
                         <a href="javascript:void(0);" onclick="showEditModal(@item.ProductId, @item.SizeId, @item.CrustId)" style="color: #007bff; text-decoration: none;">Điều Chỉnh</a>
                         <span style="margin: 0 10px; color: #ccc;">|</span>
                         <a href="javascript:void(0);" onclick="openModal(@item.ProductId)" style="color: #007bff; text-decoration: none;">Xóa</a>
+
                         <!-- Xac nhan xoa -->
                         <div id="deleteModal-@item.ProductId" class="modal-custom">
                             <div class="modal-content-custom">
@@ -56,7 +62,21 @@
                 </div>
             </div>
         }
+
+        <div class="voucher-section" style="display: flex; gap: 10px; margin-top: 20px;">
+            <input type="text" placeholder="Nhập Mã Khuyến Mãi" style="flex: 1; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: 1px solid #ddd;">
+            <button style="width: 100px; font-weight: bold; background-color: #007bff; color: white; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: none;">Áp Dụng</button>
+        </div>
+
+        <div class="cart-summary" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;">
+            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Tổng: <span style="font-weight: bold;">@Model.Sum(item => item.TotalPrice).ToString("N0")₫</span></p>
+            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm K.Mãi: <span style="font-weight: bold;">0₫</span></p>
+            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm Vouchers: <span style="font-weight: bold;">0₫</span></p>
+            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Phí Giao Hàng: <span style="font-weight: bold;">0₫</span></p>
+        </div>
+
         <a href="/Cart/Payment" class="btn btn-primary">Thanh Toán</a>
+
     }
 </div>
 
@@ -87,11 +107,11 @@
         });
     }
 
-    function showEditModal(productId, sizeId, crustId) {
+    function showEditModal(productId, sizeId, crustId, userId) {
         $.ajax({
             url: '/Cart/ShowEditCartItemModal',
             type: 'GET',
-            data: { productId: productId, sizeId: sizeId, crustId: crustId },
+            data: { productId: productId, sizeId: sizeId, crustId: crustId, userId: userId },
             success: function (result) {
                 $('#modalContainer').html(result);
                 $('#editCartModal').modal('show');

@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Final.net.Models;
 using System.Linq;
-using Final.net.Services;
 
 namespace Final.net.Controllers
 {
     public class BlogController : BaseController
     {
-        private readonly PizzaStoreContext _context;
-
-        public BlogController(CartService cartService, PizzaStoreContext context) : base(cartService)
+        public BlogController(PizzaStoreContext context) : base(context)
         {
-            _context = context;
         }
 
         // Phương thức Index để hiển thị danh sách bài viết

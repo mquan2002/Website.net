@@ -76,8 +76,10 @@
             <div class="mb-3">
                 <label for="paymentMethod" class="form-label"><strong>Phương thức thanh toán:</strong></label>
                 <select class="form-control" id="paymentMethod" name="PaymentMethod" required>
-                    <option value="Cash">Tiền mặt</option>
-                    <option value="BankTransfer">Chuyển khoản</option>
+                    @foreach (var payment in ViewBag.PaymentMethods as List<Final.net.Models.Payment>)
+                    {
+                        <option value="@payment.Method">@payment.Method</option>
+                    }
                 </select>
             </div>
             <p><strong>Tổng tiền:</strong> <span style="color: #d9534f;">@ViewBag.TotalPrice VND</span></p>

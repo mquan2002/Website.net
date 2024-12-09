@@ -1,8 +1,6 @@
 ﻿using Final.net.Models;
-using Final.net.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace Final.net.Controllers
@@ -11,20 +9,25 @@ namespace Final.net.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(CartService cartService, ILogger<HomeController> logger) : base(cartService)
+        public HomeController(PizzaStoreContext context, ILogger<HomeController> logger) : base(context)
         {
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            var username = HttpContext.Session.GetString("Username");
-            if (username == null)
+            // Kiểm tra người dùng đã đăng nhập chưa
+            if (User.Identity.IsAuthenticated)
             {
-                return View();
-
+                // Lấy Username từ Claims
+                var username = User.Claims.FirstOrDefault(c => c.Type == "Name")?.Value;
+                ViewBag.Username = username;
             }
-            ViewBag.Username = username;
+            else
+            {
+                ViewBag.Username = null;
+            }
+
             return View();
         }
 
