@@ -251,8 +251,8 @@ namespace Final.net.Controllers
                 return NotFound("User not found");
             }
 
-           
-
+            // Kiểm tra và gán giá trị mặc định cho 'notes' nếu cần
+            notes = string.IsNullOrWhiteSpace(notes) ? string.Empty : notes;
 
             // Update user information
             user.Address = string.IsNullOrWhiteSpace(updatedUser.Address) ? user.Address : updatedUser.Address;
@@ -303,7 +303,7 @@ namespace Final.net.Controllers
                 Address = string.IsNullOrWhiteSpace(updatedUser.Address) ? user.Address : updatedUser.Address, // Cung cấp giá trị cho Address
                 SDT = string.IsNullOrWhiteSpace(updatedUser.Phone) ? user.Phone : updatedUser.Phone // Cung cấp giá trị cho Phone
             };
-
+            
             _context.Orders.Add(newOrder);
 
             // Xóa giỏ hàng sau khi thanh toán thành công
