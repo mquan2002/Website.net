@@ -41,23 +41,8 @@
                     <input asp type="password" placeholder="Password" id="Password" name="Password">
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
-                <div class="form-item-other">
-                    <div class="checkbox">
-                        <input type="checkbox" id="rememberMeCheckbox">
-                        <label for="rememberMeCheckbox">Remember Me</label>
-                    </div>
-                    <a onclick="forgotPW()" style="cursor: pointer;">Forgot password |</a>
-                </div>
                 <button class="btn" type="submit">Sign In</button>
             </form>
-
-            <div class="login-card-footer">
-                <p style="font-size: 13px; margin: 10px;">Bạn chưa có tài khoản?</p>
-                </br>
-                <a href="/Sign/SignUp">
-                    <p style="font-size: 13px; color: black;">Đăng ký ngay!</p>
-                </a>
-            </div>
         </div>
     </div>
 </body>
