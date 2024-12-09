@@ -101,6 +101,12 @@ app.MapControllerRoute(
     name: "stores",
     pattern: "stores/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "menu",
+   pattern: "menu/{action=Index}/{id?}");
+
+
+
 
 app.MapControllerRoute(
     name: "areas",

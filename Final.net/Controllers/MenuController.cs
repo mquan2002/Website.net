@@ -27,6 +27,7 @@ namespace Final.net.Controllers
             }
         }
 
+
         [HttpGet]
         public IActionResult SearchLive(string query)
         {

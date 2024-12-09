@@ -107,6 +107,16 @@
                 qrSection.style.display = 'none'; // Hide QR code section
             }
         });
+
+        // Ensure the QR section is displayed if 'BankTransfer' is already selected on page load
+        window.onload = function () {
+            var paymentMethod = document.getElementById('paymentMethod').value;
+            var qrSection = document.getElementById('qrSection');
+            if (paymentMethod === 'BankTransfer') {
+                qrSection.style.display = 'block'; // Show QR code section on page load if selected
+            }
+        };
     </script>
+
 </body>
 </html>
