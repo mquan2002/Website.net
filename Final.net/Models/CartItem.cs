@@ -29,9 +29,10 @@ namespace Final.net.Models
         public int CrustId { get; set; }
         public Crust Crust { get; set; } // Không nullable nếu tất cả sản phẩm cần Crust
 
-        // Phương thức tính tổng giá cho một mục giỏ hàng, bao gồm giá cơ bản và các chi phí thêm từ Size
+       
 
-
+        public int UserId { get; set; }
+        public User User { get; set; }
 
         // Định dạng giá thành VND
         public string TotalPriceFormatted => TotalPrice.ToString("N0") + "₫";

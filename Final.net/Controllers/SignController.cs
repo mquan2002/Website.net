@@ -41,57 +41,48 @@ namespace Final.net.Controllers
 
 
         // Đăng nhập
+        // Đăng nhập
         [HttpPost]
         public async Task<IActionResult> SignIn(string username, string password)
         {
-            // Tìm user theo email
+            // Tìm user theo username
             var user = await _context.Users
                         .Include(u => u.Role)
-                        .FirstOrDefaultAsync(u => u.Username == username && u.IsDeleted == false && u.RoleId == 2);
-
-            // print user
-            Console.WriteLine(user);
+                        .FirstOrDefaultAsync(u => u.Username == username && u.IsDeleted == false);
 
             if (user == null)
             {
                 ModelState.AddModelError("Username", "Username không tồn tại.");
                 return View();
             }
-
-            Console.WriteLine(password);
-
-
+            
             // Kiểm tra mật khẩu
             var result = _passwordHasher.VerifyHashedPassword(null, user.Password, password);
             if (result == PasswordVerificationResult.Failed)
             {
-                Console.WriteLine(result);
-
                 ModelState.AddModelError("Password", "Mật khẩu không đúng.");
                 return View();
             }
 
+            // Thêm UserId vào claims
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, user.Role.Name)
-            };
+    {
+        new Claim(ClaimTypes.Name, username),
+        new Claim(ClaimTypes.Role, user.Role.Name),
+        new Claim("UserId", user.Id.ToString()) // Thêm UserId vào claims
+
+    };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
+
+           
+
 
             // Đăng nhập và lưu thông tin vào cookie
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
             // Đăng nhập thành công
-            // Lưu thông tin đăng nhập (ví dụ: sử dụng session)
-            HttpContext.Session.SetString("UserId", user.Id.ToString());
-            HttpContext.Session.SetString("Username", user.Username);
-            HttpContext.Session.SetString("Email", user.Email);
-            HttpContext.Session.SetString("Address", user.Address);
-            HttpContext.Session.SetString("Phone", user.Phone);
-
-
             return RedirectToAction("Index", "Home");
         }
 

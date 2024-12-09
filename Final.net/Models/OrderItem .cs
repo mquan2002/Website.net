@@ -1,4 +1,5 @@
 ﻿using Final.net.Models;
+using Microsoft.EntityFrameworkCore;
 
 public class OrderItem
 {
@@ -16,4 +17,7 @@ public class OrderItem
     public double Price { get; internal set; }
     public int SizeId { get; internal set; }
     public int CrustId { get; internal set; }
+
+    public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<User> Users { get; set; }
 }

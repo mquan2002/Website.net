@@ -30,6 +30,7 @@ public partial class User : BaseEntity
 
     public Role Role { get; set; }
 
+    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     public string? Notes { get; set; }
 
 }

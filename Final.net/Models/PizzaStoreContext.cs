@@ -49,7 +49,6 @@ public partial class PizzaStoreContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         modelBuilder.Entity<Delivery>(entity =>
         {
             entity.Property(e => e.DeliveryStatus).HasMaxLength(20);
@@ -74,6 +73,12 @@ public partial class PizzaStoreContext : DbContext
                 .WithMany(p => p.CartItems)
                 .HasForeignKey(ci => ci.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(ci => ci.User)
+                .WithMany(u => u.CartItems)
+                .HasForeignKey(ci => ci.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         });
 
 

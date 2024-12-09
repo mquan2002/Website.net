@@ -4,6 +4,7 @@ using Final.net.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Final.net.Migrations
 {
     [DbContext(typeof(PizzaStoreContext))]
-    partial class PizzaStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20241209065803_LinkCartItemToUser")]
+    partial class LinkCartItemToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,9 +80,6 @@ namespace Final.net.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OrderItemId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -99,8 +99,6 @@ namespace Final.net.Migrations
                     b.HasKey("CartItemId");
 
                     b.HasIndex("CrustId");
-
-                    b.HasIndex("OrderItemId");
 
                     b.HasIndex("ProductId");
 
@@ -325,7 +323,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 12, 9, 16, 29, 37, 887, DateTimeKind.Local).AddTicks(5533),
+                            CreatedDate = new DateTime(2024, 12, 9, 13, 58, 3, 202, DateTimeKind.Local).AddTicks(4260),
                             IsDeleted = false,
                             Name = "Admin",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -333,7 +331,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 12, 9, 16, 29, 37, 887, DateTimeKind.Local).AddTicks(5566),
+                            CreatedDate = new DateTime(2024, 12, 9, 13, 58, 3, 202, DateTimeKind.Local).AddTicks(4278),
                             IsDeleted = false,
                             Name = "User",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -341,7 +339,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2024, 12, 9, 16, 29, 37, 887, DateTimeKind.Local).AddTicks(5567),
+                            CreatedDate = new DateTime(2024, 12, 9, 13, 58, 3, 202, DateTimeKind.Local).AddTicks(4279),
                             IsDeleted = false,
                             Name = "Staff",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -425,9 +423,6 @@ namespace Final.net.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OrderItemId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -448,8 +443,6 @@ namespace Final.net.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderItemId");
 
                     b.HasIndex("RoleId");
 
@@ -501,10 +494,6 @@ namespace Final.net.Migrations
                         .HasForeignKey("CrustId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("OrderItem", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("OrderItemId");
 
                     b.HasOne("Final.net.Models.Product", "Product")
                         .WithMany("CartItems")
@@ -571,10 +560,6 @@ namespace Final.net.Migrations
 
             modelBuilder.Entity("Final.net.Models.User", b =>
                 {
-                    b.HasOne("OrderItem", null)
-                        .WithMany("Users")
-                        .HasForeignKey("OrderItemId");
-
                     b.HasOne("Final.net.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
@@ -646,13 +631,6 @@ namespace Final.net.Migrations
             modelBuilder.Entity("Final.net.Models.User", b =>
                 {
                     b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("OrderItem", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
