@@ -30,7 +30,7 @@ namespace Final.net.Controllers
             }
 
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value ?? "0");
-            
+
 
 
             return _context.CartItems
@@ -191,55 +191,55 @@ namespace Final.net.Controllers
         }
         [HttpGet]
         public IActionResult Payment()
-{
+        {
             // Lấy userId từ session
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value ?? "0");
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-           
+
 
 
             if (user == null)
-    {
-        return NotFound("User not found");
-    }
+            {
+                return NotFound("User not found");
+            }
             var paymentMethods = _context.Payments.ToList();
 
             // Truyền dữ liệu phương thức thanh toán vào View
             ViewBag.PaymentMethods = paymentMethods;
             // Lấy các sản phẩm trong giỏ hàng
             var cart = GetCartItems();
-    double totalPrice = 0;
-    foreach (var item in cart)
-    {
-        double itemPrice = item.BasePrice;
+            double totalPrice = 0;
+            foreach (var item in cart)
+            {
+                double itemPrice = item.BasePrice;
 
-        // Kiểm tra và tính lại giá theo kích thước
-        if (item.Size != null) // Kiểm tra nếu có size
-        {
-            if (item.Size.SizeName == "Cỡ 7 inch")
-            {
-                // Giả sử không có thay đổi giá cho kích thước 7 inch
-                itemPrice += 0;
+                // Kiểm tra và tính lại giá theo kích thước
+                if (item.Size != null) // Kiểm tra nếu có size
+                {
+                    if (item.Size.SizeName == "Cỡ 7 inch")
+                    {
+                        // Giả sử không có thay đổi giá cho kích thước 7 inch
+                        itemPrice += 0;
+                    }
+                    else if (item.Size.SizeName == "Cỡ 9 inch")
+                    {
+                        itemPrice += 80000; // Cộng thêm 80,000 cho kích thước 9 inch
+                    }
+                    else if (item.Size.SizeName == "Cỡ 12 inch")
+                    {
+                        itemPrice += 150000; // Cộng thêm 150,000 cho kích thước 12 inch
+                    }
+                }
+
+                // Tính tổng giá sản phẩm sau khi thay đổi
+                totalPrice += itemPrice * item.Quantity;
             }
-            else if (item.Size.SizeName == "Cỡ 9 inch")
-            {
-                itemPrice += 80000; // Cộng thêm 80,000 cho kích thước 9 inch
-            }
-            else if (item.Size.SizeName == "Cỡ 12 inch")
-            {
-                itemPrice += 150000; // Cộng thêm 150,000 cho kích thước 12 inch
-            }
+
+            // Lưu tổng giá vào ViewBag để sử dụng trong View
+            ViewBag.TotalPrice = totalPrice;
+
+            return View(user);
         }
-
-        // Tính tổng giá sản phẩm sau khi thay đổi
-        totalPrice += itemPrice * item.Quantity;
-    }
-
-    // Lưu tổng giá vào ViewBag để sử dụng trong View
-    ViewBag.TotalPrice = totalPrice;
-
-    return View(user);
-}
         // Thanh toán giỏ hàng
         [HttpPost]
         public IActionResult ConfirmPayment(User updatedUser, string notes, string paymentMethod)
@@ -273,37 +273,33 @@ namespace Final.net.Controllers
             }
 
             double totalPrice = cart.Sum(item => item.BasePrice * item.Quantity);
-            var newDelivery = new Delivery
-            {
-                  
-                DeliveryStatus = "Pending",             // Trạng thái giao hàng
+            // var newDelivery = new Delivery
+            // {
 
-            };
+            //     DeliveryStatus = "Pending",             // Trạng thái giao hàng
+
+            // };
 
             var payment = _context.Payments.FirstOrDefault(p => p.Method == paymentMethod);
             if (payment == null)
             {
                 return BadRequest("Phương thức thanh toán không hợp lệ.");
             }
-            
-            // Thêm delivery vào cơ sở dữ liệu và lưu lại
-            _context.Deliveries.Add(newDelivery);
-            _context.SaveChanges();  // Lưu vào cơ sở dữ liệu để có DeliveryId tự động tăng
 
             var newOrder = new Order
             {
-                UserId = userId,
+                Address = string.IsNullOrWhiteSpace(updatedUser.Address) ? user.Address : updatedUser.Address, // Cung cấp giá trị cho Address
+                SDT = string.IsNullOrWhiteSpace(updatedUser.Phone) ? user.Phone : updatedUser.Phone, // Cung cấp giá trị cho Phone
                 TotalAmount = totalPrice,
                 OrderDate = DateTime.Now,
-                PaymentStatus = newDelivery.DeliveryStatus,
-                PaymentMethod = payment.Method,
+                UserId = userId,
+                DeliveryId = 1, 
                 PaymentId = payment.PaymentId,
-                DeliveryId = newDelivery.DeliveryId, // Sử dụng DeliveryId tự động tăng
+                // PaymentStatus = newDelivery.DeliveryStatus,
+                // PaymentMethod = payment.Method,
                 Notes = notes,
-                Address = string.IsNullOrWhiteSpace(updatedUser.Address) ? user.Address : updatedUser.Address, // Cung cấp giá trị cho Address
-                SDT = string.IsNullOrWhiteSpace(updatedUser.Phone) ? user.Phone : updatedUser.Phone // Cung cấp giá trị cho Phone
             };
-            
+
             _context.Orders.Add(newOrder);
 
             // Xóa giỏ hàng sau khi thanh toán thành công
