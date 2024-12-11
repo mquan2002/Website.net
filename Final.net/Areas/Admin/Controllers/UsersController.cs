@@ -132,6 +132,13 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
             {
                 return NotFound();
             }
+
+            // if (!ModelState.IsValid)
+            // {
+            //     ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+            //     return View(user);
+            // }
+
             // Check if the username already exists
             if (await _context.Users.AnyAsync(u => u.Username == user.Username))
             {
@@ -166,7 +173,7 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
             {
                 return NotFound();
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
             return View(user);
         }
 
