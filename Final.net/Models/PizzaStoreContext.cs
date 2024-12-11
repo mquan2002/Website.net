@@ -21,6 +21,8 @@ public partial class PizzaStoreContext : DbContext
     public virtual DbSet<Crust> Crusts { get; set; }
 
     public virtual DbSet<Delivery> Deliveries { get; set; }
+    
+    public virtual DbSet<OrderItem> OrderItem { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 

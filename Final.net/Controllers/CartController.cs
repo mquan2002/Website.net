@@ -314,10 +314,10 @@ namespace Final.net.Controllers
             _context.SaveChanges();
             //var cart = _context.CartItems.Where(c => c.UserId == userId).ToList();
             var cart = _context.CartItems
-        .Include(c => c.Size)
-        .Include(c => c.Crust)
-        .Where(c => c.UserId == userId)
-        .ToList();
+                .Include(c => c.Size)
+                .Include(c => c.Crust)
+                .Where(c => c.UserId == userId)
+                .ToList();
 
 
             if (!cart.Any())
@@ -325,13 +325,13 @@ namespace Final.net.Controllers
                 return BadRequest("Giỏ hàng trống.");
             }
 
-            double totalPrice = cart.Sum(item => item.BasePrice * item.Quantity);
-            var newDelivery = new Delivery
-            {
+            double totalPrice = cart.Sum(item => (item.BasePrice   + (item.Size.SizeCost ?? 0)) * item.Quantity);
+            // var newDelivery = new Delivery
+            // {
                   
-                DeliveryStatus = "Pending",             // Trạng thái giao hàng
+            //     DeliveryStatus = "Pending",             // Trạng thái giao hàng
 
-            };
+            // };
 
             var payment = _context.Payments.FirstOrDefault(p => p.Method == paymentMethod);
             if (payment == null)
@@ -341,20 +341,37 @@ namespace Final.net.Controllers
 
             var newOrder = new Order
             {
-                UserId = userId,
                 Address = string.IsNullOrWhiteSpace(updatedUser.Address) ? user.Address : updatedUser.Address, // Cung cấp giá trị cho Address
                 SDT = string.IsNullOrWhiteSpace(updatedUser.Phone) ? user.Phone : updatedUser.Phone, // Cung cấp giá trị cho Phone
                 TotalAmount = totalPrice,
                 OrderDate = DateTime.Now,
-                //PaymentStatus = newDelivery.DeliveryStatus,
-                //PaymentMethod = payment.Method,
+                UserId = userId,
+                DeliveryId = 1,
                 PaymentId = payment.PaymentId,
-                DeliveryId = 1, // Sử dụng DeliveryId tự động tăng
+                // PaymentStatus = newDelivery.DeliveryStatus,
+                // PaymentMethod = payment.Method,
                 Notes = notes,
             };
 
             _context.Orders.Add(newOrder);
+            _context.SaveChanges();
 
+            foreach (var item in cart)
+            {
+                var orderItem = new OrderItem
+                {
+                    OrderId = newOrder.OrderId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.BasePrice,
+                    Price = (item.BasePrice   + (item.Size.SizeCost ?? 0))* item.Quantity,
+                    SizeId = item.SizeId,
+                    CrustId = item.CrustId
+                };
+
+                _context.OrderItem.Add(orderItem);
+            }
+            _context.SaveChanges();
             // Xóa giỏ hàng sau khi thanh toán thành công
             _context.CartItems.RemoveRange(cart);
             _context.SaveChanges();

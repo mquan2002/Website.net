@@ -1,0 +1,336 @@
+@model IEnumerable<Final.net.Models.Order>
+
+@{
+    ViewData["Title"] = "Danh sách đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Danh sách đơn hàng</h1>
+
+@if (!Model.Any() || Model.All(o => o.DeliveryId == 4))
+{
+    <p>Chưa có đơn hàng nào.</p> <!-- Display message if no orders exist or if all have been completed -->
+}
+else
+{
+    <div class="order-container">
+        @foreach (var order in Model)
+        {
+            <div class="order-card">
+                <div class="order-header">
+                    @if (order.OrderItems != null && order.OrderItems.Any() && order.OrderItems.First().Product != null)
+                    {
+                        <img src="@order.OrderItems.First().Product.ImageUrl" alt="Order Image" class="order-image" />
+                    }
+                    else
+                    {
+                        <p>No image available</p>
+                    }
+
+                    <div class="order-info">
+                        <p><strong>Mã đơn:</strong> @order.OrderId</p>
+                        <p><strong>Tên:</strong> @order.User?.Username</p>
+                        <p><strong>SĐT:</strong> @order.SDT</p>
+                        <p><strong>Địa chỉ:</strong> @order.Address</p>
+                    </div>
+                </div>
+
+                <!-- Total Amount and Buttons on the right side -->
+                <div class="order-details">
+                    <p class="total"><strong>Tổng tiền:</strong> @(order.TotalAmount?.ToString("N0") ?? "0") vnđ</p>
+                    <div class="order-actions">
+                        <!-- Chi tiết hóa đơn -->
+                        <button class="btn btn-primary" onclick="viewOrderDetails(@order.OrderId)">Chi tiết hóa đơn</button>
+                        <!-- Nhận đơn -->
+                        <button class="btn 
+                            @(order.DeliveryId == 1 ? "btn-danger" : 
+                            (order.DeliveryId == 2 ? "btn-primary" : 
+                            (order.DeliveryId == 3 ? "btn-success" : 
+                            (order.DeliveryId == 4 ? "btn-light" : 
+                            (order.DeliveryId == 5 ? "btn-secondary" : "btn-success")))))"
+                            onclick="acceptOrder(@order.OrderId, @order.DeliveryId)" data-order-id="@order.OrderId"
+                            data-delivery-id="@order.DeliveryId">
+                            @(order.DeliveryId == 1 ? "Nhận đơn" :
+                                (order.DeliveryId == 2 ? "Vận chuyển" :
+                                (order.DeliveryId == 3 ? "Giao hàng" :
+                                (order.DeliveryId == 4 ? "Thành công đơn" : "Nhận đơn"))))
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal for Order Details -->
+                <div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog"
+                    aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content" style="width: 900px;">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="orderDetailsModalLabel">Chi tiết đơn hàng</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Nội dung chi tiết đơn hàng sẽ được tải tại đây thông qua AJAX -->
+                                <p>Đang tải dữ liệu...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal xác nhận nhận đơn -->
+                <div class="modal fade" id="confirmAcceptModal" tabindex="-1" role="dialog"
+                    aria-labelledby="confirmAcceptModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmAcceptModalLabel">Xác nhận nhận đơn</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có chắc chắn muốn nhận đơn này không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                <!-- Button for success or failure update -->
+                                <button type="button" class="btn btn-success" id="confirmAcceptButton">Xác nhận</button>
+                                <!-- Button for failure update (appears only in case 3) -->
+                                <button type="button" class="btn btn-danger" id="confirmDeclineButton" style="display:none;">Cập
+                                    nhật thất bại</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+}
+
+<script>
+    // Hàm hiển thị chi tiết hóa đơn
+    function viewOrderDetails(orderId) {
+        console.log("OrderId received: ", orderId);
+
+        // Hiển thị modal trống trong khi chờ dữ liệu
+        $('#orderDetailsModal').modal('show');
+        $('#orderDetailsModal .modal-body').html('<p>Đang tải chi tiết đơn hàng...</p>');
+
+        // Gửi yêu cầu AJAX đến máy chủ để lấy dữ liệu chi tiết đơn hàng
+        $.ajax({
+            url: '/admin/Shipper/_OrderDetails', // Địa chỉ API hoặc action để lấy chi tiết đơn hàng
+            type: 'GET',
+            data: { orderId: orderId }, // Gửi mã đơn hàng đến máy chủ
+            success: function (response) {
+                // Cập nhật nội dung modal với dữ liệu trả về
+                $('#orderDetailsModal .modal-body').html(response);
+            },
+            error: function (xhr, status, error) {
+                console.error(`Error: ${status}, ${error}`);
+                $('#orderDetailsModal .modal-body').html('<p>Không thể tải chi tiết đơn hàng. Vui lòng thử lại sau.</p>');
+            }
+        });
+    }
+
+
+    function acceptOrder(orderId, deliveryId) {
+    if (!orderId) {
+        console.error("No orderId provided");
+        return;
+    }
+
+    console.log("OrderId sent:", orderId);
+    console.log("DeliveryId sent:", deliveryId);
+
+    // Create the message and nextDeliveryId based on the current deliveryId
+    var modalMessage = "";
+    var nextDeliveryId = 0;
+    var buttonText = "";
+    var showButtons = false;  // Flag to show two buttons for case 3
+
+    switch (deliveryId) {
+        case 1:
+            modalMessage = "Xác nhận đã lấy món?";
+            nextDeliveryId = 2;
+            buttonText = "Đã lấy món";
+            showButtons = false; // Only one button for case 1
+            break;
+        case 2:
+            modalMessage = "Xác Nhận đơn hàng chuẩn bị giao";
+            nextDeliveryId = 3;
+            buttonText = "Giao hàng";
+            showButtons = false; // Only one button for case 2
+            break;
+        case 3:
+            modalMessage = "Cập nhật trạng thái đơn hàng";
+            showButtons = true; // Show both buttons for case 3
+            break;
+        case 4:
+            modalMessage = "Đơn hàng này đã thành công. Không thể thay đổi.";
+            nextDeliveryId = 4;  // No further changes
+            buttonText = "Đơn hàng đã thành công";
+            showButtons = false; // Only one button for case 4
+            break;
+        default:
+            modalMessage = "Có lỗi xảy ra, vui lòng thử lại sau.";
+            nextDeliveryId = 5;  // Default error state
+            buttonText = "Có lỗi, thử lại sau";
+            showButtons = false; // Only one button for error case
+            break;
+    }
+
+    // Show confirmation modal
+    $('#confirmAcceptModal').modal('show');
+    $('#confirmAcceptModal .modal-body').html("<p>" + modalMessage + "</p>");
+
+    // If we're in case 3, show both success and failure buttons
+    if (showButtons) {
+         $('#confirmDeclineButton').text("Giao hàng thất bại").off('click').on('click', function () {
+            updateOrderStatus(orderId, 5);  // Update to failure (5)
+        });
+        $('#confirmAcceptButton').text("Giao hàng thành công").off('click').on('click', function () {
+            updateOrderStatus(orderId, 4);  // Update to success (4)
+        });
+        $('#confirmDeclineButton').show(); // Ensure that the second button is visible
+    } else {
+        // For other cases, just one button is shown for confirmation
+        $('#confirmAcceptButton').text(buttonText).off('click').on('click', function () {
+            updateOrderStatus(orderId, nextDeliveryId);
+        });
+        $('#confirmDeclineButton').hide();  // Hide the second button
+    }
+}
+
+function updateOrderStatus(orderId, deliveryId) {
+    // Hide the modal when an option is clicked
+    $('#confirmAcceptModal').modal('hide');
+
+    // Send an AJAX request to update the DeliveryId
+    $.ajax({
+        url: '/admin/Shipper/UpdateDeliveryStatus',
+        type: 'POST',
+        data: {
+            orderId: orderId,
+            deliveryId: deliveryId
+        },
+        success: function (response) {
+            if (response.success) {
+                alert("Đơn hàng đã được cập nhật thành công!");
+                location.reload();  // Reload the page to reflect changes
+            } else {
+                alert(response.message || "Có lỗi xảy ra trong quá trình cập nhật.");
+                location.reload();
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(`Error: ${status}, ${error}`);
+            alert("Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại sau.");
+        }
+    });
+}
+
+
+
+</script>
+
+<style>
+    .total {
+        font-size: 20px;
+        color: rgb(253, 20, 20);
+    }
+
+    .order-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .order-card {
+        display: flex;
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+    }
+
+    .order-header {
+        display: flex;
+        gap: 15px;
+    }
+
+    .order-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .order-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .order-details {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .order-actions .btn {
+        width: 180px;
+    }
+
+    /* Căn giữa modal trên màn hình */
+    .modal-dialog {
+        max-width: 900px;
+        /* Đặt chiều rộng tối đa là 900px */
+        width: 100%;
+        /* Đảm bảo rằng modal có thể thu nhỏ trên các màn hình nhỏ hơn */
+        margin: 30px auto;
+        /* Căn giữa modal trên màn hình */
+    }
+
+    /* Đảm bảo modal-content có chiều rộng cố định là 900px */
+    .modal-content {
+        width: 900px;
+    }
+
+    /* Căn chỉnh nội dung modal */
+    .modal-header {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .modal-body {
+        font-size: 16px;
+        color: #495057;
+        padding: 20px;
+    }
+
+    /* Điều chỉnh nút đóng */
+    .modal .close {
+        font-size: 1.5rem;
+        color: #000;
+    }
+
+    .modal-title {
+        font-size: 20px;
+    }
+
+    /* Thiết lập độ mờ nền của modal */
+    .modal-backdrop {
+        opacity: 0.5 !important;
+        /* Làm mờ nền modal */
+    }
+</style>
