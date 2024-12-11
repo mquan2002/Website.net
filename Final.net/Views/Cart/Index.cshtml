@@ -5,7 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
+@{
+    double totalPrice = ViewBag.TotalPriceOrder;
+}
 
+<input id="totalPriceOrder" value="@totalPrice" readonly hidden/>
 <div class="container" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
     <div class="cart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h4 style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">Giỏ Hàng Của Bạn</h4>
@@ -57,37 +61,156 @@
                     </div>
                 </div>
 
-                <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
-                    @item.TotalPrice.ToString("N0")₫
-                </div>
+            <div style="font-size: 1.1rem; font-weight: bold; color: #333; text-align: right;">
+                @item.TotalPrice.ToString("N0")₫
             </div>
-        }
-
-        <div class="voucher-section" style="display: flex; gap: 10px; margin-top: 20px;">
-            <input type="text" placeholder="Nhập Mã Khuyến Mãi" style="flex: 1; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: 1px solid #ddd;">
-            <button style="width: 100px; font-weight: bold; background-color: #007bff; color: white; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: none;">Áp Dụng</button>
         </div>
+    }
+    
+     <button type="button"  onclick="showListVoucherModal()" style="background-color: #577eff; color: #fff" class="btn btn-primary" data-toggle="modal" data-target="#listVoucherModel">
+        Chọn Voucher
+    </button>
+    <div class="voucher-section" style="display: flex; gap: 10px; margin-top: 20px;">
+        <input id="inputVoucherCode" type="text" placeholder="Nhập Mã Khuyến Mãi" style="flex: 1; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: 1px solid #ddd;">
+        <button onclick="ApplyVoucher()" style="width: 100px; font-weight: bold; background-color: #007bff; color: white; padding: 8px; font-size: 0.9rem; border-radius: 5px; border: none;">Áp Dụng</button>
+    </div>
 
-        <div class="cart-summary" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;">
-            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Tổng: <span style="font-weight: bold;">@Model.Sum(item => item.TotalPrice).ToString("N0")₫</span></p>
-            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm K.Mãi: <span style="font-weight: bold;">0₫</span></p>
-            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm Vouchers: <span style="font-weight: bold;">0₫</span></p>
-            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Phí Giao Hàng: <span style="font-weight: bold;">0₫</span></p>
-        </div>
+    <div class="cart-summary" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;">
+        @* <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Tổng: <span style="font-weight: bold;">@Model.Sum(item => item.TotalPrice).ToString("N0")₫</span></p> *@
+            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Tổng: <span id="summaryTotalOrder" style="font-weight: bold;">@totalPrice.ToString("N0")₫</span></p>
+            <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm Vouchers: <span id="summaryTotalDiscountOrder" style="font-weight: bold;">0₫</span></p>
+        
+        @* <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Giảm K.Mãi: <span style="font-weight: bold;">0₫</span></p> *@
+        <p style="display: flex; justify-content: space-between; font-size: 0.9rem; margin: 5px 0;">Phí Giao Hàng: <span style="font-weight: bold;">0₫</span></p>
+    </div>
 
-        <a href="/Cart/Payment" class="btn btn-primary">Thanh Toán</a>
+	<div class="checkout-section" style="text-align: center; margin-top: 20px;">
+            <button id="CartPaymentbtn" style="background-color: #e31b23; color: white; padding: 10px; font-size: 1rem; font-weight: bold; border-radius: 5px; width: 100%; border: none;">
+                Thanh Toán <span id="PaymentTotalOrder"> @totalPrice.ToString("N0")₫ </span>
+            </button>  
+        <a href="/Cart/Payment">
+        </a>   
+    </div>
+        // <a href="/Cart/Payment" class="btn btn-primary">Thanh Toán</a>
 
     }
 </div>
 
 <div id="modalContainer"></div>
 
+<!-- Modal List Voucher -->
+<div class="modal fade" id="listVoucherModel" tabindex="-1" role="dialog" aria-labelledby="listVoucherModelTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Danh sách voucher</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="modelVoucher_body" class="modal-body">
+       @*  <div class="input-group">
+            <input value="test" id="vouchercode" type="text" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon" readonly>
+            <div class="input-group-prepend" >
+                <button class="input-group-text" id="btnCopy" onclick="copyToClipboard()" style="background-color: #577eff; color: #fff">Copy</button>
+            </div>
+        </div> *@
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="toast" class="toast">
     <div class="toast-body">message trong controller</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    
+    document.getElementById('CartPaymentbtn').onclick = (e) => 
+    {
+        e.preventDefault();      
+        let totalPayment = Number.parseFloat(document.getElementById('PaymentTotalOrder').innerHTML.replaceAll(',','').replaceAll('₫',''))
+        $.ajax({
+            url: '/Cart/PaymentPOST',
+            type: 'POST',
+            data: { totalPayment: totalPayment },
+            success: function (response) {
+                window.location.href = response.url;
+            },
+            error: function (xhr, status, error) {
+                console.error("Error details:", xhr, status, error); // Log chi tiết lỗi
+                alert("Có lỗi xảy ra khi thanh toán.");
+            }
+        });
+
+    };
+
+    function formatNumber(number) {
+        return number.toLocaleString('en-US');
+    }
+    function ApplyVoucher() {
+        const voucherCodeValue = document.getElementById('inputVoucherCode').value;
+        const totalPriceOrderValue = document.getElementById('totalPriceOrder').value;
+
+        $.ajax({
+            url: '/Cart/ApplyDiscount',
+            type: 'POST',
+            data: { voucherCode: voucherCodeValue, totalPriceOrder: totalPriceOrderValue },
+            success: function (response) {  
+                if(response.success == true) {
+                    /// Cập nhật dữ liệu lên thanh tổng hoá đơn 
+                    document.getElementById('PaymentTotalOrder').innerHTML = `${formatNumber(response.data.newTotalOrder)}₫`
+
+                    /// Cập nhật dữ liệu lên bảng tóm tắt 
+
+                    // Cập nhật Tổng
+                    //document.getElementById('summaryTotalOrder').innerHTML = `${formatNumber(response.data.newTotalOrder)}₫`
+
+                    // Cập nhật số tiền giảm giá
+                    document.getElementById('summaryTotalDiscountOrder').innerHTML = `- ${formatNumber(response.data.validVoucher.discountPrice)}₫`
+
+                }else{
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error details:", xhr, status, error); // Log chi tiết lỗi
+                alert("Có lỗi xảy ra khi áp dụng voucher.");
+            }
+        });
+    }
+ function showListVoucherModal() {
+        $.ajax({
+            url: '/Cart/GetListVoucher',
+            type: 'GET',
+            success: function (result) {
+                let htmlContent = ``;
+                result.forEach((item) => {
+                    let html = `
+                     <div class="input-group-wrap" style="margin: 1rem">
+                         <div class="input-group">
+                            <input value="${item.voucherCode}" class="voucher-code" type="text" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon" readonly>
+                         </div>
+                         <span>Voucher áp dụng ${item.name}</span>
+                         <br/>
+                     </div>
+                    `;
+                    htmlContent += html;
+                })
+
+                $('#modelVoucher_body').html(htmlContent);
+                $('#listVoucherModel').modal({
+                  keyboard: true
+                })
+            },
+            error: function () {
+                alert('Không thể tải thông tin sản phẩm.');
+            }
+        });
+    }
     function removeFromCart(productId, sizeId, crustId) {
         $.ajax({
             url: '/Cart/RemoveFromCart',
@@ -147,6 +270,13 @@
             }, 50);  // Mỗi 50ms giảm opacity 0.05
         }, 100);  // Màn hình hiển thị toast trong xs
     }
+
+    $(document).on('click', '.voucher-code', function(e) {
+        const $this = $(this);
+        $this.select(); // Chọn toàn bộ nội dung trong input
+        document.execCommand('copy'); // Sao chép nội dung đã chọn
+        alert('Mã đã được sao chép: ' + $this.val());
+    });
 </script>
 
 
