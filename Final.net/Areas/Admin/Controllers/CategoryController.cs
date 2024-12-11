@@ -315,7 +315,7 @@ namespace Final.net.Areas_Admin_Controllers
                 var productsInCategory = _context.Products.Where(p => p.CategoryId == id);
                 foreach (var product in productsInCategory)
                 {
-                    product.CategoryId = null;
+                    product.DeletedAt = DateTime.UtcNow;
                 }
                 await _context.SaveChangesAsync();
             }

@@ -22,7 +22,7 @@ namespace Final.net.Controllers
                 foreach (var category in categories)
                 {
                     category.Products = category.Products
-                        .Where(p => p.CategoryId > 0 && p.DeletedAt == null)
+                        .Where(p => p.DeletedAt == null)
                         .ToList();
                 }
 

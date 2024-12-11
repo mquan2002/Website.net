@@ -54,10 +54,10 @@ namespace Final.net.Areas_Admin_Controllers
                     query = query.Where(p => p.ProductName.Contains(searchValue));
                 }
             }
-            var totalProducts = await query.Where(p => p.CategoryId > 0 && p.DeletedAt == null).CountAsync();
+            var totalProducts = await query.Where(p => p.DeletedAt == null).CountAsync();
             var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
             var products = await query
-                .Where(p => p.CategoryId > 0 && p.DeletedAt == null)
+                .Where(p => p.DeletedAt == null)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(p => p.Category)
