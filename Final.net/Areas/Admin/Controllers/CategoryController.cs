@@ -1,3 +1,4 @@
+// CountAsync, Skip - Take - ToListAsync,  IsNullOrEmpty, HttpContext.Session.GetString, AnyAsync,  ModelState.AddModelError, FindAsync
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace Final.net.Areas_Admin_Controllers
             {
                 return NotFound();
             }
-            const int pageSize = 1;
+            const int pageSize = 5;
             IQueryable<Category> query = _context.Categories;
 
             if (searchType == 1 && !int.TryParse(searchValue, out int categoryId22222221))
@@ -54,10 +55,11 @@ namespace Final.net.Areas_Admin_Controllers
                     query = query.Where(c => c.CategoryName.Contains(searchValue));
                 }
             }
-            var totalCategories = await query.CountAsync();
+            var totalCategories = await query.Where(c => c.DeletedAt == null).CountAsync();
             var totalPages = (int)Math.Ceiling(totalCategories / (double)pageSize);
 
             var categories = await query
+                .Where(c => c.DeletedAt == null)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -70,6 +72,8 @@ namespace Final.net.Areas_Admin_Controllers
 
             return View(categories);
         }
+
+
 
 
         // GET: Category/Details/5
@@ -96,7 +100,7 @@ namespace Final.net.Areas_Admin_Controllers
             return View(category);
         }
 
-        // GET: Category/Create
+
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -109,6 +113,7 @@ namespace Final.net.Areas_Admin_Controllers
         }
 
 
+
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category, IFormFile CategoryImage)
@@ -117,6 +122,10 @@ namespace Final.net.Areas_Admin_Controllers
             if (currentUserRole != "1" && currentUserRole != "3")
             {
                 return NotFound();
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(category); 
             }
             if (await _context.Categories.AnyAsync(c => c.CategoryName.ToLower() == category.CategoryName.ToLower()))
             {
@@ -194,7 +203,15 @@ namespace Final.net.Areas_Admin_Controllers
             {
                 return NotFound();
             }
-
+            if (!ModelState.IsValid)
+            {
+                return View(category);  // Trả lại view với thông báo lỗi nếu có
+            }
+            // if (string.IsNullOrEmpty(category.CategoryName))
+            // {
+            //     ModelState.AddModelError("CategoryName", "Tên thể loại không được rỗng");
+            //     return View(category);
+            // }
             if (await _context.Categories.AnyAsync(c => c.CategoryName.ToLower() == category.CategoryName.ToLower() && c.CategoryId != id))
             {
                 ModelState.AddModelError("CategoryName", "Thể loại này đã tồn tại.");
@@ -278,22 +295,28 @@ namespace Final.net.Areas_Admin_Controllers
             {
                 return NotFound();
             }
-            var categoryInUse = await _context.Products.AnyAsync(p => p.CategoryId == id);
+            // var categoryInUse = await _context.Products.AnyAsync(p => p.CategoryId == id);
 
-            if (categoryInUse)
-            {
-                // Thêm thông báo lỗi vào ModelState
-                ModelState.AddModelError("", "Không thể xóa thể loại này vì nó đang được sử dụng trong các sản phẩm.");
+            // if (categoryInUse)
+            // {
+            //     // Thêm thông báo lỗi vào ModelState
+            //     ModelState.AddModelError("", "Không thể xóa thể loại này vì nó đang được sử dụng trong các sản phẩm.");
 
-                // Truyền lại thể loại vào view để hiển thị
-                var category = await _context.Categories.FindAsync(id);
-                return View(category);
-            }
+            //     // Truyền lại thể loại vào view để hiển thị
+            //     var category = await _context.Categories.FindAsync(id);
+            //     return View(category);
+            // }
 
             var categoryToDelete = await _context.Categories.FindAsync(id);
             if (categoryToDelete != null)
             {
-                _context.Categories.Remove(categoryToDelete);
+                // _context.Categories.Remove(categoryToDelete);
+                categoryToDelete.DeletedAt = DateTime.UtcNow;
+                var productsInCategory = _context.Products.Where(p => p.CategoryId == id);
+                foreach (var product in productsInCategory)
+                {
+                    product.CategoryId = null;
+                }
                 await _context.SaveChangesAsync();
             }
 

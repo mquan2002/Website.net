@@ -15,13 +15,21 @@ namespace Final.net.Controllers
         {
             try
             {
-                // Lấy danh sách các danh mục cùng sản phẩm
-                var categories = _context.Categories.Include(c => c.Products).ToList();
+                var categories = _context.Categories
+                .Where(c => c.DeletedAt == null)
+                .Include(c => c.Products) 
+                .ToList();
+                foreach (var category in categories)
+                {
+                    category.Products = category.Products
+                        .Where(p => p.CategoryId > 0 && p.DeletedAt == null)
+                        .ToList();
+                }
+
                 return View(categories);
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi nếu cần (tùy thuộc vào logger bạn đang dùng)
                 Console.WriteLine($"Lỗi khi tải dữ liệu menu: {ex.Message}");
                 return StatusCode(500, "Lỗi khi tải dữ liệu menu.");
             }
