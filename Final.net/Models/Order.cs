@@ -16,8 +16,10 @@
         public int DeliveryId { get; set; }
         public virtual Delivery? Delivery { get; set; }
 
+        // Updated upstream
         // public string PaymentStatus { get; set; } = null!;
         // public string PaymentMethod { get; internal set; }
+
 
         public string Notes { get; internal set; }
 

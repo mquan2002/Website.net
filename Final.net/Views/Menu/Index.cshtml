@@ -18,7 +18,7 @@
                 <form id="searchForm">
                     <div class="search-input-container">
                         <i class="fa fa-search search-icon"></i>
-                        <input type="text" id="searchQuery" placeholder="What do you need?" onkeyup="searchProductsLive()">
+                        <input type="text" id="searchQuery" placeholder="Bạn cần gì?" onkeyup="searchProductsLive()">
                     </div>
                 </form>
 
@@ -44,7 +44,7 @@
                 </div>
                 <div class="featured__controls">
                     <ul>
-                        <li class="active" data-filter="*">All</li>
+                        <li class="active" data-filter="*">Tất cả</li>
                         @foreach (var category in Model)
                         {
                             <li data-filter=".@ToClassName(category.CategoryName)">@category.CategoryName</li>
@@ -59,12 +59,14 @@
                 foreach (var product in category.Products)
                 {
                     <div class="col-lg-3 col-md-4 col-sm-6 mix @ToClassName(category.CategoryName)">
-                        <div class="featured__item">
-                            <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
-                                <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
-                                </div>
-                            </a>
-                            <div class="featured__item__text">
+                        <div class="featured__item featured__item__card">
+                            <div class="featured__item__pic__wrap">
+                                <a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">
+                                    <div class="featured__item__pic set-bg" data-setbg="@product.ImageUrl" style="background-image: url('@product.ImageUrl');">
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="featured__item__text justify-content-between">
                                 <h6><a href="javascript:void(0);" onclick="showAddToCartModal(@product.ProductId)">@product.ProductName</a></h6>
                                 <h5>@product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h5>
                             </div>
@@ -217,13 +219,26 @@
             transform: scale(1.05); 
         }
 
+
+    .featured__item__text h6 {
+        margin-top: 0;
+        transition: margin-top 0.3s ease-in-out;
+    }
+        .featured__item__text h6:hover {
+            margin-top: -5px;
+        }
+
     .featured__item__text h6 a {
         text-decoration: none; 
-        color: black; 
-        
+        color: black;
+        font-size: 1.2rem;
+        transition: 0.3s ease-in-out;
     }
+
         .featured__item__text h6 a:hover {
-            font-weight: bolder;
+            color: #235fab;
+            filter: drop-shadow(2px 4px 6px rgb(188 49 57));
+            margin-top: -10px;
         }
 
     .featured__controls li {

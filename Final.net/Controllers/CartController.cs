@@ -18,7 +18,40 @@ namespace Final.net.Controllers
         public IActionResult Index()
         {
             var cart = GetCartItems();
+            ViewBag.CartItemCount = cart.Sum(item => item.Quantity);
+            double totalPrice = cart.Sum(item => item.TotalPrice);
+            ViewBag.TotalPriceOrder = totalPrice;
             return View(cart);
+        }
+
+        public IActionResult ApplyDiscount(string voucherCode, double totalPriceOrder)
+        {
+            if (!string.IsNullOrEmpty(voucherCode))
+            {
+                // Voucher cho hoá đơn từ 500.000
+                Voucher? validVoucher = _context.Vouchers
+                    .FirstOrDefault(x => x.VoucherCode.Trim() == voucherCode.Trim() && totalPriceOrder >= x.MinPrice && x.MinPrice >= 500000 && x.IsActive == true);
+                if (validVoucher is not null)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Thành công",
+                        data = new
+                        {
+                            NewTotalOrder = totalPriceOrder - validVoucher.DiscountPrice,
+                            validVoucher = validVoucher
+                        }
+                    });
+                }
+                return Json(new { success = false, message = "Voucher này không phù hợp" });
+            }
+            return Json(new { success = false, message = "Không nhận được dữ liệu" });
+        }
+
+        public IActionResult GetListVoucher()
+        {
+            return Json(_context.Vouchers.ToList());
         }
 
         // Lấy danh sách sản phẩm trong giỏ hàng của user
@@ -189,6 +222,21 @@ namespace Final.net.Controllers
 
             return Json(new { success = true, message = "Sản phẩm đã được xóa khỏi giỏ hàng!" });
         }
+        [HttpPost]
+        public IActionResult PaymentPOST(double? totalPayment)
+        {
+            if (totalPayment == null || (totalPayment.HasValue && double.IsNaN(totalPayment.Value)))
+            {
+                TempData["totalPayment"] = null;
+            }
+            else
+            {
+                TempData["totalPayment"] = totalPayment.ToString();
+            }
+            var url = Url.Action("Payment", "Cart");
+            return Json(new {url = url});
+        }
+
         [HttpGet]
         public IActionResult Payment()
         {
@@ -209,9 +257,11 @@ namespace Final.net.Controllers
             // Lấy các sản phẩm trong giỏ hàng
             var cart = GetCartItems();
             double totalPrice = 0;
-            foreach (var item in cart)
+            if (TempData["totalPayment"] == null)
             {
-                double itemPrice = item.BasePrice;
+                foreach (var item in cart)
+                {
+                    double itemPrice = item.BasePrice;
 
                 // Kiểm tra và tính lại giá theo kích thước
                 if (item.Size != null) // Kiểm tra nếu có size
@@ -231,9 +281,12 @@ namespace Final.net.Controllers
                     }
                 }
 
-                // Tính tổng giá sản phẩm sau khi thay đổi
-                totalPrice += itemPrice * item.Quantity;
+                    // Tính tổng giá sản phẩm sau khi thay đổi
+                    totalPrice += itemPrice * item.Quantity;
+                }
             }
+            else
+                totalPrice = Convert.ToDouble(TempData["totalPayment"]);
 
             // Lưu tổng giá vào ViewBag để sử dụng trong View
             ViewBag.TotalPrice = totalPrice;
@@ -273,12 +326,12 @@ namespace Final.net.Controllers
             }
 
             double totalPrice = cart.Sum(item => item.BasePrice * item.Quantity);
-            // var newDelivery = new Delivery
-            // {
+            var newDelivery = new Delivery
+            {
+                  
+                DeliveryStatus = "Pending",             // Trạng thái giao hàng
 
-            //     DeliveryStatus = "Pending",             // Trạng thái giao hàng
-
-            // };
+            };
 
             var payment = _context.Payments.FirstOrDefault(p => p.Method == paymentMethod);
             if (payment == null)
@@ -288,15 +341,15 @@ namespace Final.net.Controllers
 
             var newOrder = new Order
             {
+                UserId = userId,
                 Address = string.IsNullOrWhiteSpace(updatedUser.Address) ? user.Address : updatedUser.Address, // Cung cấp giá trị cho Address
                 SDT = string.IsNullOrWhiteSpace(updatedUser.Phone) ? user.Phone : updatedUser.Phone, // Cung cấp giá trị cho Phone
                 TotalAmount = totalPrice,
                 OrderDate = DateTime.Now,
-                UserId = userId,
-                DeliveryId = 1, 
+                //PaymentStatus = newDelivery.DeliveryStatus,
+                //PaymentMethod = payment.Method,
                 PaymentId = payment.PaymentId,
-                // PaymentStatus = newDelivery.DeliveryStatus,
-                // PaymentMethod = payment.Method,
+                DeliveryId = 1, // Sử dụng DeliveryId tự động tăng
                 Notes = notes,
             };
 
@@ -313,7 +366,7 @@ namespace Final.net.Controllers
          $"<td>{item.Size?.SizeName ?? "N/A"}</td>" +
          $"<td>{item.Crust?.CrustName ?? "N/A"}</td>" +
          $"<td>{item.Quantity}</td>" +
-         $"<td>{item.TotalPrice:N0} VND</td>" +
+         $"<td>{(item.BasePrice + (item.Size?.SizeName == "Cỡ 9 inch" ? 80000 : item.Size?.SizeName == "Cỡ 12 inch" ? 150000 : 0)) * item.Quantity:N0} VND</td>" +
          $"</tr>"));
 
 

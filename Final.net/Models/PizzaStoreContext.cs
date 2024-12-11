@@ -39,6 +39,8 @@ public partial class PizzaStoreContext : DbContext
     public virtual DbSet<CartItem> CartItems { get; set; }
 
     public virtual DbSet<Store> Stores { get; set; }
+	
+	public virtual DbSet<Voucher> Vouchers { get; set; }
 
 
 
