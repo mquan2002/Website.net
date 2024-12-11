@@ -3,10 +3,7 @@
     public partial class Order
     {
         public int OrderId { get; set; }
-
         public String Address { get; set; }
-
-   
         public string SDT { get; set; }
         public double? TotalAmount { get; set; }
         public DateTime OrderDate { get; set; }
@@ -21,7 +18,7 @@
         // public string PaymentMethod { get; internal set; }
 
 
-        public string Notes { get; internal set; }
+        public string Notes { get; set; }
 
         public int UserId { get; set; }
 

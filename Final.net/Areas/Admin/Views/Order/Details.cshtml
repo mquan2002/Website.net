@@ -1,0 +1,137 @@
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin2.cshtml";
+
+}
+
+@{
+    var order = ViewBag.Order as Final.net.Models.Order;
+    var orderItems = ViewBag.OrderItems as dynamic;
+}
+
+<h1>Chi tiết đơn hàng</h1>
+
+<h2>Thông tin đơn hàng</h2>
+<table class="table">
+    <tr>
+        <th>Mã đơn hàng:</th>
+        <td>@order.OrderId</td>
+    </tr>
+    <tr>
+        <th>Khách hàng:</th>
+        <td>@order.User.Username</td>
+    </tr>
+    <tr>
+        <th>Địa chỉ giao hàng:</th>
+        <td>@order.Address</td>
+    </tr>
+    <tr>
+        <th>Phương thức thanh toán:</th>
+        <td>@order.Payment.Method</td>
+    </tr>
+    <tr>
+        <th>Ngày đặt hàng:</th>
+        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+    </tr>
+    <tr>
+        <th>Tổng tiền:</th>
+        <td>@order.TotalAmount.ToString() VND</td>
+    </tr>
+</table>
+
+<h2>Danh sách sản phẩm</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Hình ảnh</th>
+            <th>Sản phẩm</th>
+            <th>Size</th>
+            <th>Loại đế</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in orderItems)
+        {
+            <tr>
+                <td><img src="@item.ImageUrl" alt="Product Image" style="width: 100px; height: auto;" /></td>
+                <td>@item.ProductName</td>
+                <td>@item.SizeName</td>
+                <td>@item.CrustName</td>
+                <td>@item.Quantity</td>
+                <td>@item.UnitPrice.ToString("N0") VND</td>
+                <td>@item.Price.ToString("N0") VND</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: #495057;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 80%;
+        margin: 20px auto;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #007bff;
+    }
+
+    h4 {
+        color: #007bff;
+        font-size: 1.4em;
+        margin-bottom: 15px;
+    }
+
+    .row {
+        margin-top: 15px;
+    }
+
+    dt {
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    dd {
+        margin-bottom: 10px;
+        color: #343a40;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        border-radius: 4px;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        text-align: center;
+    }
+
+    .image-preview {
+        max-width: 100px;
+        height: auto;
+    }
+
+</style>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

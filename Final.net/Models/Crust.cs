@@ -10,4 +10,7 @@ public partial class Crust
     public string CrustName { get; set; } = null!;
 
     public ICollection<CartItem> CartItems { get; set; }
+
+    public ICollection<OrderItem> OrderItems { get; set; }
+
 }

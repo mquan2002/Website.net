@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Final.net.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Route("admin/[controller]")]
     public class OrderController : Controller
     {
         private readonly PizzaStoreContext _context;
@@ -55,7 +56,7 @@ namespace Final.net.Areas.Admin.Controllers
 
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
-             ViewData["SearchType"] = searchType ;
+            ViewData["SearchType"] = searchType;
             ViewData["SearchValue"] = searchValue;
             ViewData["TotalOrder"] = totalOrders;
             ViewData["SearchTypeName"] = searchType == 1 ? "Id" : "số điện thoại";
@@ -83,6 +84,51 @@ namespace Final.net.Areas.Admin.Controllers
 
         //     return View(order);
         // }
+
+        [HttpGet("Detail/{id}")]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // Lấy thông tin đơn hàng theo id
+            var order = await _context.Orders
+                .Include(o => o.Payment)
+                .Include(o => o.Delivery)
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            var orderItems = await _context.OrderItem
+                .Include(oi => oi.Product) // Bao gồm thông tin sản phẩm
+                .Include(oi => oi.Size) // Bao gồm thông tin Size
+                .Include(oi => oi.Crust) // Bao gồm thông tin Crust
+                .Where(oi => oi.OrderId == id)
+                .Select(oi => new
+                {
+                    oi.OrderItemId,
+                    oi.Product.ProductName,
+                    oi.Product.ImageUrl,
+                    oi.Size.SizeName,
+                    oi.Crust.CrustName,
+                    oi.Quantity,
+                    oi.UnitPrice,
+                    oi.Price
+                })
+                .ToListAsync();
+
+            // Truyền dữ liệu vào View qua ViewBag
+            ViewBag.Order = order;
+            ViewBag.OrderItems = orderItems;
+
+            return View();
+        }
 
         [HttpGet("Edit/{id}")]
         // GET: Product/Edit/5
@@ -121,6 +167,7 @@ namespace Final.net.Areas.Admin.Controllers
 
             try
             {
+                Console.WriteLine($"Notes: {order.Notes}");
                 _context.Update(order);
                 await _context.SaveChangesAsync();
             }
