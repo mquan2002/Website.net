@@ -55,6 +55,8 @@ namespace Final.net.Controllers
                 .Include(o => o.Payment)
                 .Include(o => o.Delivery)
                 .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(o => o.Product)
                 .FirstOrDefaultAsync(o =>
                 isPhoneNumber
                     ? o.SDT == orderId  // Tìm theo số điện thoại
@@ -65,7 +67,7 @@ namespace Final.net.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = $"Order {order.OrderId}: Payment - {order.Payment.Method}, Delivery - {order.Delivery.DeliveryStatus}, Customer - {order.User.Username}",
+                        message = "Đơn hàng tìm thấy.",
                         data = new
                         {
                             order.OrderId,
@@ -73,6 +75,9 @@ namespace Final.net.Controllers
                             order.Address,
                             order.Delivery.DeliveryStatus,
                             order.User.Username,
+                            order.OrderItems.First().Product.ImageUrl,
+                            order.OrderDate,
+                            order.TotalAmount
                         }
                     });
                 }

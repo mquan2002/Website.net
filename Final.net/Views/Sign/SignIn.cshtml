@@ -33,28 +33,28 @@
             <form id="login" method="post" asp-action="SignIn">
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">person</span>
-                    <input type="text" placeholder="User name" id="Username" name="Username">
+                    <input type="text" placeholder="Tên người dùng" id="Username" name="Username">
                     <span asp-validation-for="Username" class="text-danger text__error"></span>
                 </div>
                 <div class="form-item">
                     <span class="form-item-icon material-symbols-rounded">lock</span>
-                    <input asp type="password" placeholder="Password" id="Password" name="Password">
+                    <input asp type="password" placeholder="Mật khẩu" id="Password" name="Password">
                     <span asp-validation-for="Password" class="text-danger text__error"></span>
                 </div>
                 <div class="form-item-other">
                     <div class="checkbox">
                         <input type="checkbox" id="rememberMeCheckbox">
-                        <label for="rememberMeCheckbox">Remember Me</label>
+                        <label for="rememberMeCheckbox">Lưu mật khẩu</label>
                     </div>
-                    <a onclick="forgotPW()" style="cursor: pointer;">Forgot password |</a>
+                    <a onclick="forgotPW()" style="cursor: pointer;">Quên mật khẩu</a>
                 </div>
-                <button class="btn" type="submit">Sign In</button>
+                <button class="btn" type="submit">Đăng nhập</button>
             </form>
 
             <div class="login-card-footer">
                 <p style="font-size: 13px; margin: 10px;">Bạn chưa có tài khoản?</p>
                 </br>
-                <a href="/Sign/SignUp">
+                <a href="/Sign/SignUp" style="text-decoration: none">
                     <p style="font-size: 13px; color: black;">Đăng ký ngay!</p>
                 </a>
             </div>

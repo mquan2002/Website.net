@@ -425,6 +425,7 @@ ol {
 
 .header__logo {
     padding: 15px 0;
+    margin-left: 0.5rem;
 }
 
     .header__logo a {
@@ -432,7 +433,8 @@ ol {
     }
 
 .header__menu {
-    padding: 24px 0;
+	text-align: center;
+	padding: 30px 0;
 }
 
     .header__menu ul li {
@@ -774,8 +776,9 @@ ol {
 -----------------------*/
 
 .categories__item {
-    height: 270px;
-    position: relative;
+	height: 270px;
+	position: relative;
+	border-radius: 10% 50% 10% 50% / 50% 10% 50% 10%;
 }
 
     .categories__item h5 {
@@ -865,19 +868,64 @@ ol {
             margin-right: 0;
         }
 
-.featured__item {
-    margin-bottom: 50px;
+.mix {
+    display: flex;
+    flex-direction: column;
+}
+.mix > *:first-child {
+    flex-grow: 1;
 }
 
-    .featured__item:hover .featured__item__pic .featured__item__pic__hover {
-        bottom: 20px;
-    }
+.featured__item {
+    margin-bottom: 50px;
+    box-shadow: 2px 4px 6px #235fab;
+    border-radius: 12px;
+}
+.featured__item__card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+}
+.featured__item__card .featured__item__pic__wrap {
+    overflow: hidden;
+    border-top-left-radius: calc(0.5rem - 1px);
+    border-top-right-radius: calc(0.5rem - 1px);
+}
 
+.featured__item__card .featured__item__text {
+    padding: 1rem 0.6rem 1.25rem 0.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+
+.featured__item__text {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+}
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+
+.featured__item:hover .featured__item__pic .featured__item__pic__hover {
+    bottom: 20px;
+}
+.featured__item__pic__wrap {
+    
+}
 .featured__item__pic {
     height: 270px;
     position: relative;
     overflow: hidden;
     background-position: center center;
+    border-radius: 10px 10px 0 0;
 }
 
 .featured__item__pic__hover {
@@ -942,8 +990,10 @@ ol {
             }
 
 .featured__item__text {
+    padding: 1rem 0.6rem 1.25rem 0.5rem;
     text-align: center;
-    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
     .featured__item__text h6 {
@@ -1001,9 +1051,10 @@ ol {
         }
 
 .latest-product__item {
-    margin-bottom: 20px;
-    overflow: hidden;
-    display: block;
+	margin-bottom: 20px;
+	overflow: hidden;
+	display: block;
+	border-radius: 10px 10px;
 }
 
 .latest-product__item__pic {
@@ -2295,6 +2346,7 @@ ol {
 
 .blog__item__pic img {
     min-width: 100%;
+    border-radius: 12px 12px 0 0;
 }
 
 .blog__item__text {
@@ -2932,7 +2984,7 @@ ol {
 
 @media only screen and (min-width: 1200px) {
     .container {
-        max-width: 1170px;
+        max-width: 100%;
     }
 }
 

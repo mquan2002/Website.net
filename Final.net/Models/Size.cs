@@ -12,4 +12,9 @@ public partial class Size
     public double? SizeCost { get; set; }
 
     public ICollection<CartItem> CartItems { get; set; }
+
+    public ICollection<OrderItem> OrderItems { get; set; }
+
+
+
 }

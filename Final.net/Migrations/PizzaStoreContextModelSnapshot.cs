@@ -204,14 +204,6 @@ namespace Final.net.Migrations
                     b.Property<int>("PaymentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SDT")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -231,6 +223,45 @@ namespace Final.net.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Final.net.Models.OrderItem", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"));
+
+                    b.Property<int>("CrustId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SizeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderItemId");
+
+                    b.HasIndex("CrustId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SizeId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("Final.net.Models.Payment", b =>
@@ -325,7 +356,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 12, 9, 16, 29, 37, 887, DateTimeKind.Local).AddTicks(5533),
+                            CreatedDate = new DateTime(2024, 12, 11, 14, 9, 39, 660, DateTimeKind.Local).AddTicks(4876),
                             IsDeleted = false,
                             Name = "Admin",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -333,7 +364,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 12, 9, 16, 29, 37, 887, DateTimeKind.Local).AddTicks(5566),
+                            CreatedDate = new DateTime(2024, 12, 11, 14, 9, 39, 660, DateTimeKind.Local).AddTicks(4914),
                             IsDeleted = false,
                             Name = "User",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -341,7 +372,7 @@ namespace Final.net.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2024, 12, 9, 16, 29, 37, 887, DateTimeKind.Local).AddTicks(5567),
+                            CreatedDate = new DateTime(2024, 12, 11, 14, 9, 39, 660, DateTimeKind.Local).AddTicks(4916),
                             IsDeleted = false,
                             Name = "Staff",
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -456,42 +487,35 @@ namespace Final.net.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("OrderItem", b =>
+            modelBuilder.Entity("Final.net.Models.Voucher", b =>
                 {
-                    b.Property<int>("OrderItemId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CrustId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Price")
+                    b.Property<double>("DiscountPrice")
                         .HasColumnType("float");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SizeId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("UnitPrice")
+                    b.Property<double>("MinPrice")
                         .HasColumnType("float");
 
-                    b.HasKey("OrderItemId");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.HasIndex("OrderId");
+                    b.Property<string>("VoucherCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("ProductId");
+                    b.HasKey("Id");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("Vouchers");
                 });
 
             modelBuilder.Entity("Final.net.Models.CartItem", b =>
@@ -502,7 +526,7 @@ namespace Final.net.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OrderItem", null)
+                    b.HasOne("Final.net.Models.OrderItem", null)
                         .WithMany("CartItems")
                         .HasForeignKey("OrderItemId");
 
@@ -560,32 +584,14 @@ namespace Final.net.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Final.net.Models.Product", b =>
+            modelBuilder.Entity("Final.net.Models.OrderItem", b =>
                 {
-                    b.HasOne("Final.net.Models.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId");
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Final.net.Models.User", b =>
-                {
-                    b.HasOne("OrderItem", null)
-                        .WithMany("Users")
-                        .HasForeignKey("OrderItemId");
-
-                    b.HasOne("Final.net.Models.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Final.net.Models.Crust", "Crust")
+                        .WithMany("OrderItem")
+                        .HasForeignKey("CrustId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("OrderItem", b =>
-                {
                     b.HasOne("Final.net.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
@@ -598,9 +604,43 @@ namespace Final.net.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Final.net.Models.Size", "Size")
+                        .WithMany("OrderItem")
+                        .HasForeignKey("SizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Crust");
+
                     b.Navigation("Order");
 
                     b.Navigation("Product");
+
+                    b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("Final.net.Models.Product", b =>
+                {
+                    b.HasOne("Final.net.Models.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Final.net.Models.User", b =>
+                {
+                    b.HasOne("Final.net.Models.OrderItem", null)
+                        .WithMany("Users")
+                        .HasForeignKey("OrderItemId");
+
+                    b.HasOne("Final.net.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Final.net.Models.Category", b =>
@@ -611,6 +651,8 @@ namespace Final.net.Migrations
             modelBuilder.Entity("Final.net.Models.Crust", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("OrderItem");
                 });
 
             modelBuilder.Entity("Final.net.Models.Delivery", b =>
@@ -621,6 +663,13 @@ namespace Final.net.Migrations
             modelBuilder.Entity("Final.net.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Final.net.Models.OrderItem", b =>
+                {
+                    b.Navigation("CartItems");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Final.net.Models.Payment", b =>
@@ -641,18 +690,13 @@ namespace Final.net.Migrations
             modelBuilder.Entity("Final.net.Models.Size", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("OrderItem");
                 });
 
             modelBuilder.Entity("Final.net.Models.User", b =>
                 {
                     b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("OrderItem", b =>
-                {
-                    b.Navigation("CartItems");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

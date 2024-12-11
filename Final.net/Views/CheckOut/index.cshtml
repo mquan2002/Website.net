@@ -1,12 +1,4 @@
 @{
-    ViewData["Title"] = "Check Out";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    @model List<Order>
-
-}
-
-
-@{
     ViewData["Title"] = "Order Tracking";
 }
 
@@ -52,29 +44,34 @@
                     if (response.success) {
                         $('#result').html(`
                             <div style="font-size: 18px; margin-bottom: 20px; text-align: center;">
-                                <strong style="color: #007BFF;">Đơn Hàng của bạn: ${response.data.deliveryStatus}</strong>
+                                <strong style="color: #007BFF;">Đơn Hàng Của Bạn ${response.data.deliveryStatus}</strong>
+                            </div>
+
+                            <!-- Order Details with Image and Status -->
+                            <div style="text-align: center;">
+                                <img src="${response.data.imageUrl}" alt="Order Image" style="max-width: 150px; margin-bottom: 20px;">
+                                <p style="font-size: 18px; color: #555; margin-bottom: 20px;">Trạng thái: ${response.data.deliveryStatus}</p>
                             </div>
 
                             <!-- Table for Order Details -->
                             <table style="width: 100%; max-width: 600px; margin: 0 auto; padding: 10px; border-collapse: collapse; background-color: #f9f9f9;">
                                 <tr style="border-bottom: 1px solid #ddd;">
-                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Order ID:</td>
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">ID đơn hàng:</td>
                                     <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.orderId}</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #ddd;">
-                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Delivery Method:</td>
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Phương thức thanh toán:</td>
                                     <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.method}</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #ddd;">
-                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Address:</td>
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Đại chỉ:</td>
                                     <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.address}</td>
                                 </tr>
                                 <tr>
-                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Customer Name:</td>
-                                    <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.username}</td>
+                                    <td style="padding: 8px; font-size: 16px; font-weight: bold; color: #333;">Tổng tiền:</td>
+                                    <td style="padding: 8px; font-size: 16px; color: #555;">${response.data.totalAmount}</td>
                                 </tr>
                             </table>
-
                         `);
                     } else {
                         $('#result').text(response.message); // Hiển thị thông báo lỗi
@@ -87,12 +84,3 @@
         });
     });
 </script>
-
-
-
-@if (!string.IsNullOrEmpty(ViewBag.Message))
-{
-    <div style="margin-top: 20px; text-align: center;">
-        <p>@ViewBag.Message</p>
-    </div>
-}

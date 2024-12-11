@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -20,13 +21,16 @@
     <style>
         .pagination {
             display: flex;
-            justify-content: center; /* Căn giữa */
+            justify-content: center;
+            /* Căn giữa */
             align-items: center;
-            margin-top: 20px; /* Khoảng cách từ phần trên */
+            margin-top: 20px;
+            /* Khoảng cách từ phần trên */
         }
 
         .page-item {
-            margin: 0 5px; /* Khoảng cách giữa các trang */
+            margin: 0 5px;
+            /* Khoảng cách giữa các trang */
         }
 
         .page-link {
@@ -36,20 +40,25 @@
 
         .page-item.disabled .page-link,
         .page-item.active .page-link {
-            background-color: #007bff; /* Màu nền cho trang hiện tại hoặc disabled */
+            background-color: #007bff;
+            /* Màu nền cho trang hiện tại hoặc disabled */
             color: white;
         }
-
     </style>
 
 </head>
+
 <body>
     <div class="container-scroller">
         <!-- partial:../../partials/_navbar.html -->
-        <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row" style="background-color : #004666">
-            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center" style="background-color : #004666">
-                <a class="navbar-brand brand-logo" asp-area="" asp-controller="Home" asp-action="Index"><img src="../../LayoutAdmin/assets/images/domino-horizontal-dark.svg" alt="logo" /></a>
-                <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../LayoutAdmin/assets/images/logo-mini.svg" alt="logo" /></a>
+        <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
+            style="background-color : #004666">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center"
+                style="background-color : #004666">
+                <a class="navbar-brand brand-logo" asp-area="" asp-controller="Home" asp-action="Index"><img
+                        src="../../LayoutAdmin/assets/images/domino-horizontal-dark.svg" alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini" href="../../index.html"><img
+                        src="../../LayoutAdmin/assets/images/logo-mini.svg" alt="logo" /></a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-stretch">
                 <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -61,13 +70,15 @@
                             <div class="input-group-prepend bg-transparent">
                                 <i class="input-group-text border-0 mdi mdi-magnify"></i>
                             </div>
-                            <input type="text" class="form-control bg-transparent border-0" placeholder="Search projects">
+                            <input type="text" class="form-control bg-transparent border-0"
+                                placeholder="Search projects">
                         </div>
                     </form>
                 </div>
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item nav-profile dropdown">
-                        <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <div class="nav-profile-img">
                                 <img src="../../LayoutAdmin/assets/images/faces/face1.jpg" alt="image">
                                 <span class="availability-status online"></span>
@@ -92,39 +103,50 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="mdi mdi-email-outline"></i>
                             <span class="count-symbol bg-warning"></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                            aria-labelledby="messageDropdown">
                             <h6 class="p-3 mb-0">Messages</h6>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
-                                    <img src="../../LayoutAdmin/assets/images/faces/face4.jpg" alt="image" class="profile-pic">
+                                    <img src="../../LayoutAdmin/assets/images/faces/face4.jpg" alt="image"
+                                        class="profile-pic">
                                 </div>
-                                <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
-                                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Mark send you a message</h6>
+                                <div
+                                    class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Mark send you a message
+                                    </h6>
                                     <p class="text-gray mb-0"> 1 Minutes ago </p>
                                 </div>
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
-                                    <img src="../../LayoutAdmin/assets/images/faces/face2.jpg" alt="image" class="profile-pic">
+                                    <img src="../../LayoutAdmin/assets/images/faces/face2.jpg" alt="image"
+                                        class="profile-pic">
                                 </div>
-                                <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
-                                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Cregh send you a message</h6>
+                                <div
+                                    class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Cregh send you a
+                                        message</h6>
                                     <p class="text-gray mb-0"> 15 Minutes ago </p>
                                 </div>
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
-                                    <img src="../../LayoutAdmin/assets/images/faces/face3.jpg" alt="image" class="profile-pic">
+                                    <img src="../../LayoutAdmin/assets/images/faces/face3.jpg" alt="image"
+                                        class="profile-pic">
                                 </div>
-                                <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
-                                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Profile picture updated</h6>
+                                <div
+                                    class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                                    <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Profile picture updated
+                                    </h6>
                                     <p class="text-gray mb-0"> 18 Minutes ago </p>
                                 </div>
                             </a>
@@ -133,11 +155,13 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
+                            data-bs-toggle="dropdown">
                             <i class="mdi mdi-bell-outline"></i>
                             <span class="count-symbol bg-danger"></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                            aria-labelledby="notificationDropdown">
                             <h6 class="p-3 mb-0">Notifications</h6>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item preview-item">
@@ -146,9 +170,11 @@
                                         <i class="mdi mdi-calendar"></i>
                                     </div>
                                 </div>
-                                <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                                <div
+                                    class="preview-item-content d-flex align-items-start flex-column justify-content-center">
                                     <h6 class="preview-subject font-weight-normal mb-1">Event today</h6>
-                                    <p class="text-gray ellipsis mb-0"> Just a reminder that you have an event today </p>
+                                    <p class="text-gray ellipsis mb-0"> Just a reminder that you have an event today
+                                    </p>
                                 </div>
                             </a>
                             <div class="dropdown-divider"></div>
@@ -158,7 +184,8 @@
                                         <i class="mdi mdi-settings"></i>
                                     </div>
                                 </div>
-                                <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                                <div
+                                    class="preview-item-content d-flex align-items-start flex-column justify-content-center">
                                     <h6 class="preview-subject font-weight-normal mb-1">Settings</h6>
                                     <p class="text-gray ellipsis mb-0"> Update dashboard </p>
                                 </div>
@@ -170,7 +197,8 @@
                                         <i class="mdi mdi-link-variant"></i>
                                     </div>
                                 </div>
-                                <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                                <div
+                                    class="preview-item-content d-flex align-items-start flex-column justify-content-center">
                                     <h6 class="preview-subject font-weight-normal mb-1">Launch Admin</h6>
                                     <p class="text-gray ellipsis mb-0"> New admin wow! </p>
                                 </div>
@@ -190,7 +218,8 @@
                         </a>
                     </li>
                 </ul>
-                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                    data-toggle="offcanvas">
                     <span class="mdi mdi-menu"></span>
                 </button>
             </div>
@@ -221,20 +250,23 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                            aria-controls="ui-basic">
                             <span class="menu-title">Quản lý Chức năng</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-crosshairs-gps menu-icon"></i>
                         </a>
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="../../admin/Category">Danh mục sản phẩm </a></li>
+                                <li class="nav-item"> <a class="nav-link" href="../../admin/Category">Danh mục sản phẩm
+                                    </a></li>
                                 <li class="nav-item"> <a class="nav-link" href="../../admin/Product">Sản phẩm</a></li>
                             </ul>
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic-1" aria-expanded="false" aria-controls="ui-basic-1">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic-1" aria-expanded="false"
+                            aria-controls="ui-basic-1">
                             <span class="menu-title">Quản lý nội dung</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-crosshairs-gps menu-icon"></i>
@@ -242,7 +274,7 @@
                         <div class="collapse" id="ui-basic-1">
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item"> <a class="nav-link" href="../../admin/Blog">Quản lý blog </a></li>
-          
+
                             </ul>
                         </div>
                     </li>
@@ -252,12 +284,12 @@
                             <i class="mdi mdi-contacts menu-icon"></i>
                         </a>
                     </li>
-                    @* <li class="nav-item">
-                        <a class="nav-link" href="../../pages/forms/basic_elements.html">
-                            <span class="menu-title">Đơn hàng</span>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/Shipper">
+                            <span class="menu-title">Vận chuyển</span>
                             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
                         </a>
-                    </li> *@
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../../pages/charts/chartjs.html">
                             <span class="menu-title">Thống kê</span>
@@ -271,18 +303,24 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false"
+                            aria-controls="general-pages">
                             <span class="menu-title">Quản lý cái gì đó</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-medical-bag menu-icon"></i>
                         </a>
                         <div class="collapse" id="general-pages">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/blank-page.html">1</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/login.html">2</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/register.html">3</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-404.html">4</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-500.html">5</a></li>
+                                <li class="nav-item"> <a class="nav-link"
+                                        href="../../pages/samples/blank-page.html">1</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/login.html">2</a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/register.html">3</a>
+                                </li>
+                                <li class="nav-item"> <a class="nav-link"
+                                        href="../../pages/samples/error-404.html">4</a></li>
+                                <li class="nav-item"> <a class="nav-link"
+                                        href="../../pages/samples/error-500.html">5</a></li>
                             </ul>
                         </div>
                     </li>
@@ -292,15 +330,15 @@
                                 <h6 class="font-weight-normal mb-3">test</h6>
                             </div>
                             <button class="btn btn-block btn-lg btn-gradient-primary mt-4">test/button>
-                            <div class="mt-4">
-                                <div class="border-bottom">
-                                    <p class="text-secondary">Categories</p>
+                                <div class="mt-4">
+                                    <div class="border-bottom">
+                                        <p class="text-secondary">Categories</p>
+                                    </div>
+                                    <ul class="gradient-bullet-list mt-4">
+                                        <li>123</li>
+                                        <li>123</li>
+                                    </ul>
                                 </div>
-                                <ul class="gradient-bullet-list mt-4">
-                                    <li>123</li>
-                                    <li>123</li>
-                                </ul>
-                            </div>
                         </span>
                     </li>
                 </ul>
@@ -314,7 +352,8 @@
                 <!-- partial:../../partials/_footer.html -->
                 <footer class="footer">
                     <div class="container-fluid d-flex justify-content-between">
-                        <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com 2024</span>
+                        <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright ©
+                            bootstrapdash.com 2024</span>
                     </div>
                 </footer>
                 <!-- partial -->
@@ -336,6 +375,8 @@
     <!-- endinject -->
     <!-- Custom js for this page -->
     <!-- End custom js for this page -->
-</body>
-</html>
 
+
+</body>
+
+</html>

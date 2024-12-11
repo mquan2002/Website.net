@@ -1,0 +1,43 @@
+@model Final.net.Models.Order
+
+<h4>Chi tiết đơn hàng</h4>
+<p><strong>Mã đơn:</strong> @Model.OrderId</p>
+<p><strong>Tên khách hàng:</strong> @Model.User.Username</p>
+<p><strong>SĐT:</strong> @Model.SDT</p>
+<p><strong>Địa chỉ:</strong> @Model.Address</p>
+
+<h5>Danh sách sản phẩm</h5>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Tổng tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderItems)
+        {
+            <tr>
+                <td>
+                    @if (item.Product != null)
+                    {
+                        <img src="@item.Product.ImageUrl" alt="Product Image" width="50" />
+                    }
+                    else
+                    {
+                        <span>No image available</span>
+                    }
+                </td>
+                <td>@item.Product.ProductName</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price.ToString("N0") vnđ</td>
+                <td>@((item.Quantity * item.Price).ToString("N0")) vnđ</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p><strong>Tổng tiền:</strong> @Model.TotalAmount?.ToString("N0") vnđ</p>
