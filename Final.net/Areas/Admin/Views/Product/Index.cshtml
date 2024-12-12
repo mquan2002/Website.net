@@ -71,10 +71,10 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
 
 @{
     var totalProduct = ViewData["TotalProduct"] as int? ?? 0;
+    var totalPage = ViewData["TotalPages"] as int? ?? 0;
 }
 @if (totalProduct > 0)
 {
-
     <table class="table">
         <thead>
             <tr>
@@ -99,7 +99,8 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                         <span class="product-name">@Html.DisplayFor(modelItem => item.ProductName)</span>
 
                     </td>
-                    <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                    <td>@String.Format("{0:N0} VND", item.Price)</td>
+
                     <td>@Html.DisplayFor(modelItem => item.Description)</td>
                     <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
                     <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
@@ -114,12 +115,12 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                             <button class="btn btn-primary btn-disabled" disabled>Edit</button>
                         }
                         |
-                        <a class="btn btn-success btn-no-disabled" asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                        <a class="btn btn-success btn-no-disabled" asp-action="Details"
+                            asp-route-id="@item.ProductId">Details</a> |
 
                         @if (roleId != "3")
                         {
-                            <a class="btn btn-danger btn-no-disabled" asp-action="Delete"
-                                asp-route-id="@item.ProductId">Delete</a>
+                            <a class="btn btn-danger btn-no-disabled" asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
                         }
                         else
                         {
@@ -130,7 +131,6 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
             }
         </tbody>
     </table>
-
     <!-- Phân trang -->
     <div class="pagination">
         @if (ViewData["CurrentPage"] != null && ViewData["TotalPages"] != null)
@@ -156,11 +156,14 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                             <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)">Trước</a>
                         </li>
 
-                        @for (int i = startPage; i <= endPage; i++)
+                        @if (totalPage > 1)
                         {
-                            <li class="page-item @(i == currentPage ? "disabled" : "")" @(totalPages == 1 ? "d-none" : "")>
-                                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
-                            </li>
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "disabled" : "")" @(totalPages == 1 ? "d-none" : "")>
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                                </li>
+                            }
                         }
 
                         <li class="page-item @(currentPage == totalPages ? "d-none" : "" )">
@@ -173,15 +176,16 @@ ViewContext.HttpContext.Request.Query.ContainsKey("SearchValue"))
                             <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)"
                                 asp-route-searchType="@searchType" asp-route-searchValue="@searchValue">Trước</a>
                         </li>
-
-                        @for (int i = startPage; i <= endPage; i++)
-                        {
-
-                            <li class="page-item @(i == currentPage ? "disabled" : "") @(totalPages == 1 ? "d-none" : "")">
-                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchType="@searchType"
-                                    asp-route-searchValue="@searchValue">@i</a>
-                            </li>
-                        }
+                            @if (totalPage > 1)
+                            {
+                                @for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(i == currentPage ? "disabled" : "") @(totalPages == 1 ? "d-none" : "")">
+                                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchType="@searchType"
+                                            asp-route-searchValue="@searchValue">@i</a>
+                                    </li>
+                                }
+                            }
 
                         <li class="page-item @(currentPage == totalPages ? "d-none" : "") @(totalPages == 1 ? "d-none" : "")">
                             <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)"

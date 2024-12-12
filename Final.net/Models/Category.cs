@@ -8,8 +8,10 @@ namespace Final.net.Models
     {
         public int CategoryId { get; set; }
 
-        [MaxLength(255)] 
-        
+        [MaxLength(255)]
+
+        [RegularExpression(@"^[a-zA-Z\s]*$", ErrorMessage = "Tên thể loại không được chứa số hoặc ký tự đặc biệt")]
+        [Required(ErrorMessage = "Tên thể loại không được rỗng")]
         public string CategoryName { get; set; } = null!;
 
         [MaxLength(255)]

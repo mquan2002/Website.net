@@ -54,11 +54,10 @@ namespace Final.net.Areas_Admin_Controllers
                     query = query.Where(p => p.ProductName.Contains(searchValue));
                 }
             }
-            var totalProducts = await query.CountAsync();
-
+            var totalProducts = await query.Where(p => p.DeletedAt == null).CountAsync();
             var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
-
             var products = await query
+                .Where(p => p.DeletedAt == null)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(p => p.Category)
@@ -74,7 +73,6 @@ namespace Final.net.Areas_Admin_Controllers
             ViewData["RoleId"] = currentUserRole;
             return View(products);
         }
-
         [HttpGet("Detail/{id}")]
         // GET: Product/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -114,7 +112,7 @@ namespace Final.net.Areas_Admin_Controllers
                 return Unauthorized("Bạn không có quyền sử dụng chức năng này.");
             }
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.DeletedAt == null), "CategoryId", "CategoryName");
             return View();
         }
 
@@ -128,13 +126,25 @@ namespace Final.net.Areas_Admin_Controllers
             {
                 return NotFound();
             }
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+                return View(product);
+            }
+            // if (string.IsNullOrEmpty(product.ProductName))
+            // {
+            //     ModelState.AddModelError("ProductName", "Tên sản phẩm không được rỗng");
+            //     return View(product);
+            // }
             if (await _context.Products.AnyAsync(c => c.ProductName.ToLower() == product.ProductName.ToLower()))
             {
                 ModelState.AddModelError("ProductName", "Sản phẩm này đã tồn tại.");
                 ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-                return View(product); // Trả lại model với dữ liệu đã nhập
+                return View(product);
             }
-
             if (ImageUrl != null && ImageUrl.Length > 0)
             {
                 try
@@ -142,27 +152,28 @@ namespace Final.net.Areas_Admin_Controllers
                     var imageUrl = await _productService.UploadImageToCloudinary(ImageUrl);
                     product.ImageUrl = imageUrl;
                     ModelState.Remove("ImageUrl");
+                    // if (ModelState.IsValid)
+                    // {
+                    Console.WriteLine("123");
+                    _context.Add(product);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                    // }
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("ImageUrl", "Lỗi khi upload ảnh: " + ex.Message);
-                    return View(product); // Trả lại model khi có lỗi upload ảnh
+                    return View(product);
                 }
             }
             else
             {
                 ModelState.AddModelError("ImageUrl", "Vui lòng chọn một ảnh.");
-                return View(product); // Trả lại model khi không chọn ảnh
+                return View(product);
             }
 
-            if (ModelState.IsValid)
-            {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
 
-            // Trả lại view với thông báo lỗi nếu ModelState không hợp lệ
+
             return View(product);
         }
 
@@ -204,6 +215,10 @@ namespace Final.net.Areas_Admin_Controllers
             if (id != product.ProductId)
             {
                 return NotFound();
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(product);
             }
 
             if (await _context.Products.AnyAsync(c => c.ProductName.ToLower() == product.ProductName.ToLower() && c.ProductId != id))
@@ -295,11 +310,13 @@ namespace Final.net.Areas_Admin_Controllers
             var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
-                _context.Products.Remove(product);
-            }
 
+                product.DeletedAt = DateTime.UtcNow;
+                // _context.Products.Remove(product);
+            }
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+
         }
 
         private bool ProductExists(int id)
