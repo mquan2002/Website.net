@@ -92,8 +92,10 @@
                                 <i class="mdi mdi-cached me-2 text-success"></i> Activity Log
                             </a>
                             <div class="dropdown-divider"></div>
+
                             <a class="dropdown-item" href="#">
-                                <i class="mdi mdi-logout me-2 text-primary"></i> Signout
+                                @* <i class="mdi mdi-logout me-2 text-primary"></i> Signout *@
+                                <a asp-controller="Users" asp-action="Logout" class="btn btn-danger">Đăng xuất</a>
                             </a>
                         </div>
                     </li>

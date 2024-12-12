@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Final.net.Areas.Admin.Views.HomeAdmin
 {
@@ -324,6 +325,14 @@ namespace Final.net.Areas.Admin.Views.HomeAdmin
         {
             return _context.Users.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear(); // Clear session data
+            await HttpContext.SignOutAsync(); // Sign out user
+            return RedirectToAction("index", "Login"); // Redirect to home page
+        }
     }
+
 
 }
